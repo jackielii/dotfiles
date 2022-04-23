@@ -28,18 +28,11 @@ if OS.mac?
     brew "koekeishiya/formulae/skhd" # shortcuts
     cask "mouse-fix" # mouse scrolling fix & button remap
     brew "bash" # need newest bash for some program like extracto
+    cask "google-chrome" # TODO: check if installed
+    cask "homebrew/cask-fonts/font-fira-code-nerd-font"
 else
     # linux ones
 end
-# }}}
-
-cask "google-chrome"
-
-# Fonts {{{
-cask "homebrew/cask-fonts/font-fira-code"
-cask "homebrew/cask-fonts/font-fira-code-nerd-font"
-cask "homebrew/cask-fonts/font-fira-mono-nerd-font"
-cask "homebrew/cask-fonts/font-fira-mono"
 # }}}
 
 
