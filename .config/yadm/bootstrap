@@ -62,7 +62,7 @@ fi
 # Neovim {{{
 if command -v nvim >/dev/null 2>&1; then
 	echo "\nBootstrapping Neovim\n"
-	nvim -es -u init.vim -i NONE -c "PlugInstall" -c "qa"
+	nvim -e -u $HOME/.config/nvim/init.vim -i NONE -c "PlugInstall" -c "qa"
 fi
 
 # fzf theme using base16. FZF is installed via nvim plugin
