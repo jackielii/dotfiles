@@ -9,7 +9,7 @@ set -e # exit on error
 # option
 
 trap "mv /tmp/.gitconfig ~/.gitconfig" EXIT INT TERM
-mv ~/.gitconfig ~/tmp/.gitconfig
+mv ~/.gitconfig /tmp/.gitconfig
 
 cd "$HOME"
 
