@@ -356,7 +356,6 @@ let $FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS.' --layout=reverse'
 " select filetype
 nmap <leader>km :Filetypes<CR>
 
-
 " <leader>o to open recent files
 nmap <silent><leader>o :History<CR>
 nmap <silent> <leader>e :Buffers<CR>
