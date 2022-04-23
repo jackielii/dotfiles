@@ -23,6 +23,8 @@ if [ -f "$HOME/.Brewfile" ]; then
 	brew bundle --global
 fi
 
+[ -n "${HOMEBREW_PREFIX}" ] && eval "$(brew shellenv)"
+
 # Zsh {{{
 # if [ ! -d "$HOME/.oh-my-zsh/.git" ]; then
 # 	echo "\nInstalling oh-my-zsh\n"
@@ -74,8 +76,6 @@ fi
 
 # coc.nvim dependencies {{{
 echo "\nBootstrapping coc.nvim\n"
-
-[ -n "${HOMEBREW_PREFIX}" ] && eval "$(brew shellenv)"
 
 ${HOMEBREW_PREFIX}/bin/pip3 install pynvim # coc snippet requirement
 pushd ~/.config/coc/extensions && yarn -s && popd # coc extensions
