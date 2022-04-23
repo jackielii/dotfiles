@@ -1,4 +1,7 @@
 #!/usr/bin/env zsh
 
+
+# I think this is only to work around the fzf theme
+
 source ~/.zprofile
 $HOME/.fzf/bin/fzf $@

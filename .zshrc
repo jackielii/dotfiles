@@ -192,15 +192,6 @@ export FZF_ALT_C_COMMAND="fd -t d . $HOME"
 export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --history=$HOME/.fzf_history"
  # }}}
 
-# Base16 Shell
-BASE16_SHELL="$HOME/.config/base16-shell/"
-[ -n "$PS1" ] && \
-    [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
-        eval "$("$BASE16_SHELL/profile_helper.sh")"
-
-# Base16 fzf
-source $HOME/.config/base16-fzf/bash/base16-${BASE16_THEME}.config
-
 ulimit -n 4096
 
 export PATH=$HOME/bin:$PATH:$HOME/go/bin:$HOME/pycode:$HOME/app/flutter/bin:$HOME/app/android-studio/bin

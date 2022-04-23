@@ -4,10 +4,15 @@ Managed via [yadm]()
 
 ## Install
 
-curl -L https://jackieli.dev/dot | sudo bash
+bash -c "$(curl -fsSL https://jackieli.dev/dot)"
 
 ## Mac
 
 Trying to say close to i3wm as possible
 
 ## Linux
+
+- i3wm
+- i3blocks
+- dunst
+- xfsettingsd
