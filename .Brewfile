@@ -10,7 +10,7 @@ brew "zoxide" # z change directory
 brew "gh"
 brew "lazygit"
 brew "jq"
-brew "node"
+brew "node@14"
 brew "yarn"
 brew "python3"
 brew "tree"
