@@ -23,7 +23,7 @@ if [ -f "$HOME/.Brewfile" ]; then
 	brew bundle --global
 fi
 
-[ -n "${HOMEBREW_PREFIX}" ] && eval "$(brew shellenv)"
+[ -z "${HOMEBREW_PREFIX}" ] && eval "$(brew shellenv)"
 
 # Zsh {{{
 # if [ ! -d "$HOME/.oh-my-zsh/.git" ]; then
