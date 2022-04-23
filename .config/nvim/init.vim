@@ -240,7 +240,8 @@ augroup end
 
 " }}}
 
-" vim-plug {{{
+" vim-plug {{{ This should be after the common configs so that yadm bootstrap
+" can run correctly
 let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
 if empty(glob(data_dir . '/autoload/plug.vim'))
   silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
