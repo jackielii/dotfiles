@@ -1,0 +1,23 @@
+#!/bin/sh
+
+yadm add $HOME/.zshrc
+yadm add $HOME/.tmux.conf
+yadm add $HOME/.gitconfig
+yadm add $HOME/README.md
+yadm add $HOME/.config/kitty/kitty.conf
+yadm add $HOME/.config/yabai/yabairc
+yadm add $HOME/.config/skhd/skhdrc
+yadm add $HOME/.Brewfile
+yadm add $HOME/.config/yadm/encrypt
+yadm add $HOME/.local/share/yadm/archive
+yadm add $HOME/.config/yadm/bootstrap
+yadm add $HOME/.config/nvim/coc-settings.json
+yadm add $HOME/.config/nvim/tasks.ini
+yadm add $HOME/.config/coc/ultisnips/*
+yadm add $HOME/.config/coc/extensions/package.json
+yadm add $HOME/.config/starship.toml
+yadm add $HOME/.fzf-zsh
+yadm add $HOME/bin/yadm-add
+
+
+yadm status

@@ -74,8 +74,8 @@ plugins=(
   docker-compose
   #ssh-agent
   # # zsh-vim-mode
+  you-should-use
 )
-plugins=(you-should-use $plugins)
 
 #zstyle :omz:plugins:ssh-agent identities id_rsa id_tes_ed25519
 
@@ -204,8 +204,6 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --history=$HOME/.fzf_history"
 
  # }}}
 
-ulimit -n 4096
-
 export PATH=$HOME/bin:$PATH:$HOME/go/bin:$HOME/pycode:$HOME/app/flutter/bin:$HOME/app/android-studio/bin
 export EDITOR=nvim
 export PAGER=less
@@ -215,7 +213,12 @@ export HISTFILESIZE=2000000
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
 
-#alias open="xdg-open"
+OS=$(uname -s)
+
+if [ "${OS}" = "Linux" ]; then
+  alias open="xdg-open"
+fi
+
 alias cls='echo -ne "\033c"'
 alias rm='rm -i'
 alias dh='dirs -v'
