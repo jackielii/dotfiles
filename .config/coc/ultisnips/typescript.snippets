@@ -1,0 +1,49 @@
+# A valid snippet should starts with:
+#
+#		snippet trigger_word [ "description" [ options ] ]
+#
+# and end with:
+#
+#		endsnippet
+#
+# Snippet options:
+#
+#		b - Beginning of line.
+#		i - In-word expansion.
+#		w - Word boundary.
+#		r - Regular expression
+#		e - Custom context snippet
+#		A - Snippet will be triggered automatically, when condition matches.
+#
+# Basic example:
+#
+#		snippet emitter "emitter properties" b
+#		private readonly ${1} = new Emitter<$2>()
+#		public readonly ${1/^_(.*)/$1/}: Event<$2> = this.$1.event
+#		endsnippet
+#
+# Online reference: https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt
+
+snippet describe "describe test" b
+describe('${1}', () => {
+	${0:${VISUAL}}
+})
+endsnippet
+
+snippet test "test" b
+test('${1}', () => {
+	${0:${VISUAL}}
+})
+endsnippet
+
+snippet eslint-disable "eslint disable hooks exhaustive deps" b
+// eslint-disable-next-line react-hooks/exhaustive-deps
+endsnippet
+
+snippet impreact "import react" b
+import React from 'react';
+endsnippet
+
+snippet jsonstringify "JSON.stringify(tests, null, 2)" i
+JSON.stringify(${1:${VISUAL}}, null, 2)${0}
+endsnippet

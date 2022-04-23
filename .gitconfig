@@ -1,0 +1,56 @@
+[user]
+     email = jackie.space@gmail.com
+     name = Jackie Li
+     signingkey = 9D44BB781C299FEF
+[user]
+;    email = jackie.li@target-energysolutions.com
+;    name = Jackie Li
+;    signingkey = C87B9D9061502C01
+
+[alias]
+    st = status
+    ci = commit
+    br = branch
+    co = checkout
+    df = diff
+    ds = diff --staged
+    lg = log -p
+    lol = log --graph --decorate --pretty=oneline --abbrev-commit
+    lola = log --graph --decorate --pretty=oneline --abbrev-commit --all --date=local
+    ls = ls-files
+    unstage = reset HEAD
+    undo = reset --soft HEAD~1
+
+    # Show files ignored by git:
+    ign = ls-files -o -i --exclude-standard
+
+[core]
+    whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
+	excludesfile = /Users/jackieli/.gitignore_global
+
+[credential "https://gitlab.com"]
+    tesgo = jackieli
+[credential]
+    helper = store
+; [http ]
+;   proxy = socks5://localhost:7777
+; [https ]
+;   proxy = socks5://localhost:7777
+[github]
+	user = jackielii
+[url "ssh://git@gitlab.com/"]
+        insteadOf = https://gitlab.com/
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+;[sendemail]
+;        smtpserver = smtp.gmail.com
+;        smtpuser = jackie.space@gmail.com
+;        smtpencryption = tls
+;        smtpserverport = 587
+[merge]
+	conflictstyle = diff3

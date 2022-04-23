@@ -1,0 +1,73 @@
+#!/usr/bin/env zsh
+
+# vim:set noet sts=0 sw=4 ts=4 tw=79 fdm=marker:
+
+cd "$HOME"
+
+echo "\nInit submodules\n"
+yadm submodule update --recursive --init
+
+OS=$(uname -s) # Linux or Darwin
+
+if [ -f "$HOME/.Brewfile" ]; then
+	echo "\nUpdating homebrew bundle\n"
+	brew bundle --global
+fi
+
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+	echo "\nInstalling oh-my-zsh\n"
+	# https://ohmyz.sh/#install
+	sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	source "$HOME/.zshrc"
+fi
+
+typeset -A MY_ZSH_PLUGINS
+MY_ZSH_PLUGINS=(
+	you-should-use https://github.com/MichaelAquilina/zsh-you-should-use.git
+	zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions.git
+)
+
+for NAME ("${(@k)MY_ZSH_PLUGINS}"); do
+	DIR=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${NAME}
+	GIT_REPO=$MY_ZSH_PLUGINS[$NAME]
+	if [ ! -d ${DIR} ]; then
+		echo "\nInstalling ohmyzsh plugin ${NAME}\n"
+		git clone ${GIT_REPO} ${DIR}
+	fi
+done
+
+if command -v nvim >/dev/null 2>&1; then
+	echo "\nBootstrapping Neovim\n"
+	nvim -es -u init.vim -i NONE -c "PlugInstall" -c "qa"
+fi
+
+# fzf theme using base16. FZF is installed via nvim plugin
+if [ ! -d "$HOME/.config/base16-fzf/" ]; then
+	echo "\nInstalling base16-fzf\n"
+	git clone https://github.com/fnune/base16-fzf.git $HOME/.config/base16-fzf/
+fi
+
+# coc.nvim dependencies {{{
+echo "\nBootstrapping coc.nvim\n"
+
+${HOMEBREW_PREFIX}/bin/pip3 install pynvim
+
+# coc extensions
+pushd ~/.config/coc/extensions && yarn -s && popd
+
+# lsp
+go install golang.org/x/tools/gopls@latest
+yarn global add bash-language-server
+# }}}
+
+echo "\nUpdating the yadm repo origin URL\n"
+yadm remote set-url origin "git@github.com:jackielii/dotfiles.git"
+
+
+echo "\nNow clone encrypt notes:"
+echo
+echo "gpg --import gpg-priv-jackie-space.key"
+echo "git clone gcrypt::git@github.com:jackielii/notes.git"
+echo "cd notes"
+echo "git checkout main"
+echo

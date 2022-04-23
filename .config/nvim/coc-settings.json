@@ -1,0 +1,311 @@
+{
+  // vim:set et sw=2 ts=4 fdm=marker:
+
+  // {{{ general
+  "python.pythonPath": "python3",
+  "python.formatting.provider": "black",
+  "git.enableGlobalStatus": false,
+  "diagnostic.checkCurrentLine": true,
+  "pairs.enableCharacters": ["(", "[", "{", "<", "'", "\"", "`"],
+  "codeLens.enable": false,
+  "highlight.colorNames.enable": false,
+  "highlight.document.enable": false,
+  "coc.preferences.currentFunctionSymbolAutoUpdate": true, // this updates the cursor line
+  "coc.preferences.enableMarkdown": true,
+  // "coc.preferences.semanticTokensHighlights": true,
+  "coc.preferences.formatOnSaveFiletypes": [
+    "go",
+    "typescriptreact",
+    "typescript",
+    "javascript",
+    "python",
+    "dart",
+    "rust"
+  ],
+  "html.enable": true,
+  "refactor.showMenu": "",
+  // }}}
+
+  // {{{ workspace
+  // "workspace.workspaceFolderCheckCwd": false,
+  // "workspace.bottomUpFiletypes": ["go"],
+  "workspace.ignoredFolders": [
+    "$HOME",
+    "$HOME/.dotfiles",
+    "$HOME/go/pkg/mod/**"
+  ],
+  // }}}
+
+  // {{{ list
+  "list.source.files.args": ["--hidden", "--files"],
+  "list.source.files.excludePatterns": ["**/.git/*"],
+  "list.source.grep.excludePatterns": ["**/.git/*"],
+  // }}}
+
+  // {{{ javascript
+  // "prettier.eslintIntegration": true,
+  // "prettier.tslintIntegration": true,
+  // "tsserver.trace.server": "verbose",
+  "tsserver.maxTsServerMemory": 4096, // 4GB max-old-space-size
+  "tsserver.npm": "/home/linuxbrew/.linuxbrew/bin/npm",
+  "typescript.suggest.completeFunctionCalls": false,
+  // }}}
+
+  // {{{ snippets
+  "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
+  "snippets.priority": 99,
+  // "snippets.trace": "verbose",
+  // }}}
+
+  // {{{ suggest
+  "suggest.noselect": false,
+  "suggest.languageSourcePriority": 99,
+  "suggest.maxCompleteItemCount": 50,
+  "suggest.lowPrioritySourceLimit": 10,
+  "suggest.floatConfig": {
+    "border": true
+    // "maxWidth": 90
+  },
+  // }}}
+
+  // {{{ floatConfig
+  "hover.floatConfig": {
+    "border": true
+    // "maxWidth": 90
+  },
+  "diagnostic.floatConfig": {
+    "border": true,
+    "title": "Diagnostic"
+  },
+  "signature.floatConfig": {
+    "border": true,
+    "title": "Signature"
+  },
+  // }}}
+
+  // {{{ fancy labels
+  // "suggest.completionItemKindLabels": {
+  //   "keyword": "\uf1de",
+  //   "variable": "\ue79b",
+  //   "value": "\uf89f",
+  //   "operator": "\u03a8",
+  //   "constructor": "\uf0ad",
+  //   "function": "\u0192",
+  //   "reference": "\ufa46",
+  //   "constant": "\uf8fe",
+  //   "method": "\uf09a",
+  //   "struct": "\ufb44",
+  //   "class": "\uf0e8",
+  //   "interface": "\uf417",
+  //   "text": "\ue612",
+  //   "enum": "\uf435",
+  //   "enumMember": "\uf02b",
+  //   "module": "\uf40d",
+  //   "color": "\ue22b",
+  //   "property": "\ue624",
+  //   "field": "\uf9be",
+  //   "unit": "\uf475",
+  //   "event": "\ufacd",
+  //   "file": "\uf723",
+  //   "folder": "\uf114",
+  //   "snippet": "\ue60b",
+  //   "typeParameter": "\uf728",
+  //   "default": "\uf29c"
+  // },
+  // }}}
+
+  // {{{ sources
+  "coc.source.word.priority": 1,
+  "coc.source.tmuxcomplete.enable": false,
+  "coc.source.dictionary.priority": 80,
+  "coc.source.tmuxcomplete.priority": 1,
+  "coc.source.buffer.priority": 2,
+  // }}}
+
+  // {{{ language server
+  "languageserver": {
+    "ccls": {
+      "command": "ccls",
+      "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"],
+      "rootPatterns": [".ccls", "compile_commands.json", ".git/", ".hg/"],
+      "initializationOptions": {
+        "cache": {
+          "directory": "/tmp/ccls"
+        }
+      }
+    },
+    // "kotlin": {
+    //   "host": "127.0.0.1",
+    //   "port": 8080,
+    //   "filetypes": ["kotlin"]
+    // },
+    // "kotlin": {
+    //   // "trace.server": "verbose",
+    //   "command": "/home/jackieli/kotlin/kotlin-language-server/server/build/install/server/bin/kotlin-language-server",
+    //   "filetypes": ["kotlin"]
+    // },
+    //"gopls": {
+    //  "command": "gopls",
+    //  "filetypes": ["go"],
+    //  // "args": ["-remote=auto"],
+    //  "args": ["-logfile", "/tmp/gopls.log", "-v", "-rpc.trace"],
+    //  "rootPatterns": ["go.mod", ".git/"],
+    //  //"disableWorkspaceFolders": true,
+    //  "initializationOptions": {
+    //    // "usePlaceholders": true,
+    //    // "completeUnimported": true,
+    //    // "static_check": true,
+    //    // "hoverKind": "FullDocumentation"
+    //  }
+    //},
+    "dockerfile": {
+      "command": "docker-langserver",
+      "filetypes": ["dockerfile"],
+      "args": ["--stdio"]
+    },
+    "bash": {
+      "command": "bash-language-server",
+      "args": ["start"],
+      "filetypes": ["sh"],
+      "ignoredRootPaths": ["~"]
+    }
+    // "efm": {
+    //   "command": "efm-langserver",
+    //   "args": [],
+    //   // custom config path
+    //   // "args": ["-c", "/path/to/your/config.yaml"],
+    //   "filetypes": ["vim", "eruby", "markdown", "yaml"]
+    // }
+  },
+  // }}}
+
+  // {{{ cspell
+  "cSpell.enabled": false,
+  "cSpell.ignorePaths": [
+    "**/package-lock.json",
+    "**/node_modules/**",
+    "**/vscode-extension/**",
+    "**/.git/objects/**",
+    ".vscode"
+  ],
+  "cSpell.enabledLanguageIds": [
+    // "vim",
+    // "asciidoc",
+    // "c",
+    // "cpp",
+    // "csharp",
+    // "css",
+    // "git-commit",
+    // "go",
+    // "handlebars",
+    // "haskell",
+    // "html",
+    // "jade",
+    // "java",
+    // "javascript",
+    // "javascriptreact",
+    // "json",
+    // "jsonc",
+    // "latex",
+    // "less",
+    // "markdown",
+    // "php",
+    // "plaintext",
+    // "python",
+    // "pug",
+    // "restructuredtext",
+    // "rust",
+    // "scala",
+    // "scss",
+    // "text",
+    // "typescript",
+    // "typescriptreact",
+    // "yaml",
+    // "yml"
+  ],
+  "cSpell.userWords": [
+    "Async",
+    "Catalog",
+    "Kubernetes",
+    "Meera",
+    "OGDR",
+    "RDBMS",
+    "Screenshots",
+    "admin",
+    "gopls",
+    "grpc",
+    "jackieli",
+    "oidc",
+    "ouom",
+    "postgres",
+    "ppdm",
+    "protobuf",
+    "protoc",
+    "sqlx",
+    "tespkg"
+  ],
+  "cSpell.language": "en-GB",
+  "cSpell.diagnosticLevel": "Hint",
+  "cSpell.languageSettings": [],
+  //  }}}
+
+  // {{{ go
+  "go.goplsOptions": {
+    // "verboseOutput": true,
+    "gofumpt": true,
+    "experimentalWorkspaceModule": true,
+    // "experimentalUseInvalidMetadata": false,
+    // "semanticTokens": true,
+    // "hoverKind": "FullDocumentation",
+    "staticcheck": true,
+    "buildFlags": ["-tags=wireinject"],
+    "analyses": {
+      "fillreturns": true,
+      "undeclaredname": true,
+      "unusedparams": true,
+      "nonewvars": true,
+      "ST1003": false // identifier naming like package name with underscore
+      // },
+      // "codelens": {
+      //   "generate": true,
+      //   "test": true
+    }
+  },
+  "go.tags": {
+    "skipUnexported": true
+  },
+  "go.goplsUseDaemon": true,
+  // "go.trace.server": "verbose",
+  "go.goplsPath": "~/go/bin/gopls",
+  // "go.disable": {
+  //   "workspaceFolders": true
+  // },
+  // }}}
+
+  // {{{ flutter
+
+  "flutter.sdk.flutter-lookup": "echo $HOME/snap/flutter/common/flutter/bin/flutter",
+  "flutter.sdk.dart-lookup": "echo $HOME/snap/flutter/common/flutter/bin/dart",
+
+  // "flutter.sdk.dart-lookup": "echo /snap/flutter/current",
+  // "flutter.sdk.flutter-lookup": "echo /snap/flutter/current",
+  // "flutter.lsp.debug": true,
+  // "flutter.trace.server": "verbose"
+  // }}}
+
+  // {{{ coc-sql
+  // "sql.database": "postgresql",
+  // }}}
+
+  // {{{ outline
+  "outline.sortBy": "position",
+  "outline.showLineNumber": false,
+  "outline.expandLevel": 0,
+  // }}}
+
+  // {{{ tree
+  "tree.key.close": "q",
+  // }}}
+
+  "semanticTokens.filetypes": ["go", "gomod"]
+}

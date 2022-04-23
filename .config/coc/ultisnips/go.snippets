@@ -1,0 +1,106 @@
+# A valid snippet should starts with:
+#
+#		snippet trigger_word [ "description" [ options ] ]
+#
+# and end with:
+#
+#		endsnippet
+#
+# Snippet options:
+#
+#		b - Beginning of line.
+#		i - In-word expansion.
+#		w - Word boundary.
+#		r - Regular expression
+#		e - Custom context snippet
+#		A - Snippet will be triggered automatically, when condition matches.
+#
+# Basic example:
+#
+#		snippet emitter "emitter properties" b
+#		private readonly ${1} = new Emitter<$2>()
+#		public readonly ${1/^_(.*)/$1/}: Event<$2> = this.$1.event
+#		endsnippet
+#
+# Online reference: https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt
+
+snippet fe "fmt.Errorf"
+fmt.Errorf("${1}", ${2})${0}
+endsnippet
+
+snippet fori "for 0..N-1 { ... }"
+for ${1:i} := 0; $1 < ${2:N}; $1++ {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet forr "for k, v := range items { ... }"
+for ${2:k}, ${3:v} := range ${1} {
+	${0:${VISUAL}}
+}
+endsnippet
+
+# snippet fum "func (s Receiver) funcName()" b
+# func (${1:s} ${2:Type}) ${3:funcName}(${4:param}) ${5:error} {
+# 	${0:${VISUAL}}
+# }
+# endsnippet
+
+snippet fun "func funcName()"
+func ${1:funcName}(${2}) ${3:error} {
+	${4:panic("not implemented")}
+}
+${0}
+endsnippet
+
+snippet iferrp "if err then panic" b
+if err != nil {
+	panic(err)
+}
+${0}
+endsnippet
+
+snippet reqe "require no error"
+require.NoError(${3:t}, ${2:err})
+${1}
+endsnippet
+
+snippet iferrf "if err then fatal" b
+if err != nil {
+	log.Fatal(err)
+}
+endsnippet
+
+snippet notimplemented "not implemented" b
+panic("not implemented")
+endsnippet
+
+snippet wireinject "wire inject" b
+// +build wireinject
+
+endsnippet
+
+snippet "(\w+)\.fum" "fum method" r
+func (${5:`!p snip.rv=match.group(1)[0].lower()`} ${6:*}`!p snip.rv=match.group(1)`) ${1:method}(${2}) ${3:error} {
+	${4:${VISUAL:panic("not implemented")}}
+}
+$0
+endsnippet
+
+snippet "(\w+)\.(\w+)\.fum" "fum + method" r
+func (${5:`!p snip.rv=match.group(1)[0].lower()`} ${6:*}`!p snip.rv=match.group(1)`) ${7:`!p snip.rv=match.group(2)`}(${1}) ${2:error} {
+	${4:${VISUAL:panic("not implemented")}}
+}
+$0
+endsnippet
+
+snippet "fum.(\w+)\.(\w+)" "fum + method" r
+func (${5:`!p snip.rv=match.group(1)[0].lower()`} ${6:*}`!p snip.rv=match.group(1)`) ${7:`!p snip.rv=match.group(2)`}(${1}) ${2:error} {
+	${4:${VISUAL:panic("not implemented")}}
+}
+$0
+endsnippet
+
+snippet ve "var err error" b
+var err error
+endsnippet

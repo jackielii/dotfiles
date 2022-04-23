@@ -1,0 +1,4 @@
+#!/usr/bin/env zsh
+
+source ~/.zprofile
+$HOME/.fzf/bin/fzf $@
