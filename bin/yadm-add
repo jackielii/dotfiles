@@ -1,6 +1,7 @@
 #!/bin/sh
 
 yadm add $HOME/.zshrc
+yadm add $HOME/.oh-my-zsh/
 yadm add $HOME/.tmux.conf
 yadm add $HOME/.gitconfig
 yadm add $HOME/README.md
