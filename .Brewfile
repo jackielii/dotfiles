@@ -36,11 +36,10 @@ end
 cask "google-chrome"
 
 # Fonts {{{
-tap "homebrew/cask-fonts"
-cask "font-fira-code"
-cask "font-fira-code-nerd-font"
-cask "font-fira-mono-nerd-font"
-cask "font-fira-mono"
+cask "homebrew/cask-fonts/font-fira-code"
+cask "homebrew/cask-fonts/font-fira-code-nerd-font"
+cask "homebrew/cask-fonts/font-fira-mono-nerd-font"
+cask "homebrew/cask-fonts/font-fira-mono"
 # }}}
 
 
