@@ -83,6 +83,8 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
+[ -z "${HOMEBREW_PREFIX}" ] && eval "$(brew shellenv)"
+
 # When logging in from tty .profile will not be sourced because we use zsh as
 # login shell: https://gist.github.com/pbrisbin/45654dc74787c18e858c However,
 # when logging in via UI, .profile will be sourced:
