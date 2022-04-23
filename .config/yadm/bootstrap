@@ -24,12 +24,12 @@ if [ -f "$HOME/.Brewfile" ]; then
 fi
 
 # Zsh {{{
-if [ ! -d "$HOME/.oh-my-zsh/.git" ]; then
-	echo "\nInstalling oh-my-zsh\n"
-	# https://ohmyz.sh/#install
-	sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-	source "$HOME/.zshrc"
-fi
+# if [ ! -d "$HOME/.oh-my-zsh/.git" ]; then
+# 	echo "\nInstalling oh-my-zsh\n"
+# 	# https://ohmyz.sh/#install
+# 	sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+# 	source "$HOME/.zshrc"
+# fi
 
 typeset -A MY_ZSH_PLUGINS
 MY_ZSH_PLUGINS=(
