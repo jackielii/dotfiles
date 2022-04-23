@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env zsh --no-rcs
 
 # vim:set noet sts=0 sw=4 ts=4 tw=79 fdm=marker:
 
@@ -66,19 +66,16 @@ fi
 # coc.nvim dependencies {{{
 echo "\nBootstrapping coc.nvim\n"
 
-${HOMEBREW_PREFIX}/bin/pip3 install pynvim
+${HOMEBREW_PREFIX}/bin/pip3 install pynvim # coc snippet requirement
+pushd ~/.config/coc/extensions && yarn -s && popd # coc extensions
 
-# coc extensions
-pushd ~/.config/coc/extensions && yarn -s && popd
-
-# lsp
+# lsp servers
 go install golang.org/x/tools/gopls@latest
 yarn global add bash-language-server
 # }}}
 
 echo "\nUpdating the yadm repo origin URL\n"
 yadm remote set-url origin "git@github.com:jackielii/dotfiles.git"
-
 
 echo "\nNow clone encrypt notes:"
 echo
@@ -87,3 +84,4 @@ echo "git clone gcrypt::git@github.com:jackielii/notes.git"
 echo "cd notes"
 echo "git checkout main"
 echo
+echo "yadm decrypt # this requires the gpg key to be imported"

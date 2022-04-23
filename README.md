@@ -4,7 +4,9 @@ Managed via [yadm]()
 
 ## Install
 
+```
 bash -c "$(curl -fsSL https://jackieli.dev/dot)"
+```
 
 ## Mac
 

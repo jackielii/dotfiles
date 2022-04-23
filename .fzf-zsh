@@ -1,7 +1,8 @@
 #!/usr/bin/env zsh
 
+# Base16 fzf
+[ -n "$BASE16_THEME" ] && \
+	[ -f $HOME/.config/base16-fzf/bash/base16-${BASE16_THEME}.config ] && \
+	source $HOME/.config/base16-fzf/bash/base16-${BASE16_THEME}.config
 
-# I think this is only to work around the fzf theme
-
-source ~/.zprofile
 $HOME/.fzf/bin/fzf $@
