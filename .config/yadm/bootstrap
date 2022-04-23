@@ -75,6 +75,8 @@ fi
 # coc.nvim dependencies {{{
 echo "\nBootstrapping coc.nvim\n"
 
+[ -n "${HOMEBREW_PREFIX}" ] && eval "$(brew shellenv)"
+
 ${HOMEBREW_PREFIX}/bin/pip3 install pynvim # coc snippet requirement
 pushd ~/.config/coc/extensions && yarn -s && popd # coc extensions
 
