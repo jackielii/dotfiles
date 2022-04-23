@@ -2,6 +2,7 @@
 
 # Basics {{{
 cask "kitty"
+brew "tmux"
 brew "neovim"
 brew "fd"
 brew "starship"
