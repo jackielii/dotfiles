@@ -2,6 +2,10 @@
 
 # vim:set noet sts=0 sw=4 ts=4 tw=79 fdm=marker:
 
+set -e # exit on error
+trap "mv /tmp/.gitconfig ~/"
+mv ~/.gitconfig ~/tmp/.gitconfig
+
 cd "$HOME"
 
 echo "\nInit submodules\n"

@@ -22,6 +22,7 @@ brew "golang"
 
 # Mac {{{
 if OS.mac?
+    tap "koekeishiya/formulae"
     # see https://github.com/koekeishiya/yabai for installation steps on mac
     brew "koekeishiya/formulae/yabai" # window manager
     brew "koekeishiya/formulae/skhd" # shortcuts
@@ -35,6 +36,7 @@ end
 cask "google-chrome"
 
 # Fonts {{{
+tap "homebrew/cask-fonts"
 cask "font-fira-code"
 cask "font-fira-code-nerd-font"
 cask "font-fira-mono-nerd-font"
