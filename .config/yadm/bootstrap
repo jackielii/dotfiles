@@ -65,11 +65,11 @@ fi
 # }}}
 
 
-if ! command -v node >/dev/null 2>&1; then
-	# TODO: need to be the same as ~/.Brewfile:13
-	echo "\nLinking brew node to a version\n"
-	brew link node@14
-fi
+# if ! command -v node >/dev/null 2>&1; then
+# 	# TODO: need to be the same as ~/.Brewfile:13
+# 	echo "\nLinking brew node to a version\n"
+# 	brew link node@14
+# fi
 
 # Neovim {{{
 if command -v nvim >/dev/null 2>&1; then
@@ -96,8 +96,7 @@ yarn global add bash-language-server
 # }}}
 
 if [ "${OS}" = "Darwin" ]; then
-	brew services restart yabai
-	brew services restart skhd
+	bash $HOME/.config/yadm/macos
 fi
 
 if [[ -f ~/.gitconfig && -d ~/.ssh ]] ; then

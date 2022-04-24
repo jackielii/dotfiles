@@ -30,7 +30,7 @@ yabai -m config window_shadow                float
 
 yabai -m config active_window_opacity        1
 yabai -m config normal_window_opacity        0.85
-yabai -m config split_ratio                  0.455
+yabai -m config split_ratio                  0.6
 yabai -m config auto_balance                 off
 
 # border

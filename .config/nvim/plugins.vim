@@ -102,7 +102,7 @@ Plug 'skywind3000/asyncrun.vim' " dependency for asynctasks
 Plug 'neomake/neomake'
 
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
-Plug 'kyazdani42/nvim-tree.lua', {'branch': 'master'}
+Plug 'kyazdani42/nvim-tree.lua'
 
 " treesitter related
 " Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
