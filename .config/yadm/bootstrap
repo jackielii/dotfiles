@@ -85,6 +85,11 @@ go install golang.org/x/tools/gopls@latest
 yarn global add bash-language-server
 # }}}
 
+if [ "${OS}" = "Darwin" ]; then
+	brew service restart yabai
+	brew service restart skhd
+fi
+
 echo "\nUpdating the yadm repo origin URL\n"
 yadm remote set-url origin "git@github.com:jackielii/dotfiles.git"
 
