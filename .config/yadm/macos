@@ -98,6 +98,8 @@ sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo Hos
 
 # # Disable Notification Center and remove the menu bar icon
 # launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
+# # to revert
+# launchctl load -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist
 
 # # Disable automatic capitalization as it’s annoying when typing code
 # defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
@@ -925,6 +927,10 @@ sudo mdutil -E / > /dev/null
 # My shortcuts                                                                #
 ###############################################################################
 defaults write com.google.Chrome NSUserKeyEquivalents -dict-add 'Open Location...' '^L'
+
+# Shift + backspace to delete
+defaults write -g NSUserKeyEquivalents -dict-add 'Move to Bin' '@$\U232b'
+defaults write -g NSUserKeyEquivalents -dict-add 'Put Back' '@$\U232b'
 
 ## my keyboard configurations
 # cp ~/.config/yadm/com.apple.symbolichotkeys.plist ~/Library/Preferences

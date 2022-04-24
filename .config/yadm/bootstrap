@@ -92,7 +92,7 @@ if command -v nvim >/dev/null 2>&1; then
 	# doing this
 	nvim -e -u $HOME/.config/nvim/init.vim -i NONE \
 		-c "redir! > /tmp/nvim-plug-install.log" \
-		-c "PlugInstall" -c "qa" || true
+		-c "PlugInstall" -c "PlugClean!" -c "PlugUpdate" -c "qa" || true
 fi
 
 # fzf theme using base16. FZF is installed via nvim plugin

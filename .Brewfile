@@ -16,9 +16,9 @@ brew "python3"
 brew "tree"
 brew "htop"
 brew "rg"
-
 brew "git-remote-gcrypt" # for encrypted repo
 brew "golang"
+brew "gron"
 # }}}
 
 # Mac {{{
@@ -31,8 +31,8 @@ if OS.mac?
     brew "bash" # need newest bash for some program like extracto
     cask "google-chrome" # TODO: check if installed
     cask "homebrew/cask-fonts/font-fira-code-nerd-font"
-    cask "copyq"
-    cask "karabiner-elements"
+    # cask "karabiner-elements"
+    cask "maccy"
 else
     # linux ones
 end
