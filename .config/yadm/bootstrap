@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh --no-rcs -o pipefail
+#!/usr/bin/env zsh --no-rcs
 
 # vim:set noet sts=0 sw=4 ts=4 tw=79 fdm=marker:
 
