@@ -4,13 +4,16 @@
 
 set -e # exit on error
 
+url.git@github.com:.insteadof
+
 # ~/.gitconfig has insteadOf configs that changes https to git. This won't work
 # unless we already have the .ssh decrypted. Moving it out and in is the safest
 # option
 if [ ! -f ~/.ssh/id_rsa ]; then
-	echo "ssh identify not found, .gitconfig breaks clone, moving out"
-	trap "mv /tmp/.gitconfig ~/.gitconfig" EXIT INT TERM
-	mv ~/.gitconfig /tmp/.gitconfig
+	echo "ssh identify not found, checking url.git* configs"
+	URL_GITHUB="$(git config --global --get url.git@github.com:.insteadof)"
+	trap "git config --global url.git@github.com:.insteadof ${URL_GITHUB}" EXIT INT TERM
+	git config --global --unset url.git@github.com:.insteadof
 fi
 
 cd "$HOME"

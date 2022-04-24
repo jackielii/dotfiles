@@ -46,7 +46,7 @@
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 [url "git@github.com:"]
-	insteadOf = https://github.com/
+	insteadof = https://github.com
 ;[sendemail]
 ;        smtpserver = smtp.gmail.com
 ;        smtpuser = jackie.space@gmail.com
