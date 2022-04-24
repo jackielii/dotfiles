@@ -1,10 +1,8 @@
-#!/usr/bin/env zsh --no-rcs
+#!/usr/bin/env zsh --no-rcs -o pipefail
 
 # vim:set noet sts=0 sw=4 ts=4 tw=79 fdm=marker:
 
 set -e # exit on error
-
-url.git@github.com:.insteadof
 
 # ~/.gitconfig has insteadOf configs that changes https to git. This won't work
 # unless we already have the .ssh decrypted. Moving it out and in is the safest
