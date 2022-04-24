@@ -32,6 +32,7 @@ if OS.mac?
     cask "google-chrome" # TODO: check if installed
     cask "homebrew/cask-fonts/font-fira-code-nerd-font"
     cask "copyq"
+    cask "karabiner-elements"
 else
     # linux ones
 end

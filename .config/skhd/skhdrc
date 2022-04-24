@@ -92,9 +92,13 @@ cmd + ctrl + shift - 0x2F : yabai -m window --toggle border; sleep 0.5; yabai -m
 # }}}
 
 # launch common apps {{{
-cmd - return : kitty -1 -d ~
-cmd + shift - return : open "/Applications/Google Chrome.app"
-cmd - 1 : kitty -1 tmux
+
+# switch to main first tmux listening to socket, if none, launch new one
+cmd - return : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
+    kitty --listen-on=unix:/tmp/mykitty -d ~ \
+        zsh -c "source ~/.base16_theme; tmux attach"
+cmd + shift - return : kitty -1 -d ~
+cmd + ctrl - return : open "/Applications/Google Chrome.app"
 ctrl - f12 : copyq menu
 # }}}
 
