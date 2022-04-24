@@ -10,7 +10,7 @@ brew "zoxide" # z change directory
 brew "gh"
 brew "lazygit"
 brew "jq"
-brew "node@16"
+brew "node@14" # coc.nvim and it's dependencies don't work with higher version
 brew "yarn"
 brew "python3"
 brew "tree"
@@ -18,7 +18,6 @@ brew "htop"
 
 brew "git-remote-gcrypt" # for encrypted repo
 brew "golang"
-
 # }}}
 
 # Mac {{{

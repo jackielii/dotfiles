@@ -63,9 +63,9 @@ fi
 
 
 if ! command -v node >/dev/null 2>&1; then
-	# TODO: need to be the same as ~/.Brewfile
-	echo "\nLinking brew node@16\n"
-	brew link node@16
+	# TODO: need to be the same as ~/.Brewfile:13
+	echo "\nLinking brew node to a version\n"
+	brew link node@14
 fi
 
 # Neovim {{{
@@ -100,11 +100,16 @@ fi
 echo "\nUpdating the yadm repo origin URL\n"
 yadm remote set-url origin "git@github.com:jackielii/dotfiles.git"
 
-echo "\nNow clone encrypt notes:"
+echo "\n# Now clone encrypt notes:"
 echo
 echo "gpg --import gpg-priv-jackie-space.key"
+echo
+echo "yadm decrypt # this requirees the gpg key to be imported"
+echo
 echo "git clone gcrypt::git@github.com:jackielii/notes.git"
 echo "cd notes"
 echo "git checkout main"
 echo
-echo "yadm decrypt # this requires the gpg key to be imported"
+echo "# restart these after giving permissions"
+echo "brew services restart yabai"
+echo "brew services restart skhd"
