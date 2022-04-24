@@ -93,8 +93,8 @@ yarn global add bash-language-server
 # }}}
 
 if [ "${OS}" = "Darwin" ]; then
-	brew service restart yabai
-	brew service restart skhd
+	brew services restart yabai
+	brew services restart skhd
 fi
 
 echo "\nUpdating the yadm repo origin URL\n"
