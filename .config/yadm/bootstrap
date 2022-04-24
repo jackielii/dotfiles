@@ -7,9 +7,10 @@ set -e # exit on error
 # ~/.gitconfig has insteadOf configs that changes https to git. This won't work
 # unless we already have the .ssh decrypted. Moving it out and in is the safest
 # option
-
-trap "mv /tmp/.gitconfig ~/.gitconfig" EXIT INT TERM
-mv ~/.gitconfig /tmp/.gitconfig
+if [ ! -f ~/.ssh/id_rsa ]; then
+	trap "mv /tmp/.gitconfig ~/.gitconfig" EXIT INT TERM
+	mv ~/.gitconfig /tmp/.gitconfig
+fi
 
 cd "$HOME"
 
@@ -97,8 +98,13 @@ if [ "${OS}" = "Darwin" ]; then
 	brew services restart skhd
 fi
 
-echo "\nUpdating the yadm repo origin URL\n"
-yadm remote set-url origin "git@github.com:jackielii/dotfiles.git"
+if [[ -f ~/.gitconfig && -d ~/.ssh ]] ; then
+	echo "\nUpdating the yadm repo origin URL\n"
+	yadm remote set-url origin "git@github.com:jackielii/dotfiles.git"
+else
+	echo "\n# After restore ssh keys, do:"
+	echo "yadm remote set-url origin git@github.com:jackielii/dotfiles.git"
+fi
 
 echo "\n# Now clone encrypt notes:"
 echo
