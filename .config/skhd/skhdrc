@@ -35,12 +35,6 @@ cmd + shift - h : yabai -m window --swap west || $(yabai -m window --display wes
 cmd + shift - j : yabai -m window --swap south || $(yabai -m window --display south; yabai -m display --focus south)
 cmd + shift - k : yabai -m window --swap north || $(yabai -m window --display north; yabai -m display --focus north)
 cmd + shift - l : yabai -m window --swap east || $(yabai -m window --display east; yabai -m display --focus east)
-# warp window using arrow keys
-cmd + shift - left : yabai -m window --warp west || $(yabai -m window --display west; yabai -m display --focus west)
-cmd + shift - down : yabai -m window --warp south || $(yabai -m window --display south; yabai -m display --focus south)
-cmd + shift - up : yabai -m window --warp north || $(yabai -m window --display north; yabai -m display --focus north)
-cmd + shift - right : yabai -m window --warp east || $(yabai -m window --display east; yabai -m display --focus east)
-
 #cmd + ctrl - h : yabai -m window --insert west
 #cmd + ctrl - j : yabai -m window --insert south
 #cmd + ctrl - k : yabai -m window --insert north
@@ -68,13 +62,26 @@ cmd + ctrl + shift - 8 : yabai -m window --space 18
 cmd + ctrl + shift - 9 : yabai -m window --space 19
 cmd + ctrl + shift - 0 : yabai -m window --space 10
 
+## resize
+cmd + ctrl + shift - k: yabai -m window --resize top:0:-10 || yabai -m window south --resize top:0:-10
+cmd + ctrl + shift - j: yabai -m window --resize bottom:0:10 || yabai -m window north --resize bottom:0:10
+cmd + ctrl + shift - h: yabai -m window --resize left:-10:0 || yabai -m window east --resize left:-10:0
+cmd + ctrl + shift - l: yabai -m window --resize right:10:0 || yabai -m window west --resize right:10:0
 # }}}
 
-# stack {{{
-cmd + ctrl + shift - k: yabai -m window --stack north
-cmd + ctrl + shift - j: yabai -m window --stack south
-cmd + ctrl + shift - h: yabai -m window --stack west
-cmd + ctrl + shift - l: yabai -m window --stack east
+# warp & stack (always with arrow keys) {{{
+
+# warp window (similar to move but with arrow)
+cmd + shift - up : yabai -m window --warp north || $(yabai -m window --display north; yabai -m display --focus north)
+cmd + shift - down : yabai -m window --warp south || $(yabai -m window --display south; yabai -m display --focus south)
+cmd + shift - left : yabai -m window --warp west || $(yabai -m window --display west; yabai -m display --focus west)
+cmd + shift - right : yabai -m window --warp east || $(yabai -m window --display east; yabai -m display --focus east)
+
+# stack similar to warp, add ctrl
+cmd + ctrl + shift - up: yabai -m window --stack north
+cmd + ctrl + shift - down: yabai -m window --stack south
+cmd + ctrl + shift - left: yabai -m window --stack west
+cmd + ctrl + shift - right: yabai -m window --stack east
 # }}}
 
 # layout {{{
