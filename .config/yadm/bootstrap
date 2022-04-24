@@ -62,7 +62,7 @@ fi
 # }}}
 
 
-if command -v node >/dev/null 2>&1; then
+if ! command -v node >/dev/null 2>&1; then
 	# TODO: need to be the same as ~/.Brewfile
 	brew link node@16
 fi
