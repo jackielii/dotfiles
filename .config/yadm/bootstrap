@@ -8,6 +8,7 @@ set -e # exit on error
 # unless we already have the .ssh decrypted. Moving it out and in is the safest
 # option
 if [ ! -f ~/.ssh/id_rsa ]; then
+	echo "ssh identify not found, .gitconfig breaks clone, moving out"
 	trap "mv /tmp/.gitconfig ~/.gitconfig" EXIT INT TERM
 	mv ~/.gitconfig /tmp/.gitconfig
 fi
