@@ -64,6 +64,7 @@ fi
 
 if ! command -v node >/dev/null 2>&1; then
 	# TODO: need to be the same as ~/.Brewfile
+	echo "\nLinking brew node@16\n"
 	brew link node@16
 fi
 
