@@ -127,3 +127,6 @@ echo
 echo "# restart these after giving permissions"
 echo "brew services restart yabai"
 echo "brew services restart skhd"
+echo
+echo "# Also checkout yabai wiki to disable SIP"
+echo "# https://github.com/koekeishiya/yabai/wiki/"

@@ -569,7 +569,6 @@ lua <<EOF
       args = {}
     },
     view = {
-      auto_resize = true,
       mappings = {
         custom_only = true,
         list = {
@@ -620,8 +619,14 @@ lua <<EOF
       }
     },
     actions = {
+      change_dir = {
+        enable = false,
+      },
       open_file = {
-        quit_on_open = true
+        quit_on_open = true,
+        window_picker = {
+          enable = false,
+        },
       }
     },
     git = {

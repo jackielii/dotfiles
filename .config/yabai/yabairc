@@ -60,6 +60,7 @@ yabai -m rule --add title='Preferences$' manage=off
 # float settings windows
 yabai -m rule --add title='Settings$' manage=off
 yabai -m rule --add app='^Mac Mouse Fix$' manage=off
+yabai -m rule --add app='^CopyQ$' manage=off
 
 #SPACEBAR_HEIGHT=$(spacebar -m config height)
 #yabai -m config external_bar all:${SPACEBAR_HEIGHT}:0

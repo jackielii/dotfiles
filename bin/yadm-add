@@ -12,6 +12,7 @@ yadm add $HOME/.Brewfile
 yadm add $HOME/.config/yadm/encrypt
 yadm add $HOME/.config/yadm/macos
 yadm add $HOME/.config/yadm/bootstrap
+yadm add $HOME/.config/yadm/com.apple.symbolichotkeys.plist
 yadm add $HOME/.local/share/yadm/archive
 yadm add $HOME/.config/nvim/coc-settings.json
 yadm add $HOME/.config/nvim/tasks.ini

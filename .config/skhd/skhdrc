@@ -79,7 +79,7 @@ cmd + ctrl + shift - l: yabai -m window --stack east
 
 # layout {{{
 #cmd - s : yabai -m space --layout stack
-cmd - e : [ $( yabai -m query --spaces --space | jq -re '.type') = 'bsp' ] && yabai -m space --layout stack || yabai -m space --layout bsp
+cmd - e : [ $(yabai -m query --spaces --space | jq -re '.type') = 'bsp' ] && yabai -m space --layout stack || yabai -m space --layout bsp
 cmd + shift - space : yabai -m window --toggle float; yabai -m window --grid 4:4:1:1:2:2
 cmd + ctrl + shift - space : yabai -m space --rotate 270
 
@@ -93,7 +93,9 @@ cmd + ctrl + shift - 0x2F : yabai -m window --toggle border; sleep 0.5; yabai -m
 
 # launch common apps {{{
 cmd - return : kitty -1 -d ~
-cmd - m : kitty -1 tmux
+cmd + shift - return : open "/Applications/Google Chrome.app"
+cmd - 1 : kitty -1 tmux
+ctrl - f12 : copyq menu
 # }}}
 
 # my habbits {{{
