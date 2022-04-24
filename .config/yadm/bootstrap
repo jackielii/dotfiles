@@ -71,6 +71,20 @@ fi
 # 	brew link node@14
 # fi
 
+# coc.nvim dependencies {{{
+# This happens before Neovim setup:
+# 1. this only installs coc extensions in the nodejs system
+# 2. this should reduce the errors
+echo "\nBootstrapping coc.nvim\n"
+
+${HOMEBREW_PREFIX}/bin/pip3 install pynvim # coc snippet requirement
+pushd ~/.config/coc/extensions && yarn -s && popd # coc extensions
+
+# lsp servers
+go install golang.org/x/tools/gopls@latest
+yarn global add bash-language-server
+# }}}
+
 # Neovim {{{
 if command -v nvim >/dev/null 2>&1; then
 	echo "\nBootstrapping Neovim\n"
@@ -82,17 +96,6 @@ if [ ! -d "$HOME/.config/base16-fzf/" ]; then
 	echo "\nInstalling base16-fzf\n"
 	git clone https://github.com/fnune/base16-fzf.git $HOME/.config/base16-fzf/
 fi
-# }}}
-
-# coc.nvim dependencies {{{
-echo "\nBootstrapping coc.nvim\n"
-
-${HOMEBREW_PREFIX}/bin/pip3 install pynvim # coc snippet requirement
-pushd ~/.config/coc/extensions && yarn -s && popd # coc extensions
-
-# lsp servers
-go install golang.org/x/tools/gopls@latest
-yarn global add bash-language-server
 # }}}
 
 if [ "${OS}" = "Darwin" ]; then
