@@ -68,6 +68,7 @@ fi
 
 # Tmux {{{ already in .tmux.conf
 if [ ! -d $HOME/.tmux/plugins/tpm ]; then
+	echo "\nBootstrapping tmux\n"
 	git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
 	$HOME/.tmux/plugins/tpm/bin/install_plugins
 fi
@@ -99,9 +100,10 @@ if command -v nvim >/dev/null 2>&1; then
 	echo "\nBootstrapping Neovim\n"
 	# nvim plug install will return errors, there might be a better way of
 	# doing this
+	rm -f /tmp/nvim-plug-install.log
 	nvim -e -u $HOME/.config/nvim/init.vim -i NONE \
 		-c "redir! > /tmp/nvim-plug-install.log" \
-		-c "PlugInstall" -c "PlugClean!" -c "PlugUpdate" -c "qa" || true
+		-c "PlugInstall" -c "PlugClean!" -c "PlugUpdate" -c "qa"
 fi
 
 # fzf theme using base16. FZF is installed via nvim plugin
@@ -116,6 +118,12 @@ if [ "${OS}" = "Darwin" ]; then
 	bash $HOME/.config/yadm/macos
 fi
 
+echo "\n# Now clone encrypt notes:"
+echo
+echo "gpg --import gpg-priv-jackie-space.key"
+echo
+echo "yadm decrypt # this requirees the gpg key to be imported"
+
 if [[ -f ~/.gitconfig && -d ~/.ssh/id_rsa ]] ; then
 	echo "\nUpdating the yadm repo origin URL\n"
 	yadm remote set-url origin "git@github.com:jackielii/dotfiles.git"
@@ -124,11 +132,6 @@ else
 	echo "yadm remote set-url origin git@github.com:jackielii/dotfiles.git"
 fi
 
-echo "\n# Now clone encrypt notes:"
-echo
-echo "gpg --import gpg-priv-jackie-space.key"
-echo
-echo "yadm decrypt # this requirees the gpg key to be imported"
 echo
 echo "git clone gcrypt::git@github.com:jackielii/notes.git"
 echo "cd notes"

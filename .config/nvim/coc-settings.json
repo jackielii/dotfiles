@@ -59,7 +59,8 @@
   // }}}
 
   // {{{ suggest
-  "suggest.noselect": false,
+  "suggest.noselect": true,
+  "suggest.enablePreselect": false,
   "suggest.languageSourcePriority": 99,
   "suggest.maxCompleteItemCount": 50,
   "suggest.lowPrioritySourceLimit": 10,
