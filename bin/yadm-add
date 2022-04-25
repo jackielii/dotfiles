@@ -24,7 +24,6 @@ yadm add $HOME/.config/nvim/scratch.vim
 yadm add $HOME/.config/coc/ultisnips/*
 yadm add $HOME/.config/coc/extensions/package.json
 yadm add $HOME/.config/starship.toml
-yadm add $HOME/.fzf-zsh
 yadm add $HOME/bin/yadm-add
 yadm add $HOME/.direnvrc
 

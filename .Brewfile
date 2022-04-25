@@ -23,6 +23,7 @@ brew "gron"
 brew "direnv"
 brew "ranger"
 brew "kubectl"
+brew "envoy"
 # }}}
 
 # Mac {{{

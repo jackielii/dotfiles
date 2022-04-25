@@ -77,7 +77,7 @@ plugins=(
   gh
 )
 
-if [ -d ~/.ssh ]; then
+if [ -d ~/.ssh ] && [ -f ~/.ssh/id_rsa ]; then
   plugins=(ssh-agent $plugins)
   zstyle :omz:plugins:ssh-agent identities id_tes_ed25519 id_rsa
 fi
@@ -248,7 +248,7 @@ bindkey '^W' backward-kill-word-space
 # alt+delete delete to eol, used cat to show the escape sequence
 bindkey "^[[3;3~" vi-kill-eol
 
-source ~/.secrets
+[ -f ~/.secrets ] && source ~/.secrets
 
 export GPG_TTY=$(tty)
 export GO111MODULE=on

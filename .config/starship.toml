@@ -77,9 +77,10 @@ symbol = " "
 symbol = " "
 
 [custom.direnv]
-symbol = "E"
+symbol = "E->"
 when = """ test -n "$DIRENV_DIR" """
 
 [custom.work]
-symbol = ""
+# symbol = ""
+symbol = "Tes"
 when = """ test "$GITHUB_TOKEN" = "$TES_GITHUB_API_TOKEN" """

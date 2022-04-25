@@ -4,6 +4,12 @@
 
 set -e # exit on error
 
+# Ask for the administrator password upfront
+sudo -v
+
+# Keep-alive: update existing `sudo` time stamp until bootstrapping has finished
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
 # ~/.gitconfig has insteadOf configs that changes https to git. This won't work
 # unless we already have the .ssh decrypted. Moving it out and in is the safest
 # option
@@ -62,9 +68,10 @@ fi
 # }}}
 
 # Tmux {{{ already in .tmux.conf
-# if [ ! -d $HOME/.tmux/plugins/tpm ]; then
-# 	git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
-# fi
+if [ ! -d $HOME/.tmux/plugins/tpm ]; then
+	git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+	$HOME/.tmux/plugins/tpm/bin/install_plugins
+fi
 # }}}
 
 
@@ -110,7 +117,7 @@ if [ "${OS}" = "Darwin" ]; then
 	bash $HOME/.config/yadm/macos
 fi
 
-if [[ -f ~/.gitconfig && -d ~/.ssh ]] ; then
+if [[ -f ~/.gitconfig && -d ~/.ssh/id_rsa ]] ; then
 	echo "\nUpdating the yadm repo origin URL\n"
 	yadm remote set-url origin "git@github.com:jackielii/dotfiles.git"
 else
