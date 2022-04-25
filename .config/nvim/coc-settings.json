@@ -28,6 +28,7 @@
 
   // {{{ workspace
   "workspace.workspaceFolderCheckCwd": false,
+  "workspace.workspaceFolderFallbackCwd": false,
   // "workspace.bottomUpFiletypes": ["go"],
   "workspace.ignoredFolders": [
     "$HOME",
@@ -277,9 +278,9 @@
   "go.goplsUseDaemon": true,
   // "go.trace.server": "verbose",
   "go.goplsPath": "~/go/bin/gopls",
-  // "go.disable": {
-  //   "workspaceFolders": true
-  // },
+  "go.disable": {
+    "workspaceFolders": true
+  },
   // }}}
 
   // {{{ flutter

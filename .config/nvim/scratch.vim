@@ -21,4 +21,6 @@ function! s:Scratch (command, ...)
 endfunction
 
 command! -nargs=? Scriptnames call <sid>Scratch('scriptnames', <f-args>)
+command! -nargs=? Messages call <sid>Scratch('messages', <f-args>)
 command! -nargs=+ Scratch call <sid>Scratch(<f-args>)
+

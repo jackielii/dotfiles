@@ -647,14 +647,14 @@ lua <<EOF
     --if not starts_with(cwd, dir) then
     if cwd ~= dir then
       vim.cmd('cd ' .. dir)
-      require'nvim-tree'.change_dir(dir)
     end
+    require'nvim-tree'.change_dir(dir)
   end
   -- https://github.com/kyazdani42/nvim-tree.lua/issues/240
   function NvimTreeFindFileAnywhere()
     local project_path = vim.g.project_path
     local buffer_path = vim.fn.expand('%:p:h')
-    print(buffer_path, project_path)
+    -- print(buffer_path, project_path)
     if starts_with(buffer_path, project_path) then
       -- inside the working directory
       ensure_cwd(project_path)
