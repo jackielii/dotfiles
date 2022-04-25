@@ -36,7 +36,7 @@ fi
 
 [ -z "${HOMEBREW_PREFIX}" ] && eval "$(brew shellenv)"
 
-# Zsh {{{
+# Zsh {{{ commented out - using git submodules instead - more reliable
 # if [ ! -d "$HOME/.oh-my-zsh/.git" ]; then
 # 	echo "\nInstalling oh-my-zsh\n"
 # 	# https://ohmyz.sh/#install
@@ -70,6 +70,7 @@ fi
 if [ ! -d $HOME/.tmux/plugins/tpm ]; then
 	echo "\nBootstrapping tmux\n"
 	git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+	tmux new-session -d "tmux source-file $HOME/.tmux.conf && tmux kill-server"
 	$HOME/.tmux/plugins/tpm/bin/install_plugins
 fi
 # }}}
