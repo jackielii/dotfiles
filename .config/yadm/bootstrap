@@ -16,8 +16,10 @@ set -e # exit on error
 if [ ! -f ~/.ssh/id_rsa ]; then
 	echo "ssh identify not found, checking url.git* configs"
 	URL_GITHUB="$(git config --global --get url.git@github.com:.insteadof)"
-	trap "git config --global url.git@github.com:.insteadof ${URL_GITHUB}" EXIT INT TERM
-	git config --global --unset url.git@github.com:.insteadof
+	if [ -n ${URL_GITHUB} ]; then
+		trap "git config --global url.git@github.com:.insteadof ${URL_GITHUB}" EXIT INT TERM
+		git config --global --unset url.git@github.com:.insteadof
+	fi
 fi
 
 cd "$HOME"
