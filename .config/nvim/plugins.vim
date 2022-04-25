@@ -47,16 +47,17 @@ Plug 'justinmk/vim-sneak'
 Plug 'airblade/vim-rooter'
 Plug 'tpope/vim-sleuth' " auto detect indent
 " Plug 'triglav/vim-visual-increment' " increment a block
-Plug 'roxma/vim-tmux-clipboard'
+" Plug 'roxma/vim-tmux-clipboard'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb' " Gbrowse for github
 Plug 'shumphrey/fugitive-gitlab.vim' " Gbrowse for gitlab
 Plug 'Shougo/echodoc.vim'
-Plug 'majutsushi/tagbar'
+" Plug 'majutsushi/tagbar'
 " Plug 'bkad/CamelCaseMotion'
 " Plug 'scrooloose/nerdtree'
 " Plug 'scrooloose/nerdcommenter'
 "Plug 'jiangmiao/auto-pairs'
+
 " Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Plug 'neoclide/coc.nvim', {'tag': 'v0.0.77'}
 Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
@@ -70,11 +71,11 @@ Plug 'HerringtonDarkholme/yats.vim' " typescript language support
 "Plug 'Shougo/denite.nvim', {'tag': '*'}
 "Plug 'Shougo/neomru.vim'
 "Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}}
-Plug 'godlygeek/tabular'
+" Plug 'godlygeek/tabular' " from vimcast: http://vimcasts.org/episodes/aligning-text-with-tabular-vim/
 Plug 'preservim/vim-markdown'
 Plug 'mg979/vim-visual-multi'
 "Plug 'sebdah/vim-delve'
-Plug 'wellle/tmux-complete.vim' " add tmux buffer to completioin list
+" Plug 'wellle/tmux-complete.vim' " add tmux buffer to completioin list
 Plug 'mbbill/undotree'
 Plug 'udalov/kotlin-vim'
 "Plug '~/nvim/proto'
@@ -83,7 +84,7 @@ Plug 'udalov/kotlin-vim'
 " Plug 'mattn/vim-gist'
 " Plug 'vimwiki/vimwiki'
 Plug 'lervag/wiki.vim'
-Plug 'lervag/wiki-ft.vim' " wiki file type
+" Plug 'lervag/wiki-ft.vim' " wiki file type
 Plug 'lervag/lists.vim' " for toggle todo list item
 
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
@@ -98,8 +99,6 @@ Plug 'dart-lang/dart-vim-plugin'
 " tasks
 Plug 'skywind3000/asynctasks.vim'
 Plug 'skywind3000/asyncrun.vim' " dependency for asynctasks
-
-Plug 'neomake/neomake'
 
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
 Plug 'kyazdani42/nvim-tree.lua'

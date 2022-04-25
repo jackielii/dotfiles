@@ -75,3 +75,11 @@ symbol = " "
 
 [rust]
 symbol = " "
+
+[custom.direnv]
+symbol = "E"
+when = """ test -n "$DIRENV_DIR" """
+
+[custom.work]
+symbol = ""
+when = """ test "$GITHUB_TOKEN" = "$TES_GITHUB_API_TOKEN" """

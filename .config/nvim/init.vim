@@ -251,7 +251,7 @@ call plug#begin('~/.config/nvim/plugged')
 runtime plugins.vim
 call plug#end()
 
-" exit here if we're in bootstraping process
+" Install plugins if we're bootstrapping
 if !empty($YADM_BOOTSTRAPPING)
   execute 'PlugInstall'
   execute 'qa!'
@@ -547,8 +547,6 @@ nnoremap , <Nop>
 " asynctask
 let g:asynctasks_config_name = '.vim/tasks.ini'
 let g:asyncrun_open = 6
-
-let g:neomake_open_list = 2
 
 " nvim-tree.lua {{{
 " let g:nvim_tree_disable_window_picker = 1
