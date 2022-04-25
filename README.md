@@ -1,6 +1,6 @@
 # My dot files
 
-Managed via [yadm]()
+Managed via [yadm](https://yadm.io/)
 
 ## Install
 

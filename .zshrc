@@ -263,6 +263,6 @@ alias ctx='kubectx'
 alias gs='gst'
 alias lg='lazygit'
 unalias gops
-export GOPRIVATE=tespkg.in,github.com/tespkg,gitlab.com/target-digital-transformation
-export JAVA_HOME=$HOME/.jdks/current
+
+export JAVA_HOME=$HOME/.jdks/current # managed by intellij
 export PATH="$JAVA_HOME/bin:$PATH"

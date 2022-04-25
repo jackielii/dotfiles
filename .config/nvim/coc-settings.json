@@ -27,7 +27,7 @@
   // }}}
 
   // {{{ workspace
-  // "workspace.workspaceFolderCheckCwd": false,
+  "workspace.workspaceFolderCheckCwd": false,
   // "workspace.bottomUpFiletypes": ["go"],
   "workspace.ignoredFolders": [
     "$HOME",

@@ -35,6 +35,7 @@ if OS.mac?
     cask "homebrew/cask-fonts/font-fira-code-nerd-font"
     # cask "karabiner-elements"
     cask "maccy"
+    cask "intellij-idea-ce"
 else
     # linux ones
 end

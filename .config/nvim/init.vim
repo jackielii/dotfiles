@@ -250,6 +250,11 @@ endif
 call plug#begin('~/.config/nvim/plugged')
 runtime plugins.vim
 call plug#end()
+
+" exit here if we're in bootstraping process
+if !empty($YADM_BOOTSTRAPPING)
+  execute 'qa!'
+endif
 " }}}
 
 " {{{ color scheme and highlight

@@ -16,6 +16,9 @@ fi
 
 cd "$HOME"
 
+
+export YADM_BOOTSTRAPPING=yes
+
 echo "\nInit submodules\n"
 yadm submodule update --recursive --init
 
@@ -103,6 +106,7 @@ fi
 # }}}
 
 if [ "${OS}" = "Darwin" ]; then
+	echo "\nSetting MacOS defaults\n"
 	bash $HOME/.config/yadm/macos
 fi
 
