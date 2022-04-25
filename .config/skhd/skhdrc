@@ -71,11 +71,11 @@ cmd + ctrl + shift - l: yabai -m window --resize right:10:0 || yabai -m window w
 
 # warp & stack (always with arrow keys) {{{
 
-# warp window (similar to move but with arrow)
-cmd + shift - up : yabai -m window --warp north || $(yabai -m window --display north; yabai -m display --focus north)
-cmd + shift - down : yabai -m window --warp south || $(yabai -m window --display south; yabai -m display --focus south)
-cmd + shift - left : yabai -m window --warp west || $(yabai -m window --display west; yabai -m display --focus west)
-cmd + shift - right : yabai -m window --warp east || $(yabai -m window --display east; yabai -m display --focus east)
+# warp window (similar to move but with arrow); further warp stacks
+cmd + shift - up : yabai -m window --warp north || $(yabai -m window --stack south)
+cmd + shift - down : yabai -m window --warp south || $(yabai -m window --stack north)
+cmd + shift - left : yabai -m window --warp west || $(yabai -m window --stack east)
+cmd + shift - right : yabai -m window --warp east || $(yabai -m window --stack west)
 
 # stack similar to warp, add ctrl
 cmd + ctrl + shift - up: yabai -m window --stack north
@@ -90,12 +90,15 @@ cmd - e : [ $(yabai -m query --spaces --space | jq -re '.type') = 'bsp' ] && yab
 cmd + shift - space : yabai -m window --toggle float; yabai -m window --grid 4:4:1:1:2:2
 cmd + ctrl + shift - space : yabai -m space --rotate 270
 
-cmd + shift - f : yabai -m window --toggle native-fullscreen
+cmd - f11 : yabai -m window --toggle native-fullscreen
 # flash window border for active window
 cmd + ctrl + shift - w : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
 # 0x2F is dot
 cmd + ctrl + shift - 0x2F : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
 
+# 0x18 is =
+cmd + shift - 0x18 : yabai -m space --balance y-axis
+cmd + ctrl + shift - 0x18 : yabai -m space --balance x-axis
 # }}}
 
 # launch common apps {{{
@@ -106,7 +109,8 @@ cmd - return : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
         zsh -c "source ~/.base16_theme; tmux attach"
 cmd + shift - return : kitty -1 -d ~
 cmd + ctrl - return : open "/Applications/Google Chrome.app"
-ctrl - f12 : copyq menu
+cmd + ctrl + shift - return : open ~
+# cmd + ctrl + shift - return : kitty -1 -d ~ zsh -c "source ~/.base16_theme; ranger"
 # }}}
 
 # my habbits {{{

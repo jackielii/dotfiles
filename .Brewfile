@@ -19,6 +19,8 @@ brew "rg"
 brew "git-remote-gcrypt" # for encrypted repo
 brew "golang"
 brew "gron"
+brew "direnv"
+brew "ranger"
 # }}}
 
 # Mac {{{

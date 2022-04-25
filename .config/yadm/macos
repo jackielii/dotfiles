@@ -926,11 +926,18 @@ sudo mdutil -E / > /dev/null
 ###############################################################################
 # My shortcuts                                                                #
 ###############################################################################
+# @ for command, ~ for option, ^ for control, $ for shift
+
 defaults write com.google.Chrome NSUserKeyEquivalents -dict-add 'Open Location...' '^L'
+# defaults write com.apple.finder NSUserKeyEquivalents -dict-add 'Open Location...' '^L'
+defaults write com.microsoft.Outlook NSUserKeyEquivalents -dict-add 'Send' '^\U21a9'
+defaults write com.microsoft.Outlook NSUserKeyEquivalents -dict-add 'Outlook Items Search' '^K'
+defaults write com.microsoft.Outlook NSUserKeyEquivalents -dict-add 'Advanced Search...' '^$K'
 
 # Shift + backspace to delete
 defaults write -g NSUserKeyEquivalents -dict-add 'Move to Bin' '@$\U232b'
 defaults write -g NSUserKeyEquivalents -dict-add 'Put Back' '@$\U232b'
+defaults write -g NSUserKeyEquivalents -dict-add 'Open With' '@$O'
 
 ## my keyboard configurations
 # cp ~/.config/yadm/com.apple.symbolichotkeys.plist ~/Library/Preferences

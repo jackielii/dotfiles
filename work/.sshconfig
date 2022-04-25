@@ -1,0 +1,7 @@
+Include ~/.ssh/config
+
+host github.com
+ HostName github.com
+ IdentityFile ~/.ssh/id_tes_ed25519
+ User git
+

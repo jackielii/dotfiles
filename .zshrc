@@ -72,12 +72,15 @@ plugins=(
   zsh-autosuggestions
   docker
   docker-compose
-  #ssh-agent
   # # zsh-vim-mode
   you-should-use
+  gh
 )
 
-#zstyle :omz:plugins:ssh-agent identities id_rsa id_tes_ed25519
+if [ -d ~/.ssh ]; then
+  plugins=(ssh-agent $plugins)
+  zstyle :omz:plugins:ssh-agent identities id_tes_ed25519 id_rsa
+fi
 
 source $ZSH/oh-my-zsh.sh
 
@@ -94,6 +97,8 @@ source $ZSH/oh-my-zsh.sh
 # twice when the tty emulator starts which calls zsh which will eval .zshrc.
 # Hense the following line
 [[ $_DOT_PROFILE_SOURCED != "yes" && -f ~/.profile ]] && source ~/.profile
+
+eval "$(direnv hook zsh)"
 
 # export MANPATH="/usr/local/man:$MANPATH"
 

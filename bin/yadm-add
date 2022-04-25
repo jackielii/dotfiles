@@ -26,6 +26,11 @@ yadm add $HOME/.config/coc/extensions/package.json
 yadm add $HOME/.config/starship.toml
 yadm add $HOME/.fzf-zsh
 yadm add $HOME/bin/yadm-add
+yadm add $HOME/.direnvrc
 
+## tes work
+yadm add $HOME/work/.gitconfig
+yadm add $HOME/work/.sshconfig
+yadm add $HOME/work/.envrc
 
 yadm status

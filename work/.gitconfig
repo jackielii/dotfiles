@@ -1,0 +1,8 @@
+[include]
+   path = ~/.gitconfig
+
+[user]
+   email = jackie.li@target-energysolutions.com
+   name = Jackie Li
+   signingkey = C87B9D9061502C01
+
