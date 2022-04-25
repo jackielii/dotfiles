@@ -98,12 +98,15 @@ yarn global add bash-language-server
 # Neovim {{{
 if command -v nvim >/dev/null 2>&1; then
 	echo "\nBootstrapping Neovim\n"
+	PLUG_VIM="${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim
+	[ ! -f "${PLUG_VIM}" ] && curl -fLo "${PLUG_VIM}" --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 	# nvim plug install will return errors, there might be a better way of
 	# doing this
 	rm -f /tmp/nvim-plug-install.log
 	nvim -e -u $HOME/.config/nvim/init.vim \
 		-c "redir! > /tmp/nvim-plug-install.log" \
-		-c "qa" # PlugInstall is done within init.nvim
+		-c "PlugInstall" -c "qa"
 	cat /tmp/nvim-plug-install.log
 fi
 
