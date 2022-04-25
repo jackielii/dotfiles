@@ -103,7 +103,7 @@ if command -v nvim >/dev/null 2>&1; then
 	rm -f /tmp/nvim-plug-install.log
 	nvim -e -u $HOME/.config/nvim/init.vim -i NONE \
 		-c "redir! > /tmp/nvim-plug-install.log" \
-		-c "PlugInstall" -c "PlugClean!" -c "PlugUpdate" -c "qa"
+		-c "PlugInstall" -c "qa"
 	cat /tmp/nvim-plug-install.log
 fi
 
