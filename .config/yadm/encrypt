@@ -1,3 +1,4 @@
 .ssh/*
 .secrets
 .config/gh/hosts.yml
+.kube/config*

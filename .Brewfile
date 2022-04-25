@@ -4,6 +4,7 @@
 cask "kitty"
 brew "tmux"
 brew "neovim"
+brew "coreutils"
 brew "fd"
 brew "starship"
 brew "zoxide" # z change directory
@@ -21,6 +22,7 @@ brew "golang"
 brew "gron"
 brew "direnv"
 brew "ranger"
+brew "kubectl"
 # }}}
 
 # Mac {{{
