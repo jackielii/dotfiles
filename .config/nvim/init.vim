@@ -240,23 +240,9 @@ augroup end
 
 " }}}
 
-" vim-plug {{{ This should be after the common configs so that yadm bootstrap
-" can run correctly
-let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
-if empty(glob(data_dir . '/autoload/plug.vim'))
-  execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
 call plug#begin('~/.config/nvim/plugged')
 runtime plugins.vim
 call plug#end()
-
-" Install plugins if we're bootstrapping
-if !empty($YADM_BOOTSTRAPPING)
-  execute 'PlugInstall'
-  execute 'qa!'
-endif
-" }}}
 
 " {{{ color scheme and highlight
 " transparent background
