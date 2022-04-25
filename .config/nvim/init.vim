@@ -253,6 +253,7 @@ call plug#end()
 
 " exit here if we're in bootstraping process
 if !empty($YADM_BOOTSTRAPPING)
+  execute 'PlugInstall'
   execute 'qa!'
 endif
 " }}}
