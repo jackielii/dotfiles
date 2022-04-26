@@ -15,7 +15,7 @@ cmd - 6 : yabai -m space --focus 6
 cmd - 7 : yabai -m space --focus 7
 cmd - 8 : yabai -m space --focus 8
 cmd - 9 : yabai -m space --focus 9
-cmd - 0 : yabai -m space --focus 0
+cmd - 0 : yabai -m space --focus 10
 
 cmd + ctrl - 1 : yabai -m space --focus 11
 cmd + ctrl - 2 : yabai -m space --focus 12
@@ -26,7 +26,7 @@ cmd + ctrl - 6 : yabai -m space --focus 16
 cmd + ctrl - 7 : yabai -m space --focus 17
 cmd + ctrl - 8 : yabai -m space --focus 18
 cmd + ctrl - 9 : yabai -m space --focus 19
-cmd + ctrl - 0 : yabai -m space --focus 10
+cmd + ctrl - 0 : yabai -m space --focus 20
 
 # }}}
 
@@ -91,10 +91,13 @@ cmd + shift - space : yabai -m window --toggle float; yabai -m window --grid 4:4
 cmd + ctrl + shift - space : yabai -m space --rotate 270
 
 cmd - f11 : yabai -m window --toggle native-fullscreen
+f14 : yabai -m space --toggle mission-control # f14 is scrlock
 # flash window border for active window
 cmd + ctrl + shift - w : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
 # 0x2F is dot
 cmd + ctrl + shift - 0x2F : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
+# f15 is Pause
+f15 : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
 
 # 0x18 is =
 cmd + shift - 0x18 : yabai -m space --balance y-axis
@@ -118,9 +121,9 @@ cmd + shift - x : yabai -m window --close
 # }}}
 
 # editing remaps: more like linux {{{
-cmd - backspace : skhd -k "alt - backspace" # cmd+backspace as alt+backspace
-cmd - left : skhd -k "alt - left" # cmd+left as alt+left
-cmd - right : skhd -k "alt - right" # cmd+backspace as alt+backspace
+ctrl - backspace : skhd -k "alt - backspace" # ctrl+backspace as ctrl+backspace
+ctrl - left : skhd -k "alt - left" # cmd+left as ctrl+left
+ctrl - right : skhd -k "alt - right" # cmd+backspace as ctrl+backspace
 # }}}
 
 # focus on floating

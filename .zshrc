@@ -226,6 +226,10 @@ if [ "${OS}" = "Linux" ]; then
   alias open="xdg-open"
 fi
 
+if [ "${OS}" = "Darwin" ]; then
+  export PATH=$PATH:${HOMEBREW_PREFIX}/opt/python@3.9/libexec/bin
+fi
+
 alias cls='echo -ne "\033c"'
 alias rm='rm -i'
 alias dh='dirs -v'

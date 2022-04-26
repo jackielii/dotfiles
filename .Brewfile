@@ -39,6 +39,7 @@ if OS.mac?
     # cask "karabiner-elements"
     cask "maccy"
     cask "intellij-idea-ce"
+    cask "xbar"
 else
     # linux ones
 end
