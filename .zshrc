@@ -273,3 +273,7 @@ unalias gops
 
 export JAVA_HOME=$HOME/.jdks/current # managed by intellij
 export PATH="$JAVA_HOME/bin:$PATH"
+
+## github related
+export GITHUB_TOKEN="${MY_GITHUB_API_TOKEN}"
+export GITHUB_API_TOKEN="${GITHUB_TOKEN}" # for coc-git

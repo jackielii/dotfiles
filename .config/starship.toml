@@ -82,5 +82,7 @@ when = """ test -n "$DIRENV_DIR" """
 
 [custom.work]
 # symbol = ""
-symbol = "Tes"
-when = """ test -n "$GITHUB_TOKEN" && test "$GITHUB_TOKEN" = "$TES_GITHUB_API_TOKEN" """
+symbol = ""
+command = " test $GITHUB_TOKEN = $TES_GITHUB_API_TOKEN && echo Tes || echo JL"
+when = """ test -n "$GITHUB_TOKEN""""
+format = "[$symbol($output)]($style)"

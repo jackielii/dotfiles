@@ -118,9 +118,7 @@
 
   // {{{ sources
   "coc.source.word.priority": 1,
-  "coc.source.tmuxcomplete.enable": false,
   "coc.source.dictionary.priority": 80,
-  "coc.source.tmuxcomplete.priority": 1,
   "coc.source.buffer.priority": 2,
   // }}}
 
