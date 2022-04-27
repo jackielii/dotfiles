@@ -1,10 +1,28 @@
 # ( vim: set ts=4 sw=4 et fdm=marker: )
+# https://github.com/koekeishiya/skhd/issues/1#issue-248494406
+# https://github.com/koekeishiya/skhd/blob/master/examples/skhdrc
 
 # focus cmd - ? {{{
-cmd - h : yabai -m window --focus west   || $(yabai -m display --focus west)
+cmd - h : yabai -m window --focus west || yabai -m display --focus west
 cmd - j : yabai -m window --focus stack.next || yabai -m window --focus south  || $(yabai -m display --focus south) || yabai -m window --focus stack.first
 cmd - k : yabai -m window --focus stack.prev || yabai -m window --focus north  || $(yabai -m display --focus north) || yabai -m window --focus stack.last
-cmd - l : yabai -m window --focus east   || $(yabai -m display --focus east)
+cmd - l : yabai -m window --focus east || yabai -m display --focus east
+
+cmd + ctrl - h : yabai -m space --focus prev
+# cmd + ctrl - j : yabai -m window --insert south
+# cmd + ctrl - k : yabai -m window --insert north
+cmd + ctrl - l : yabai -m space --focus next
+
+# cmd - h : yabai -m window --focus west \
+#     || yabai -m display --focus west \
+#     || yabai -m window --focus $( \
+#         (yabai -m query --spaces --space next) \
+#             | jq -re '.[] | select(."is-visible" == true)."last-window"')
+# cmd - l : yabai -m window --focus east \
+#     || yabai -m display --focus east \
+#     || yabai -m window --focus $( \
+#         (yabai -m query --spaces --display) \
+#             | jq -re '.[] | select(."is-visible" == true)."first-window"')
 
 cmd - 1 : yabai -m space --focus 1
 cmd - 2 : yabai -m space --focus 2
@@ -35,10 +53,6 @@ cmd + shift - h : yabai -m window --swap west || $(yabai -m window --display wes
 cmd + shift - j : yabai -m window --swap south || $(yabai -m window --display south; yabai -m display --focus south)
 cmd + shift - k : yabai -m window --swap north || $(yabai -m window --display north; yabai -m display --focus north)
 cmd + shift - l : yabai -m window --swap east || $(yabai -m window --display east; yabai -m display --focus east)
-#cmd + ctrl - h : yabai -m window --insert west
-#cmd + ctrl - j : yabai -m window --insert south
-#cmd + ctrl - k : yabai -m window --insert north
-#cmd + ctrl - l : yabai -m window --insert east
 
 cmd + shift - 1 : yabai -m window --space 1
 cmd + shift - 2 : yabai -m window --space 2
@@ -72,16 +86,16 @@ cmd + ctrl + shift - l: yabai -m window --resize right:10:0 || yabai -m window w
 # warp & stack (always with arrow keys) {{{
 
 # warp window (similar to move but with arrow); further warp stacks
-cmd + shift - up : yabai -m window --warp north || $(yabai -m window --stack south)
-cmd + shift - down : yabai -m window --warp south || $(yabai -m window --stack north)
-cmd + shift - left : yabai -m window --warp west || $(yabai -m window --stack east)
-cmd + shift - right : yabai -m window --warp east || $(yabai -m window --stack west)
+# cmd + shift - up : yabai -m window --warp north || $(yabai -m window --stack south)
+# cmd + shift - down : yabai -m window --warp south || $(yabai -m window --stack north)
+# cmd + shift - left : yabai -m window --warp west || $(yabai -m window --stack east)
+# cmd + shift - right : yabai -m window --warp east || $(yabai -m window --stack west)
 
 # stack similar to warp, add ctrl
-cmd + ctrl + shift - up: yabai -m window --stack north
-cmd + ctrl + shift - down: yabai -m window --stack south
-cmd + ctrl + shift - left: yabai -m window --stack west
-cmd + ctrl + shift - right: yabai -m window --stack east
+# cmd + ctrl + shift - up: yabai -m window --stack north
+# cmd + ctrl + shift - down: yabai -m window --stack south
+# cmd + ctrl + shift - left: yabai -m window --stack west
+# cmd + ctrl + shift - right: yabai -m window --stack east
 # }}}
 
 # layout {{{
@@ -91,7 +105,7 @@ cmd + shift - space : yabai -m window --toggle float; yabai -m window --grid 4:4
 cmd + ctrl + shift - space : yabai -m space --rotate 270
 
 cmd - f11 : yabai -m window --toggle native-fullscreen
-f14 : yabai -m space --toggle mission-control # f14 is scrlock
+f14 : yabai -m space --toggle mission-control && cliclick -r w:200 m:0,0 # f14 is scrlock
 # flash window border for active window
 cmd + ctrl + shift - w : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
 # 0x2F is dot
@@ -110,7 +124,7 @@ cmd + ctrl + shift - 0x18 : yabai -m space --balance x-axis
 cmd - return : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
     kitty --listen-on=unix:/tmp/mykitty -d ~ \
         zsh -c "source ~/.base16_theme; tmux attach"
-cmd + shift - return : kitty -1 -d ~
+cmd + shift - return : kitty -d ~
 cmd + ctrl - return : open "/Applications/Google Chrome.app"
 cmd + ctrl + shift - return : open ~
 # cmd + ctrl + shift - return : kitty -1 -d ~ zsh -c "source ~/.base16_theme; ranger"
@@ -121,9 +135,26 @@ cmd + shift - x : yabai -m window --close
 # }}}
 
 # editing remaps: more like linux {{{
-ctrl - backspace : skhd -k "alt - backspace" # ctrl+backspace as ctrl+backspace
-ctrl - left : skhd -k "alt - left" # cmd+left as ctrl+left
-ctrl - right : skhd -k "alt - right" # cmd+backspace as ctrl+backspace
+
+# delete word
+ctrl - backspace : skhd -k "alt - backspace"
+# move word
+ctrl - left : skhd -k "alt - left"
+ctrl - right : skhd -k "alt - right"
+# select word
+ctrl + shift - left : skhd -k "alt + shift - left"
+ctrl + shift - right : skhd -k "alt + shift - right"
+
+# Home & end hack
+home:                skhd -k "cmd - left"
+end:                 skhd -k "cmd - right"
+shift - home:        skhd -k "cmd + shift - left"
+shift - end:         skhd -k "cmd + shift - right"
+# ctrl + home/end hack
+ctrl - home:         skhd -k "cmd - up"
+ctrl - end:          skhd -k "cmd - down"
+ctrl + shift - home: skhd -k "cmd + shift - up"
+ctrl + shift - end:  skhd -k "cmd + shift - down"
 # }}}
 
 # focus on floating

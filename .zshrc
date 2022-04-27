@@ -228,6 +228,9 @@ fi
 
 if [ "${OS}" = "Darwin" ]; then
   export PATH=$PATH:${HOMEBREW_PREFIX}/opt/python@3.9/libexec/bin
+  # https://github.com/kovidgoyal/kitty/issues/838#issuecomment-770328902
+  bindkey "\e[1;3D" backward-word # ⌥←
+  bindkey "\e[1;3C" forward-word # ⌥→
 fi
 
 alias cls='echo -ne "\033c"'
