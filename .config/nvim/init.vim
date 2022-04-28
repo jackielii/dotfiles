@@ -11,48 +11,39 @@ if (has("termguicolors"))
   set termguicolors
 endif
 
-" don't wait for too long for key combinations
-set timeout
-set timeoutlen=1000
-
 scriptencoding utf-8
+
+set timeout " don't wait for too long for key combinations
+set timeoutlen=1000
 set tabstop=4
 set shiftwidth=4
 set nu rnu
-
-syntax sync fromstart
-
 set virtualedit=block
 set nostartofline
 set directory=~/tmp
 set foldmethod=manual
-" set foldmethod=syntax
 set foldlevelstart=99
-" set guicursor=a:blinkon1000
-" set guicursor=a:blinkon1
-" set guicursor=n-v-c:block-Cursor/lCursor-blinkon1,i-ci:ver25-Cursor/lCursor-blinkon1,r-cr:hor20-Cursor/lCursor-blinkon1
-" au VimLeave * set guicursor=a:block-blinkon1
 set mouse=nvirh
 set ignorecase
 set smartcase
 set autoindent
 set smartindent
-" No tmp or swp files
-set nobackup
+set nobackup " No tmp or swp files
 set nowritebackup
 set noswapfile
-set cul " cursor line
+set cursorline
 set colorcolumn=80
-"  hide -- INSERT --
-set noshowmode
-" System clipboard
-set clipboard+=unnamedplus
-" allow unsaved buffers to be hidden
-set hidden
+set noshowmode "  hide -- INSERT --
+set clipboard+=unnamedplus " System clipboard
+set hidden " allow unsaved buffers to be hidden
 set nomore
 set cmdheight=2
 set laststatus=3
-highlight WinSeparator guibg=none
+set splitbelow
+set splitright
+set pastetoggle=<F2> " F2 toggle paste mode
+
+syntax sync fromstart " more reliable syntax highlight
 
 " map common mistakes
 " cmap Q q
@@ -71,11 +62,9 @@ inoremap Pp <Esc>P
 inoremap PP <Esc>pa
 inoremap CC <Esc>cc
 
-" F2 toggle paste mode
-set pastetoggle=<F2>
 
-set splitbelow
-set splitright
+let g:netrw_fastbrowse = 0 " remove netrw after opening file
+highlight WinSeparator guibg=none
 
 " ctrl-s to save and to normal mode
 noremap  <silent> <C-S> <esc>:update<CR>:nohl<CR>
@@ -107,7 +96,7 @@ vnoremap // y/\V<C-r>=escape(@",'/\')<CR><CR>N
 nnoremap <C-f> <C-d>
 nnoremap <C-b> <C-u>
 
-" last-position-jump
+" last-position-jump when re-opening a file
 autocmd BufReadPost *
   \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
   \ |   exe "normal! g`\""
@@ -126,11 +115,11 @@ command! -register CopyMatches call CopyMatches(<q-reg>)
 
 " fast resize window
 if bufwinnr(1)
-  map <leader>+ 4<C-W>+
-  map <leader>= 4<C-W>+
-  map <leader>- 4<C-W>-
-  map <leader>> 4<C-W>>
-  map <leader>< 4<C-W><
+  map <leader>+ 6<C-W>+
+  map <leader>= 6<C-W>+
+  map <leader>- 6<C-W>-
+  map <leader>> 6<C-W>>
+  map <leader>< 6<C-W><
 endif
 
 " [c]lear [w]hitespace
@@ -232,11 +221,19 @@ map <leader>kn :enew<CR>
 augroup comment
   autocmd!
   autocmd FileType json setlocal commentstring=//\ %s
-  autocmd FileType jsonc setlocal commentstring=//\ %s
   autocmd FileType typescriptreact setlocal commentstring=//\ %s
   autocmd FileType sql setlocal commentstring=--\ %s
   autocmd FileType proto setlocal commentstring=//\ %s
 augroup end
+
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
+cnoremap <C-p> <Up>
+cnoremap <C-n> <Down>
+cnoremap <C-b> <Left>
+cnoremap <C-f> <Right>
+cnoremap <M-b> <S-Left>
+cnoremap <M-f> <S-Right>
 
 " }}}
 
@@ -300,7 +297,6 @@ nmap <leader>gc :Git commit<CR>
 nmap <leader>gds :tab Git diff --staged<CR>
 nmap <leader>gda :tab Git diff<CR>
 nmap <leader>gdd :tab Git diff %<CR>
-nmap <F10> :tab Git diff %<CR>
 nmap <leader>gp :Git pull<CR>
 nmap <leader>gP :Git push<CR>
 nmap <leader>gll :0Gclog<CR>
@@ -321,12 +317,16 @@ nmap ga <Plug>(EasyAlign)
 
 lua << EOF
 require('Comment').setup()
+require('indent_blankline').setup {
+  char = '┊',
+  show_trailing_blankline_indent = false,
+}
 EOF
-
 
 " {{{ fzf
 let g:fzf_buffers_jump = 1
 map <silent> <C-p> :FZF<CR>
+map <silent> <leader>zf :execute 'FZF '.expand('%:p:h')<CR>
 " This is the default extra key bindings
 let g:fzf_action = {
   \ 'ctrl-v': 'vsplit',
@@ -454,6 +454,7 @@ let g:VM_maps['Find Under']         = '<A-n>'
 let g:VM_maps['Find Subword Under'] = '<A-n>'
 " <CR> to accept completion item
 autocmd User visual_multi_mappings  imap <buffer><expr> <CR> pumvisible() ? "\<C-Y>" : "\<Plug>(VM-I-Return)"
+let g:VM_theme = 'ocean'
 
 " temporary work around for conflict with coc.nvim `:h vm-functions`
 " https://github.com/mg979/vim-visual-multi/issues/75#issuecomment-1091401897
@@ -535,20 +536,11 @@ let g:asynctasks_config_name = '.vim/tasks.ini'
 let g:asyncrun_open = 6
 
 " nvim-tree.lua {{{
-" let g:nvim_tree_disable_window_picker = 1
-" nmap <silent> <leader>f :NvimTreeFindFile<CR>
-" let g:nvim_tree_auto_close = 1
-" let g:nvim_tree_hijack_cursor = 0
-" let g:nvim_tree_quit_on_open = 1
-" let g:nvim_tree_hijack_netrw = 0
-" let g:nvim_tree_disable_netrw = 1
-" let g:nvim_tree_auto_resize = 1
-" let g:nvim_tree_auto_open = 1
 au! VimEnter * let g:project_path = getcwd(-1,-1)
 lua <<EOF
   require'nvim-tree'.setup {
-    -- disable_netrw       = true,
-    -- hijack_netrw        = true,
+    -- disable_netrw       = false,
+    hijack_netrw        = false,
     -- hijack_cursor       = false,
     update_cwd = false,
     hijack_directories = {
@@ -671,6 +663,7 @@ nmap <silent> <leader>f :lua NvimTreeFindFileAnywhere()<CR>
 " }}}
 
 nmap <F8> :Rooter<CR>
+nmap <F10> :execute 'lcd '.g:project_path <bar> echo g:project_path<CR>
 
 " targets.vim
 " to have argument object work in {} & []
@@ -755,11 +748,10 @@ endfunction
 map <F4> :CloseNonProjectBuffers<CR>
 " }}}
 
-" most of the following has conflicts
-" imap <silent><C-L> <C-O>:TmuxNavigateRight<CR>
-" imap <silent><C-H> <C-O>:TmuxNavigateLeft<CR>
-" imap <silent><C-J> <C-O>:TmuxNavigateDown<CR>
-" imap <silent><C-K> <C-O>:TmuxNavigateUp<CR>
+if has('macunix')
+    " https://github.com/neovim/neovim/wiki/FAQ#nvim-shows-weird-symbols-2-q-when-changing-modes
+    " set guicursor=
+endif
 
 runtime lightline.vim
 runtime coc.vim

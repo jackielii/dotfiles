@@ -1,5 +1,9 @@
 add_newline = false
 
+[character]
+success_symbol = "[➜](bold green) "
+error_symbol = "[✗](bold red) "
+
 [gcloud]
 disabled=true
 
@@ -77,12 +81,12 @@ symbol = " "
 symbol = " "
 
 [custom.direnv]
-symbol = "E->"
+symbol = "E-> "
 when = """ test -n "$DIRENV_DIR" """
 
 [custom.work]
-# symbol = ""
-symbol = ""
+# symbol = " "
+symbol = " "
 command = " test $GITHUB_TOKEN = $TES_GITHUB_API_TOKEN && echo Tes || echo JL"
 when = """ test -n "$GITHUB_TOKEN""""
 format = "[$symbol($output)]($style)"

@@ -2,6 +2,7 @@
   // vim:set et sw=2 ts=4 fdm=marker:
 
   // {{{ general
+  "session.saveOnVimLeave": false, // https://github.com/tpope/vim-obsession/issues/72#issuecomment-1089202674
   "python.pythonPath": "python3",
   "python.formatting.provider": "black",
   "git.enableGlobalStatus": false,
@@ -59,8 +60,9 @@
   // }}}
 
   // {{{ suggest
-  "suggest.noselect": true,
+  "suggest.noselect": false,
   "suggest.enablePreselect": false,
+  "suggest.selection": "recentlyUsedByPrefix",
   "suggest.languageSourcePriority": 99,
   "suggest.maxCompleteItemCount": 50,
   "suggest.lowPrioritySourceLimit": 10,

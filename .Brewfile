@@ -24,6 +24,7 @@ brew "direnv"
 brew "ranger"
 brew "kubectl"
 brew "envoy"
+brew "tig"
 # }}}
 
 # Mac {{{
