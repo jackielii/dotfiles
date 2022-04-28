@@ -85,6 +85,7 @@ if [ -d ~/.ssh ] && [ -f ~/.ssh/id_rsa ]; then
 fi
 
 if [ "${OS}" = "Darwin" ]; then
+	# use gnu-utils on mac, it sets PATH correctly for ls, grep etc
 	plugins=(gnu-utils $plugins)
 fi
 
@@ -198,7 +199,7 @@ eval "$(zoxide init zsh)"
 BASE16_SHELL="$HOME/.config/base16-shell/"
 [ -n "$PS1" ] && \
 	[ -s "$BASE16_SHELL/profile_helper.sh" ] && \
-	eval "$("$BASE16_SHELL/profile_helper.sh")"
+		eval "$("$BASE16_SHELL/profile_helper.sh")"
 
 # {{{ fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -214,7 +215,7 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --history=$HOME/.fzf_history"
 # Base16 fzf
 [ -n "$BASE16_THEME" ] && \
 	[ -f $HOME/.config/base16-fzf/bash/base16-${BASE16_THEME}.config ] && \
-	source $HOME/.config/base16-fzf/bash/base16-${BASE16_THEME}.config
+		source $HOME/.config/base16-fzf/bash/base16-${BASE16_THEME}.config
 # }}}
 
 
@@ -290,4 +291,4 @@ export PATH="$JAVA_HOME/bin:$PATH"
 export GITHUB_TOKEN="${MY_GITHUB_API_TOKEN}"
 export GITHUB_API_TOKEN="${GITHUB_TOKEN}" # for coc-git
 
-# vim:set noet sts=0 sw=4 ts=4 tw=79 fdm=marker:
+# vim:set noet sts=0 sw=2 ts=2 tw=79 fdm=marker:
