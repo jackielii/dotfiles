@@ -177,7 +177,6 @@ cmd - 6 : yabai -m space --focus 6
 cmd - 7 : yabai -m space --focus 7
 cmd - 8 : yabai -m space --focus 8
 cmd - 9 : yabai -m space --focus 9
-cmd - 0 : yabai -m space --focus 10
 
 cmd + ctrl - 1 : yabai -m space --focus 11
 cmd + ctrl - 2 : yabai -m space --focus 12
@@ -188,7 +187,10 @@ cmd + ctrl - 6 : yabai -m space --focus 16
 cmd + ctrl - 7 : yabai -m space --focus 17
 cmd + ctrl - 8 : yabai -m space --focus 18
 cmd + ctrl - 9 : yabai -m space --focus 19
-cmd + ctrl - 0 : yabai -m space --focus 20
+
+# focus full screen
+cmd - 0: yabai -m space --focus \
+    $(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == true).index)|.[0]')
 
 # }}}
 
@@ -248,17 +250,20 @@ cmd - e : [ $(yabai -m query --spaces --space | jq -re '.type') = 'bsp' ] && yab
 cmd + shift - space : yabai -m window --toggle float; yabai -m window --grid 4:4:1:1:2:2
 cmd + ctrl + shift - space : yabai -m space --rotate 270
 
+## fullscreen
 cmd - f11 : yabai -m window --toggle native-fullscreen
+ctrl + cmd - f : yabai -m window --toggle native-fullscreen
+
 f14 : yabai -m space --toggle mission-control && cliclick -r w:200 m:0,0 # f14 is scrlock
-# flash window border for active window
+## flash window border for active window
 cmd + ctrl + shift - w : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
-# 0x2F is dot
+## 0x2F is dot
 cmd + ctrl + shift - 0x2F : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
-# f15 is Pause
+## f15 is Pause
 cmd - f15 : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
 f15 : yabai -m window --focus mouse
 
-# 0x18 is =
+## 0x18 is =
 cmd + shift - 0x18 : yabai -m space --balance y-axis
 cmd + ctrl + shift - 0x18 : yabai -m space --balance x-axis
 # }}}

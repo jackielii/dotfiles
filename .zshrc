@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-  export ZSH="$HOME/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
@@ -24,7 +24,7 @@ DEFAULT_USER="jackieli"
 
 # Uncomment the following line to use hyphen-insensitive completion. Case
 # sensitive completion must be off. _ and - will be interchangeable.
-HYPHEN_INSENSITIVE="true"
+# HYPHEN_INSENSITIVE="true"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
 # DISABLE_AUTO_UPDATE="true"
@@ -64,23 +64,30 @@ DISABLE_AUTO_TITLE="true"
 
 VIM_MODE_NO_DEFAULT_BINDINGS=true
 
+OS=$(uname -s)
+
 plugins=(
-  git
-  kubectl
-  golang
-  tmux
-  zsh-autosuggestions
-  docker
-  docker-compose
-  # # zsh-vim-mode
-  you-should-use
-  gh
+	git
+	kubectl
+	golang
+	tmux
+	zsh-autosuggestions
+	docker
+	docker-compose
+	# # zsh-vim-mode
+	you-should-use
+	gh
 )
 
 if [ -d ~/.ssh ] && [ -f ~/.ssh/id_rsa ]; then
-  plugins=(ssh-agent $plugins)
-  zstyle :omz:plugins:ssh-agent identities id_tes_ed25519 id_rsa
+	plugins=(ssh-agent $plugins)
+	zstyle :omz:plugins:ssh-agent identities id_tes_ed25519 id_rsa
 fi
+
+if [ "${OS}" = "Darwin" ]; then
+	plugins=(gnu-utils $plugins)
+fi
+
 
 source $ZSH/oh-my-zsh.sh
 
@@ -190,8 +197,8 @@ eval "$(zoxide init zsh)"
 # Base16 Shell
 BASE16_SHELL="$HOME/.config/base16-shell/"
 [ -n "$PS1" ] && \
-    [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
-        eval "$("$BASE16_SHELL/profile_helper.sh")"
+	[ -s "$BASE16_SHELL/profile_helper.sh" ] && \
+	eval "$("$BASE16_SHELL/profile_helper.sh")"
 
 # {{{ fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -208,10 +215,10 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --history=$HOME/.fzf_history"
 [ -n "$BASE16_THEME" ] && \
 	[ -f $HOME/.config/base16-fzf/bash/base16-${BASE16_THEME}.config ] && \
 	source $HOME/.config/base16-fzf/bash/base16-${BASE16_THEME}.config
+# }}}
 
- # }}}
 
-export PATH=$HOME/bin:$PATH:$HOME/go/bin:$HOME/pycode:$HOME/app/flutter/bin:$HOME/app/android-studio/bin
+export PATH=$HOME/bin:$PATH:$HOME/go/bin
 export EDITOR=nvim
 export PAGER=less
 export PROMPT_COMMAND='history -a'
@@ -220,17 +227,22 @@ export HISTFILESIZE=2000000
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
 
-OS=$(uname -s)
-
 if [ "${OS}" = "Linux" ]; then
-  alias open="xdg-open"
+	alias open="xdg-open"
+	export PATH=$PATH:$HOME/pycode:$HOME/app/flutter/bin:$HOME/app/android-studio/bin
 fi
 
 if [ "${OS}" = "Darwin" ]; then
-  export PATH=$PATH:${HOMEBREW_PREFIX}/opt/python@3.9/libexec/bin
-  # https://github.com/kovidgoyal/kitty/issues/838#issuecomment-770328902
-  bindkey "\e[1;3D" backward-word # ⌥←
-  bindkey "\e[1;3C" forward-word # ⌥→
+	if [ -n "${HOMEBREW_PREFIX}" ]; then
+		# python3 -> python
+		# use gnu ls etc
+		# https://formulae.brew.sh/formula/coreutils -> moved to zsh plugin
+		# https://docs.brew.sh/Homebrew-and-Python#python-3y
+		export PATH=$PATH:${HOMEBREW_PREFIX}/opt/python@3.9/libexec/bin
+	fi
+	# https://github.com/kovidgoyal/kitty/issues/838#issuecomment-770328902
+	bindkey "\e[1;3D" backward-word # ⌥←
+	bindkey "\e[1;3C" forward-word # ⌥→
 fi
 
 alias cls='echo -ne "\033c"'
@@ -277,3 +289,5 @@ export PATH="$JAVA_HOME/bin:$PATH"
 ## github related
 export GITHUB_TOKEN="${MY_GITHUB_API_TOKEN}"
 export GITHUB_API_TOKEN="${GITHUB_TOKEN}" # for coc-git
+
+# vim:set noet sts=0 sw=4 ts=4 tw=79 fdm=marker:
