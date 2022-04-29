@@ -87,12 +87,23 @@ fi
 if [ "${OS}" = "Darwin" ]; then
 	# use gnu-utils on mac, it sets PATH correctly for ls, grep etc
 	plugins=(gnu-utils $plugins)
+	# use our own ls --color
+	alias ls="\gls --color=auto"
 fi
 
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
+
+if [ "${OS}" = "Darwin" ]; then
+	# use our own ls --color, this is after sourcing the oh-my-zsh.sh
+	alias ls="\gls --color=auto"
+fi
+
+if [ $TERM = "xterm-kitty" ]; then
+	# alias ssh="kitty +kitten ssh"
+fi
 
 [ -z "${HOMEBREW_PREFIX}" ] && eval "$(brew shellenv)"
 

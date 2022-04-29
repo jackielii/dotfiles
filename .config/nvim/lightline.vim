@@ -14,7 +14,7 @@ endfunction
 
 function! GitBranch()
   let l:s = FugitiveHead()
-  if empty(l:s) | return '' | else | return l:s .. ' ' | endif
+  if empty(l:s) | return '' | else | return ' ' .. l:s | endif
 endfunction
 
 let g:lightline.component_function = {

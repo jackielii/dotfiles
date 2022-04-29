@@ -11,7 +11,7 @@ brew "zoxide" # z change directory
 brew "gh"
 brew "lazygit"
 brew "jq"
-brew "node@14", link: true # coc.nvim and it's dependencies don't work with higher version
+brew "node@16", link: true # Copilot requires node@16 on macos
 brew "yarn"
 brew "python3"
 brew "tree"
@@ -25,6 +25,7 @@ brew "ranger"
 brew "kubectl"
 brew "envoy"
 brew "tig"
+brew "imagemagick"
 # }}}
 
 # Mac {{{
