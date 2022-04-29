@@ -1,6 +1,7 @@
 # ( vim: set ts=4 sw=4 et fdm=marker: )
 # keys: https://github.com/koekeishiya/skhd/issues/1#issue-248494406
 # example: https://github.com/koekeishiya/skhd/blob/master/examples/skhdrc
+#
 # {{{ README
 # Usage:
 # -V | --verbose: Output debug information
