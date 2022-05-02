@@ -26,6 +26,8 @@ brew "kubectl"
 brew "envoy"
 brew "tig"
 brew "imagemagick"
+brew "bufbuild/buf/buf"
+brew "tctl"
 # }}}
 
 # Mac {{{

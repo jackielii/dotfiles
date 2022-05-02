@@ -200,8 +200,6 @@ nnoremap <silent> ]g  :<C-u>CocNext<CR>
 nnoremap <silent> [g  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent> <leader>cr  :<C-u>CocListResume<CR>
-nnoremap <silent> <leader>p  :<C-u>CocListResume<CR>
-
 nnoremap <silent> <leader>ct  :<C-u>CocList tasks<cr>
 
 nnoremap <leader>gi :call CocAction('runCommand', 'editor.action.organizeImport')<CR>

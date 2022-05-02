@@ -14,11 +14,12 @@ endfunction
 
 function! GitBranch()
   let l:s = FugitiveHead()
-  if empty(l:s) | return '' | else | return ' ' .. l:s | endif
+  let l:c = '' " get(b:, 'coc_git_status', '')
+  if empty(l:s) | return '' | else | return ' ' .. l:s .. l:c | endif
 endfunction
 
 let g:lightline.component_function = {
-\  'gitbranch': 'GitBranch' ,
+\  'gitbranch': 'GitBranch',
 \  'current_function': 'CocCurrentFunction',
 \  'current_package': 'CocCurrentPackage'
 \ }

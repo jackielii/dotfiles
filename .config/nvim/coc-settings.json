@@ -60,7 +60,7 @@
   // }}}
 
   // {{{ suggest
-  "suggest.noselect": false, // do select first entry
+  "suggest.noselect": false, // don't select first entry
   "suggest.enablePreselect": false, // put recently used on top
   "suggest.selection": "recentlyUsedByPrefix",
   "suggest.languageSourcePriority": 99,

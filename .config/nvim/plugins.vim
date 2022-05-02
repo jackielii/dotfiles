@@ -115,9 +115,10 @@ Plug 'github/copilot.vim'
 Plug 'lukas-reineke/indent-blankline.nvim'
 
 " octo.nvim
-"Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-lua/plenary.nvim'
 "Plug 'nvim-telescope/telescope.nvim'
 "" Plug 'kyazdani42/nvim-web-devicons' " already included above
 "Plug 'pwntester/octo.nvim'
 
 Plug 'voldikss/vim-floaterm'
+Plug 'sindrets/diffview.nvim'

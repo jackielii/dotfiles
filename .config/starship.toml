@@ -63,7 +63,7 @@ symbol = " "
 symbol = " "
 
 [custom.direnv]
-symbol = "E-> "
+symbol = " "
 when = """ test -n "$DIRENV_DIR" """
 
 [custom.work]

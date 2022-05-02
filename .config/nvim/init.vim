@@ -49,7 +49,6 @@ syntax sync fromstart " more reliable syntax highlight
 " cmap Q q
 cmap Wq wq
 imap jk <esc>
-imap kj <esc>
 imap jj <esc>
 imap kk <esc>
 
@@ -290,7 +289,7 @@ nnoremap <silent> <leader><leader>O :BufOnly<CR>
 
 " fugitive git related {{{
 nmap <leader>g :Git<space>
-nmap <leader>g<CR> :Git<CR>
+nmap <leader>g<CR> :tab Git<CR>
 nmap <leader>ge :Gedit<CR>
 nmap <leader>gb :Git blame<CR>
 nmap <leader>gc :Git commit<CR>
@@ -325,7 +324,7 @@ EOF
 
 " {{{ fzf
 let g:fzf_buffers_jump = 1
-map <silent> <C-p> :FZF<CR>
+map <silent> <leader>p :FZF<CR>
 map <silent> <leader>zf :execute 'FZF '.expand('%:p:h')<CR>
 " This is the default extra key bindings
 let g:fzf_action = {
@@ -472,7 +471,7 @@ endfunction
 " let g:vimwiki_list = [{'path': '~/notes/', 'syntax': 'markdown', 'ext': '.md'}]
 
 " wiki.vim: https://github.com/lervag/wiki.vim
-let g:wiki_root = '~/notes'
+let g:wiki_root = '~/personal/notes'
 let g:wiki_map_link_create = 'WikiNewLinkFileName'
 let g:wiki_mappings_use_defaults = 'local'
 function WikiNewLinkFileName(text) abort

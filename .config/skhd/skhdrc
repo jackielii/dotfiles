@@ -218,8 +218,11 @@ cmd + ctrl - 8 : yabai -m space --focus 18
 cmd + ctrl - 9 : yabai -m space --focus 19
 
 # focus full screen
-cmd - 0: yabai -m space --focus \
+alt - 0: yabai -m space --focus \
     $(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == true).index)|.[0]')
+
+# focus previous window
+cmd - tab : yabai -m window --focus recent
 
 # }}}
 
@@ -276,7 +279,7 @@ cmd + ctrl + shift - l: yabai -m window --resize right:10:0 || yabai -m window w
 # layout {{{
 #cmd - s : yabai -m space --layout stack
 cmd - e : [ $(yabai -m query --spaces --space | jq -re '.type') = 'bsp' ] && yabai -m space --layout stack || yabai -m space --layout bsp
-cmd + shift - space : yabai -m window --toggle float; yabai -m window --grid 4:4:1:1:2:2
+cmd + shift - space : yabai -m window --toggle float; yabai -m window --grid 8:8:1:1:6:6
 cmd + ctrl + shift - space : yabai -m space --rotate 270
 
 ## fullscreen
@@ -293,23 +296,25 @@ cmd - f15 : yabai -m window --toggle border; sleep 0.5; yabai -m config window_b
 ## 0x4C is Enter
 0x4C : yabai -m window --focus mouse
 
-## 0x18 is =
+## 0x18 is = ; 0x1B is -
 cmd + shift - 0x18 : yabai -m space --balance y-axis
-cmd + ctrl + shift - 0x18 : yabai -m space --balance x-axis
+cmd + shift - 0x1B : yabai -m space --balance x-axis
 # }}}
 
 # launch common apps {{{
 
 # switch to main first tmux listening to socket, if none, launch new one
-# f14 : yabai -m space --toggle mission-control && cliclick -r w:200 m:0,0 # f14 is scrlock
 # f14 : HHKB: FN+T
 f14 : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
+    kitty --listen-on=unix:/tmp/mykitty -d ~ \
+        zsh -c "source ~/.base16_theme; tmux attach"
+alt - t : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
     kitty --listen-on=unix:/tmp/mykitty -d ~ \
         zsh -c "source ~/.base16_theme; tmux attach"
 cmd + shift - return : kitty -d ~
 cmd + ctrl - return : open "/Applications/Google Chrome.app"
 cmd + ctrl + shift - return : open ~
-cmd - m : open -a "Microsoft Outlook.app"
+alt - m : open -a "Microsoft Outlook.app"
 # cmd + ctrl + shift - return : kitty -1 -d ~ zsh -c "source ~/.base16_theme; ranger"
 # }}}
 
