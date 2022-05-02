@@ -40,6 +40,8 @@ if OS.mac?
     brew "bash" # need newest bash for some program like extracto
     cask "google-chrome" # TODO: check if installed
     cask "homebrew/cask-fonts/font-fira-code-nerd-font"
+    cask "homebrew/cask-fonts/font-cascadia-code"
+    cask "homebrew/cask-fonts/font-noto-nerd-font"
     # cask "karabiner-elements"
     cask "maccy"
     cask "intellij-idea-ce"

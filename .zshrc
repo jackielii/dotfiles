@@ -255,6 +255,11 @@ if [ "${OS}" = "Darwin" ]; then
 	# https://github.com/kovidgoyal/kitty/issues/838#issuecomment-770328902
 	bindkey "\e[1;3D" backward-word # ⌥←
 	bindkey "\e[1;3C" forward-word # ⌥→
+
+	# https://github.com/kovidgoyal/kitty/issues/2748#issuecomment-640231667
+	bindkey '\e[H'  beginning-of-line
+	bindkey '\e[F'  end-of-line
+	bindkey '\e[3~' delete-char
 fi
 
 alias cls='echo -ne "\033c"'
