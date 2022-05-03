@@ -114,11 +114,10 @@ command! -register CopyMatches call CopyMatches(<q-reg>)
 
 " fast resize window
 if bufwinnr(1)
-  map <leader>+ 6<C-W>+
   map <leader>= 6<C-W>+
   map <leader>- 6<C-W>-
-  map <leader>> 6<C-W>>
-  map <leader>< 6<C-W><
+  map <leader>. 6<C-W>>
+  map <leader>, 6<C-W><
 endif
 
 " [c]lear [w]hitespace
@@ -229,8 +228,6 @@ cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
 cnoremap <C-p> <Up>
 cnoremap <C-n> <Down>
-cnoremap <C-b> <Left>
-cnoremap <C-f> <Right>
 cnoremap <M-b> <S-Left>
 cnoremap <M-f> <S-Right>
 
@@ -313,14 +310,6 @@ let g:rooter_manual_only = 1
 xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
-
-lua << EOF
-require('Comment').setup()
-require('indent_blankline').setup {
-  char = '┊',
-  show_trailing_blankline_indent = false,
-}
-EOF
 
 " {{{ fzf
 let g:fzf_buffers_jump = 1
@@ -536,125 +525,7 @@ let g:asyncrun_open = 6
 
 " nvim-tree.lua {{{
 au! VimEnter * let g:project_path = getcwd(-1,-1)
-lua <<EOF
-  require'nvim-tree'.setup {
-    -- disable_netrw       = false,
-    hijack_netrw        = false,
-    -- hijack_cursor       = false,
-    update_cwd = false,
-    hijack_directories = {
-      enable = false,
-    },
-    system_open = {
-      cmd  = "xdg-open",
-      args = {}
-    },
-    view = {
-      mappings = {
-        custom_only = true,
-        list = {
-          -- default:
-          { key = { "<CR>", "o", "<2-LeftMouse>" }, action = "edit" },
-          --{ key = "<C-e>", action = "edit_in_place" },
-          { key = "O", action = "edit_no_picker" },
-          { key = { "<2-RightMouse>", "<C-]>" }, action = "cd" },
-          { key = "<C-v>", action = "vsplit" },
-          { key = "<C-x>", action = "split" },
-          { key = "<C-t>", action = "tabnew" },
-          { key = "<", action = "prev_sibling" },
-          { key = ">", action = "next_sibling" },
-          { key = "P", action = "parent_node" },
-          { key = "<BS>", action = "close_node" },
-          { key = "<Tab>", action = "preview" },
-          { key = "K", action = "first_sibling" },
-          { key = "J", action = "last_sibling" },
-          { key = "I", action = "toggle_git_ignored" },
-          { key = "H", action = "toggle_dotfiles" },
-          { key = "R", action = "refresh" },
-          { key = "a", action = "create" },
-          { key = "d", action = "remove" },
-          { key = "D", action = "trash" },
-          { key = "r", action = "rename" },
-          { key = "<C-r>", action = "full_rename" },
-          { key = "x", action = "cut" },
-          { key = "c", action = "copy" },
-          { key = "p", action = "paste" },
-          { key = "y", action = "copy_name" },
-          { key = "Y", action = "copy_path" },
-          { key = "gy", action = "copy_absolute_path" },
-          { key = "[c", action = "prev_git_item" },
-          { key = "]c", action = "next_git_item" },
-          { key = "-", action = "dir_up" },
-          { key = "s", action = "system_open" },
-          { key = "q", action = "close" },
-          { key = "g?", action = "toggle_help" },
-          { key = "W", action = "collapse_all" },
-          { key = "S", action = "search_node" },
-          { key = ".", action = "run_file_command" },
-          { key = "<C-k>", action = "toggle_file_info" },
-          { key = "U", action = "toggle_custom" },
-
-          -- addition
-          { key = "<c-s>", mode = "n", action = "split" },
-        }
-      }
-    },
-    actions = {
-      change_dir = {
-        enable = false,
-      },
-      open_file = {
-        quit_on_open = true,
-        window_picker = {
-          enable = false,
-        },
-      }
-    },
-    git = {
-      ignore = false
-    }
-  }
-
-  local function starts_with(full, part)
-    return string.sub(full, 1, string.len(part)) == part
-  end
-  local function ensure_cwd(dir)
-    local cwd = vim.loop.cwd()
-    --if not starts_with(cwd, dir) then
-    if cwd ~= dir then
-      vim.cmd('cd ' .. dir)
-    end
-    require'nvim-tree'.change_dir(dir)
-  end
-  -- https://github.com/kyazdani42/nvim-tree.lua/issues/240
-  function NvimTreeFindFileAnywhere()
-    local project_path = vim.g.project_path
-    local buffer_path = vim.fn.expand('%:p:h')
-    -- print(buffer_path, project_path)
-    if starts_with(buffer_path, project_path) then
-      -- inside the working directory
-      ensure_cwd(project_path)
-      -- if no filename, just open current project
-      if vim.fn.expand('%') == '' then
-        -- print('opening project because of empty filename')
-        require'nvim-tree'.focus()
-      else
-        require'nvim-tree'.find_file(true)
-      end
-    else
-      -- outside of working directory
-      ensure_cwd(vim.fn.expand('%:p:h'))
-      require'nvim-tree'.find_file(true)
-    end
-  end
-
-  function NvimTreeOpenProject()
-    ensure_cwd(vim.g.project_path)
-    require'nvim-tree'.focus()
-    require'nvim-tree.actions.reloaders'.reload_explorer()
-  end
-EOF
-
+" see luainit.lua:96
 nmap <silent> <leader>kb :lua NvimTreeOpenProject()<CR>
 nmap <silent> <leader>F :lua NvimTreeOpenProject()<CR>
 " nmap <silent> <leader>f :NvimTreeFindFile<CR>
@@ -690,13 +561,6 @@ let g:startify_session_autoload = 1
 
 " indent blank lines
 " let g:indent_blankline_filetype = ['vim']
-
-" {{{ oct.nvim
-lua <<EOF
---require"octo".setup({
---})
-EOF
-" }}}
 
 " float terminal {{{
 nnoremap <silent>   <F1>    :FloatermToggle --width=0.9 --height=0.9<CR>
@@ -748,11 +612,23 @@ map <F4> :CloseNonProjectBuffers<CR>
 " }}}
 
 if has('macunix')
-    " https://github.com/neovim/neovim/wiki/FAQ#nvim-shows-weird-symbols-2-q-when-changing-modes
-    " set guicursor=
+  " mac specific stuff
 endif
+
+" {{{ temporary dap mappings
+nnoremap <leader>bb :lua require'dap'.toggle_breakpoint()<CR>
+nnoremap <leader>bB :lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>
+nnoremap <leader>dp :lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>
+nnoremap <leader>dr :lua require'dap'.repl.open()<CR>
+nnoremap <leader>dl :lua require'dap'.run_last()<CR>
+" vnoremap <M-k> <Cmd>lua require("dapui").eval()<CR>
+" nnoremap <M-k> <Cmd>lua require("dapui").eval(vim.fn.expand("<cword>"))<CR>
+
+nnoremap <leader>dt :lua require'dap-go'.debug_test()<CR>
+" }}}
+
 
 runtime lightline.vim
 runtime coc.vim
 runtime scratch.vim
-" luafile ~/.config/nvim/local/treesitter.lua
+runtime luainit.lua

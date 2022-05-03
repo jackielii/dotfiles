@@ -221,8 +221,8 @@ cmd + ctrl - 9 : yabai -m space --focus 19
 alt - 0: yabai -m space --focus \
     $(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == true).index)|.[0]')
 
-# focus previous window
-cmd - tab : yabai -m window --focus recent
+# focus previous window: there is no way to switch to recent floating window
+cmd - tab : yabai -m window --focus recent || yabai -m space --focus recent
 
 # }}}
 
@@ -286,7 +286,10 @@ cmd + ctrl + shift - space : yabai -m space --rotate 270
 cmd - f11 : yabai -m window --toggle native-fullscreen
 ctrl + cmd - f : yabai -m window --toggle native-fullscreen
 
-f15 : yabai -m space --toggle mission-control && cliclick -r w:200 m:0,0 # f15 is pause
+## f15 is pause
+f15 : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
+## 0x32 is `
+cmd + ctrl - 0x32 : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
 ## flash window border for active window
 cmd + ctrl + shift - w : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
 ## 0x2F is dot

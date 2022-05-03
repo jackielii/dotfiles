@@ -309,5 +309,10 @@
   "tree.key.close": "q",
   // }}}
 
-  "semanticTokens.filetypes": ["go", "gomod"]
+  "semanticTokens.filetypes": [
+    "go",
+    "gomod"
+  ],
+  "Lua.telemetry.enable": true,
+  "sumneko-lua.enableNvimLuaDev": true
 }

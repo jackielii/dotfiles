@@ -104,7 +104,7 @@ Plug 'kyazdani42/nvim-web-devicons' " for file icons
 Plug 'kyazdani42/nvim-tree.lua'
 
 " treesitter related
-" Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 " Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 
 " many text objects
@@ -120,5 +120,9 @@ Plug 'nvim-lua/plenary.nvim'
 "" Plug 'kyazdani42/nvim-web-devicons' " already included above
 "Plug 'pwntester/octo.nvim'
 
-Plug 'voldikss/vim-floaterm'
-Plug 'sindrets/diffview.nvim'
+Plug 'voldikss/vim-floaterm' " floating terminal within neovim
+Plug 'sindrets/diffview.nvim' " quite nice diffview, :DiffViewFileHistory
+
+Plug 'mfussenegger/nvim-dap' " debug framework
+Plug 'leoluz/nvim-dap-go' " Dap UI for Go
+Plug 'rcarriga/nvim-dap-ui' " Dap widgets
