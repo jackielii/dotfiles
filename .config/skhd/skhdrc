@@ -271,10 +271,10 @@ cmd + ctrl + shift - l: yabai -m window --resize right:10:0 || yabai -m window w
 # cmd + shift - right : yabai -m window --warp east || $(yabai -m window --stack west)
 
 # stack similar to warp, add ctrl
-# cmd + ctrl + shift - up: yabai -m window --stack north
-# cmd + ctrl + shift - down: yabai -m window --stack south
-# cmd + ctrl + shift - left: yabai -m window --stack west
-# cmd + ctrl + shift - right: yabai -m window --stack east
+cmd + ctrl + shift - up: yabai -m window --stack north
+cmd + ctrl + shift - down: yabai -m window --stack south
+cmd + ctrl + shift - left: yabai -m window --stack west
+cmd + ctrl + shift - right: yabai -m window --stack east
 # }}}
 
 # layout {{{

@@ -19,7 +19,7 @@ end
 
 local function set_dap_mappings()
   -- print("set_dap_mappings")
-  dapui_map('<F5>', [[<Cmd>lua require'dap'.continue()<CR>]])
+  dapui_map('<F8>', [[<Cmd>lua require'dap'.continue()<CR>]])
   dapui_map('<F7>', [[<Cmd>lua require'dap'.disconnect()<CR>]])
   dapui_map('<F10>', [[<Cmd>lua require'dap'.step_over()<CR>]])
   dapui_map('<F11>', [[<Cmd>lua require'dap'.step_into()<CR>]])

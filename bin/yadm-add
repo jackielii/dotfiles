@@ -28,6 +28,7 @@ yadm add $HOME/.config/starship.toml
 yadm add $HOME/bin/yadm-add
 yadm add $HOME/.direnvrc
 yadm add $HOME/.gnupg/gpg-agent.conf
+yadm add $HOME/.gnupg/gpg.conf
 
 ## tes work
 yadm add $HOME/work/.gitconfig

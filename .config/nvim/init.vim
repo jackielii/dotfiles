@@ -623,7 +623,7 @@ function! CloseNonProjectBuffers(dir, bang)
   endwhile
 endfunction
 
-map <F4> :bd<CR>
+map <F4> :CloseNonProjectBuffers<CR>
 map <leader><leader>p :CloseNonProjectBuffers<CR>
 " }}}
 

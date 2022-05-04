@@ -6,3 +6,5 @@
    name = Jackie Li
    signingkey = C87B9D9061502C01
 
+[commit]
+   gpgSign = true
