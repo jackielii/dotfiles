@@ -5,6 +5,7 @@
     "coc-docker": ">=0.5.0",
     "coc-emmet": ">=1.1.6",
     "coc-eslint": ">=1.5.8",
+    "coc-explorer": ">=0.22.9",
     "coc-floaterm": ">=0.2.2",
     "coc-flutter": ">=1.9.7",
     "coc-git": ">=2.4.9",

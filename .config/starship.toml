@@ -72,11 +72,11 @@ symbol = " "
 command = " test $GITHUB_TOKEN = $TES_GITHUB_API_TOKEN && echo Tes || echo JL"
 when = """ test -n "$GITHUB_TOKEN""""
 style = "blue"
-format = "[$symbol($output)]($style)"
+format = "[$symbol($output)]($style) "
 
 [git_status]
 ## temporary workaround for: https://github.com/kovidgoyal/kitty/issues/5026
 # style = "red"
-ahead = ""
-behind = ""
-diverged = ""
+# ahead = ""
+# behind = ""
+# diverged = ""

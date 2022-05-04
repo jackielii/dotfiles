@@ -1,5 +1,4 @@
 " vim:set et sw=2 ts=2 tw=79 fdm=marker:
-
 " {{{ Basic Settings:  can be copyied around
 
 " leader is space
@@ -91,9 +90,6 @@ nnoremap c# :let @/ = expand("<cword>")<CR>cgN
 
 " visual mode put selected to search
 vnoremap // y/\V<C-r>=escape(@",'/\')<CR><CR>N
-
-nnoremap <C-f> <C-d>
-nnoremap <C-b> <C-u>
 
 " last-position-jump when re-opening a file
 autocmd BufReadPost *
@@ -313,8 +309,18 @@ nmap ga <Plug>(EasyAlign)
 
 " {{{ fzf
 let g:fzf_buffers_jump = 1
-map <silent> <leader>p :FZF<CR>
-map <silent> <leader>zf :execute 'FZF '.expand('%:p:h')<CR>
+map <silent> <leader>p :Files<CR>
+map <silent> <leader>zf :execute 'Files '.expand('%:p:h')<CR>
+" https://github.com/junegunn/fzf.vim/issues/226#issuecomment-1116143932
+" command! -bang -nargs=? -complete=dir HFiles
+"   \ call fzf#vim#files(<q-args>, {'source': 'find . \( -not -path "./.git/*" ' .
+"     \   '-and \( -path "./.*" -or -path "./.*/**" \) ' .
+"     \   '-and \( -type f -or -type l \) ' .
+"     \ '\) -print | sed "s:^..::"'}, <bang>0)
+command! -bang -nargs=? -complete=dir HFiles
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview({'source': 'fd -t f -uu -L -E .git -E node_modules'}), <bang>0)
+map <leader>zh :HFiles<CR>
+
 " This is the default extra key bindings
 let g:fzf_action = {
   \ 'ctrl-v': 'vsplit',
@@ -336,6 +342,12 @@ let $FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS.' --layout=reverse'
 " let g:fzf_layout = { 'window': 'call FloatingFZF()' }
 " select filetype
 nmap <leader>km :Filetypes<CR>
+nmap <leader>kl :Lines<CR>
+nmap <leader>kh :Helptags<CR>
+nmap <leader>k' :Marks<CR>
+nmap <leader>k<space> :Maps<CR>
+nmap <leader>k: :History:<CR>
+nmap <leader>k/ :History/<CR>
 
 " <leader>o to open recent files
 nmap <silent><leader>o :History<CR>
@@ -367,9 +379,9 @@ augroup GoRelated
   autocmd BufReadPost,BufWritePre *.go call <SID>SetMark("import (\\_.\\{-})", "i") "http://vimregex.com/#Non-Greedy
   autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.organizeImport')
 augroup END
-nmap <leader>kr :CocCommand go.gopls.tidy<CR>
-nmap <leader>kt :CocCommand go.gopls.runTests<CR>
-nmap <leader>kl :CocCommand go.gopls.listKnownPackages<CR>
+nmap <leader>kgr :CocCommand go.gopls.tidy<CR>
+nmap <leader>kgt :CocCommand go.gopls.runTests<CR>
+nmap <leader>kgl :CocCommand go.gopls.listKnownPackages<CR>
 
 let g:go_highlight_build_constraints = 1
 " let g:go_highlight_extra_types = 1
@@ -523,13 +535,16 @@ nnoremap , <Nop>
 let g:asynctasks_config_name = '.vim/tasks.ini'
 let g:asyncrun_open = 6
 
-" nvim-tree.lua {{{
+" nvim-tree.lua {{{ using coc-explorer now
 au! VimEnter * let g:project_path = getcwd(-1,-1)
 " see luainit.lua:96
-nmap <silent> <leader>kb :lua NvimTreeOpenProject()<CR>
-nmap <silent> <leader>F :lua NvimTreeOpenProject()<CR>
+" let g:coc_explorer_cmd = 'CocCommand explorer --quit-on-open --sources file+'
+let g:coc_explorer_cmd = 'CocCommand explorer'
+" nmap <silent> <leader>kb :lua NvimTreeOpenProject()<CR>
+nmap <silent> <leader>F :execute g:coc_explorer_cmd.' '.g:project_path<CR>
 " nmap <silent> <leader>f :NvimTreeFindFile<CR>
-nmap <silent> <leader>f :lua NvimTreeFindFileAnywhere()<CR>
+" nmap <silent> <leader>f :lua NvimTreeFindFileAnywhere()<CR>
+nmap <silent> <leader>f :execute g:coc_explorer_cmd<CR>
 " }}}
 
 nmap <F8> :Rooter<CR>
@@ -608,7 +623,8 @@ function! CloseNonProjectBuffers(dir, bang)
   endwhile
 endfunction
 
-map <F4> :CloseNonProjectBuffers<CR>
+map <F4> :bd<CR>
+map <leader><leader>p :CloseNonProjectBuffers<CR>
 " }}}
 
 if has('macunix')

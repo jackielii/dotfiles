@@ -299,6 +299,22 @@
   // "sql.database": "postgresql",
   // }}}
 
+  // {{{ coc-explorer
+  "explorer.icon.enableNerdfont": true,
+  "explorer.keyMappings.global": {
+    "<c-s>": "open:split",
+    "<c-v>": "open:vsplit"
+  },
+  "explorer.quitOnOpen": true,
+  "explorer.sources": [
+    {
+      "name": "file",
+      "expand": true
+    }
+  ],
+  "explorer.file.reveal.auto": true,
+  // }}}
+
   // {{{ outline
   "outline.sortBy": "position",
   "outline.showLineNumber": false,

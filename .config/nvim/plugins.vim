@@ -101,7 +101,7 @@ Plug 'skywind3000/asynctasks.vim'
 Plug 'skywind3000/asyncrun.vim' " dependency for asynctasks
 
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
-Plug 'kyazdani42/nvim-tree.lua'
+" Plug 'kyazdani42/nvim-tree.lua'
 
 " treesitter related
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
