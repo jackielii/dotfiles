@@ -597,15 +597,15 @@ defaults write com.apple.spotlight orderedItems -array \
 	'{"enabled" = 1;"name" = "PDF";}' \
 	'{"enabled" = 1;"name" = "FONTS";}' \
 	'{"enabled" = 1;"name" = "DOCUMENTS";}' \
-	'{"enabled" = 0;"name" = "MESSAGES";}' \
-	'{"enabled" = 0;"name" = "CONTACT";}' \
+	'{"enabled" = 1;"name" = "MESSAGES";}' \
+	'{"enabled" = 1;"name" = "CONTACT";}' \
 	'{"enabled" = 0;"name" = "EVENT_TODO";}' \
 	'{"enabled" = 0;"name" = "IMAGES";}' \
-	'{"enabled" = 0;"name" = "BOOKMARKS";}' \
+	'{"enabled" = 1;"name" = "BOOKMARKS";}' \
 	'{"enabled" = 0;"name" = "MUSIC";}' \
 	'{"enabled" = 0;"name" = "MOVIES";}' \
-	'{"enabled" = 0;"name" = "PRESENTATIONS";}' \
-	'{"enabled" = 0;"name" = "SPREADSHEETS";}' \
+	'{"enabled" = 1;"name" = "PRESENTATIONS";}' \
+	'{"enabled" = 1;"name" = "SPREADSHEETS";}' \
 	'{"enabled" = 0;"name" = "SOURCE";}' \
 	'{"enabled" = 0;"name" = "MENU_DEFINITION";}' \
 	'{"enabled" = 0;"name" = "MENU_OTHER";}' \
@@ -930,13 +930,9 @@ sudo mdutil -E / > /dev/null
 
 defaults write com.google.Chrome NSUserKeyEquivalents -dict-add 'Open Location...' '^L'
 # defaults write com.apple.finder NSUserKeyEquivalents -dict-add 'Open Location...' '^L'
-defaults write com.microsoft.Outlook NSUserKeyEquivalents -dict-add 'Send' '^\U21a9'
 defaults write com.microsoft.Outlook NSUserKeyEquivalents -dict-add 'Outlook Items Search' '^K'
 defaults write com.microsoft.Outlook NSUserKeyEquivalents -dict-add 'Advanced Search...' '^$K'
 
-# Shift + backspace to delete
-defaults write -g NSUserKeyEquivalents -dict-add 'Move to Bin' '@$\U232b'
-defaults write -g NSUserKeyEquivalents -dict-add 'Put Back' '@$\U232b'
 defaults write -g NSUserKeyEquivalents -dict-add 'Open With' '@$O'
 
 # Below not really working, too much hassle, just use skhd

@@ -300,6 +300,8 @@
   // }}}
 
   // {{{ coc-explorer
+  "explorer.git.showIgnored": true,
+  "explorer.file.showHiddenFiles": true,
   "explorer.icon.enableNerdfont": true,
   "explorer.keyMappings.global": {
     "<c-s>": "open:split",
@@ -313,6 +315,8 @@
     }
   ],
   "explorer.file.reveal.auto": true,
+  "explorer.focus": true,
+  "explorer.openAction.strategy": "previousBuffer",
   // }}}
 
   // {{{ outline
@@ -325,10 +329,7 @@
   "tree.key.close": "q",
   // }}}
 
-  "semanticTokens.filetypes": [
-    "go",
-    "gomod"
-  ],
+  "semanticTokens.filetypes": ["go", "gomod"],
   "Lua.telemetry.enable": true,
   "sumneko-lua.enableNvimLuaDev": true
 }

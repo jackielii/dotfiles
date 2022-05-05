@@ -28,6 +28,8 @@ brew "tig"
 brew "imagemagick"
 brew "bufbuild/buf/buf"
 brew "tctl"
+
+brew "ccls" # C/C++/Objective-C language server
 # }}}
 
 # Mac {{{

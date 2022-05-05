@@ -184,7 +184,7 @@ nmap <leader>cg :CocGrep -regex<space>
 nnoremap <silent> <leader>ds :<C-u>CocList outline<CR>
 nnoremap <silent> <leader>da :<C-u>CocList diagnostics<cr>
 nnoremap <silent> <leader>dl :<C-u>CocList symbols<CR>
-nnoremap <silent> <leader>dr :<C-u>CocListResume<CR>
+" nnoremap <silent> <leader>dr :<C-u>CocListResume<CR>
 
 " Manage extensions
 nnoremap <silent> <leader>ce  :<C-u>CocList extensions<cr>

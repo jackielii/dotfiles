@@ -40,12 +40,12 @@ set cmdheight=2
 set laststatus=3
 set splitbelow
 set splitright
-set pastetoggle=<F2> " F2 toggle paste mode
+set pastetoggle=<F6>
 
 syntax sync fromstart " more reliable syntax highlight
 
 " map common mistakes
-" cmap Q q
+cmap Q q!
 cmap Wq wq
 imap jk <esc>
 imap jj <esc>
@@ -137,8 +137,8 @@ nnoremap <silent> <Leader><Leader>5 :let @+ = expand("%:p")<CR>:echom "copied: "
 nnoremap Y y$
 
 " keep cursor when searching
-nnoremap n nzzzv
-nnoremap N Nzzzv
+" nnoremap n nzzzv
+" nnoremap N Nzzzv
 " nnoremap J mzJ`z
 
 " break undo on common editing chars
@@ -335,6 +335,7 @@ let g:fzf_preview_window = ['right:50%:hidden', 'ctrl-/']
 " let g:fzf_layout = { 'window': '10new' }
 
 " nnoremap <silent> <C-p> :call fzf#vim#files('.', {'options': '--prompt ""'})<CR>
+nnoremap <silent> <C-p> :Files<CR>
 
 let $FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 let $FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS.' --layout=reverse'
@@ -547,8 +548,24 @@ nmap <silent> <leader>F :execute g:coc_explorer_cmd.' '.g:project_path<CR>
 nmap <silent> <leader>f :execute g:coc_explorer_cmd<CR>
 " }}}
 
-nmap <F8> :Rooter<CR>
-nmap <F10> :execute 'lcd '.g:project_path <bar> echo g:project_path<CR>
+" F1 > cd g:project_path S-F1: cd buff_path
+" F2 > Files
+" F3 > Rooter
+" F4 > CloseNonProjectBuffers
+" F5 > AsyncTask run_last
+" F6 > Paste
+" F7 > Clear floats
+" F8 > Lazygit
+" F9 > dap run_last
+" F10 > debug step over
+" F11 > debug step into
+" F12 > debug step out
+nmap <F1> :execute 'lcd '.g:project_path <bar> echo g:project_path<CR>
+" on mac, <C-v>F1 produces <F13>, on Linux it produces <S-F1>
+map <S-F1> <F13>
+nmap <F13> :execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h')<CR>
+nmap <F2> :Files<CR>
+nmap <F3> :Rooter<CR>
 
 " targets.vim
 " to have argument object work in {} & []
@@ -578,11 +595,11 @@ let g:startify_session_autoload = 1
 " let g:indent_blankline_filetype = ['vim']
 
 " float terminal {{{
-nnoremap <silent>   <F1>    :FloatermToggle --width=0.9 --height=0.9<CR>
-tnoremap <silent>   <F1>    <C-\><C-n>:FloatermToggle<CR>
-inoremap <silent>   <F1>    <esc><C-\><C-n>:FloatermToggle<CR>
-nmap     <F9> :FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
-imap     <F9> <esc>:FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
+" nnoremap <silent>   <F1>    :FloatermToggle --width=0.9 --height=0.9<CR>
+" tnoremap <silent>   <F1>    <C-\><C-n>:FloatermToggle<CR>
+" inoremap <silent>   <F1>    <esc><C-\><C-n>:FloatermToggle<CR>
+nmap     <F8> :FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
+imap     <F8> <esc>:FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
 let g:floaterm_width=0.8
 let g:floaterm_height=0.9
 let g:floaterm_title='Terminal'
@@ -634,13 +651,13 @@ endif
 " {{{ temporary dap mappings
 nnoremap <leader>bb :lua require'dap'.toggle_breakpoint()<CR>
 nnoremap <leader>bB :lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>
-nnoremap <leader>dp :lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>
-nnoremap <leader>dr :lua require'dap'.repl.open()<CR>
-nnoremap <leader>dl :lua require'dap'.run_last()<CR>
+nnoremap <leader>bp :lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>
+" nnoremap <leader>dr :lua require'dap'.repl.open()<CR>
+nnoremap <F9> :lua require'dap'.run_last()<CR>
+nnoremap <leader>dd :lua require'dapui'.toggle()<CR>
+nnoremap <leader>dt :lua require'dap-go'.debug_test()<CR>
 " vnoremap <M-k> <Cmd>lua require("dapui").eval()<CR>
 " nnoremap <M-k> <Cmd>lua require("dapui").eval(vim.fn.expand("<cword>"))<CR>
-
-nnoremap <leader>dt :lua require'dap-go'.debug_test()<CR>
 " }}}
 
 
