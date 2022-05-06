@@ -318,6 +318,8 @@ alt - t : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
 cmd + shift - return : kitty -d ~
 cmd + ctrl - return : open "/Applications/Google Chrome.app"
 cmd + ctrl + shift - return : open ~
+alt - w : open "/Applications/Google Chrome.app"
+alt - f : open ~
 alt - m : open -a "Microsoft Outlook.app"
 # cmd + ctrl + shift - return : kitty -1 -d ~ zsh -c "source ~/.base16_theme; ranger"
 # }}}

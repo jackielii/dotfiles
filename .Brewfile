@@ -49,6 +49,7 @@ if OS.mac?
     cask "intellij-idea-ce"
     cask "xbar"
     brew "cliclick"
+    cask "gimp"
 else
     # linux ones
 end

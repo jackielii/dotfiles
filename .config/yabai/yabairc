@@ -62,6 +62,7 @@ yabai -m rule --add title='Settings$' manage=off
 yabai -m rule --add app='^Mac Mouse Fix$' manage=off
 yabai -m rule --add app='^Maccy$' manage=off
 yabai -m rule --add app='^Happy Hacking Keyboard Keymap Tool$' manage=off
+yabai -m rule --add app='^GIMP-' manage=off
 
 #SPACEBAR_HEIGHT=$(spacebar -m config height)
 #yabai -m config external_bar all:${SPACEBAR_HEIGHT}:0
