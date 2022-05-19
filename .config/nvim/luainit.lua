@@ -26,7 +26,9 @@ local function set_dap_mappings()
   dapui_map('<F11>', [[<Cmd>lua require'dap'.step_into()<CR>]])
   dapui_map('<F12>', [[<Cmd>lua require'dap'.step_out()<CR>]])
   dapui_map('<leader>kk', [[<Cmd>lua require("dapui").eval()<CR>]])
+  dapui_map('K', [[<Cmd>lua require("dapui").eval()<CR>]])
 end
+
 local function clear_dap_mappings()
   -- print("clear_dap_mappings")
   -- print(vim.inspect(save_mappings))
@@ -34,16 +36,17 @@ local function clear_dap_mappings()
     vim.api.nvim_set_keymap("n", key, value, { noremap = true, silent = true })
   end
 end
-require'dap'.listeners.after.event_initialized["dapui_config"] = function()
-  require'dapui'.open()
+
+require 'dap'.listeners.after.event_initialized["dapui_config"] = function()
+  require 'dapui'.open()
   set_dap_mappings()
 end
-require'dap'.listeners.before.event_terminated['dapui_config'] = function()
-  require'dapui'.close()
+require 'dap'.listeners.before.event_terminated['dapui_config'] = function()
+  require 'dapui'.close()
   clear_dap_mappings()
 end
-require'dap'.listeners.before.event_exited["dapui_config"] = function()
-  require'dapui'.close()
+require 'dap'.listeners.before.event_exited["dapui_config"] = function()
+  require 'dapui'.close()
   clear_dap_mappings()
 end
 
@@ -168,3 +171,42 @@ end
 -- end
 -- }}}
 
+-- Tree sitter {{{
+require 'nvim-treesitter.configs'.setup {
+  -- A list of parser names, or "all"
+  ensure_installed = { "go", "typescript", "javascript", "tsx", "lua", "kotlin", "java" },
+
+  -- Install parsers synchronously (only applied to `ensure_installed`)
+  sync_install = false,
+
+  -- List of parsers to ignore installing (for "all")
+  -- ignore_install = { "javascript" },
+
+  highlight = {
+    -- `false` will disable the whole extension
+    enable = true,
+
+    -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
+    -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
+    -- the name of the parser)
+    -- list of language that will be disabled
+    -- disable = { "c", "rust" },
+
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    additional_vim_regex_highlighting = false,
+  },
+
+  incremental_selection = {
+    enable = true,
+    keymaps = {
+      init_selection = "<a-g>",
+      node_incremental = "<a-g>",
+      scope_incremental = "<a-a>",
+      node_decremental = "<a-t>",
+    },
+  },
+}
+-- }}}

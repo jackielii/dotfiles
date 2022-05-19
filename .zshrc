@@ -307,4 +307,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 export GITHUB_TOKEN="${MY_GITHUB_API_TOKEN}"
 export GITHUB_API_TOKEN="${GITHUB_TOKEN}" # for coc-git
 
+## macos libpq
+export PATH="$HOMEBREW_PREFIX/opt/libpq/bin:$PATH"
+
 # vim:set noet sts=0 sw=2 ts=2 tw=79 fdm=marker:

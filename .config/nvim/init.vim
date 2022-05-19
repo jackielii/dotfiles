@@ -55,6 +55,7 @@ syntax sync fromstart " more reliable syntax highlight
 cmap Q q!
 cmap Wq wq
 imap jk <esc>
+" tmap jk <c-\><c-n>
 imap jj <esc>
 imap kk <esc>
 
@@ -159,8 +160,9 @@ nnoremap <expr> j (v:count > 1 ? "m'" . v:count : "") . 'gj'
 nnoremap <expr> k (v:count > 1 ? "m'" . v:count : "") . 'gk'
 
 " L/H to move to the next/previous capital letter
-nmap <silent> L :call search('\<\u', '', line('.'))<CR>
-nmap <silent> H :call search('\<\u', 'b', line('.'))<CR>
+nmap <silent> L :call search('\u', '', line('.'))<CR>
+" nmap <silent> L :call search('\<\u', '', line('.'))<CR>
+nmap <silent> H :call search('\u', 'b', line('.'))<CR>
 nmap <leader><leader>x :so %<CR>
 
 " replace without yanking
@@ -243,6 +245,8 @@ call plug#end()
 " {{{ color scheme and highlight
 " transparent background
 au ColorScheme * hi Normal ctermbg=none guibg=none
+" ~/.vimrc_background will be updated by base16-shell profile helper:
+" https://github.com/chriskempson/base16-shell/blob/master/README.md#base16-vim-users
 if filereadable(expand("~/.vimrc_background"))
   let base16colorspace=256
   source ~/.vimrc_background
@@ -342,10 +346,10 @@ let g:fzf_preview_window = ['right:50%:hidden', 'ctrl-/']
 
 " nnoremap <silent> <C-p> :call fzf#vim#files('.', {'options': '--prompt ""'})<CR>
 function s:isCocList()
-  " echo 'buflisted ' . &buflisted
-  " echo 'filetype ' . &filetype
-  " echo 'buftype ' . &buftype
-  return !&buflisted && &filetype == 'list'
+  " echomsg 'buflisted ' . &buflisted
+  " echomsg 'filetype ' . &filetype
+  " echomsg 'buftype ' . &buftype
+  return !&buflisted && (&filetype == 'list' || &filetype == 'coctree')
 endfunction
 
 nnoremap <silent><expr> <C-p> <SID>isCocList() ? "\<C-p>" : ':Files<CR>'
@@ -567,7 +571,7 @@ nmap <silent> <leader>f :execute g:coc_explorer_cmd<CR>
 " F4 > CloseNonProjectBuffers
 " F5 > AsyncTask run_last
 " F6 > Paste
-" F7 > Clear floats
+" F7 > Clear floats / dap.discontinue()
 " F8 > Lazygit
 " F9 > dap run_last
 " F10 > debug step over
@@ -608,9 +612,9 @@ let g:startify_session_autoload = 1
 " let g:indent_blankline_filetype = ['vim']
 
 " float terminal {{{
-" nnoremap <silent>   <F1>    :FloatermToggle --width=0.9 --height=0.9<CR>
-" tnoremap <silent>   <F1>    <C-\><C-n>:FloatermToggle<CR>
-" inoremap <silent>   <F1>    <esc><C-\><C-n>:FloatermToggle<CR>
+nnoremap <silent>   <F20>    :FloatermToggle --width=0.9 --height=0.9<CR>
+tnoremap <silent>   <F20>    <C-\><C-n>:FloatermToggle<CR>
+inoremap <silent>   <F20>    <esc><C-\><C-n>:FloatermToggle<CR>
 nmap     <F8> :FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
 imap     <F8> <esc>:FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
 let g:floaterm_width=0.8
@@ -712,7 +716,7 @@ inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
 " CocConfig: suggest.noselect: false
 " inoremap <silent><expr> <cr> "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
-vmap <C-i> <Plug>(coc-snippets-select)
+vmap <C-l> <Plug>(coc-snippets-select)
 imap <C-l> <Plug>(coc-snippets-expand)
 " imap <C-j> <Plug>(coc-snippets-expand-jump)
 
@@ -818,15 +822,14 @@ function! s:GrepArgs(...)
   return join(list, "\n")
 endfunction
 
-function! s:GrepLiteral()
-  let text = input('search: ')
+function! s:GrepLiteral(folder)
+  let text = input(empty(a:folder) ? 'search cwd: ' : 'search '.a:folder.': ')
   let text = escape(text, ' ')
-  if empty(text)
-    return
-  endif
-  execute 'CocList grep -S '.text
+  if empty(text) | return | endif
+  execute 'CocList grep -S '.text.(empty(a:folder) ? '' : ' -- '.a:folder)
 endfunction
-nmap <leader>/ :<C-u>call <SID>GrepLiteral()<CR>
+nmap <leader>/ :<C-u>call <SID>GrepLiteral("")<CR>
+nmap <leader>? :<C-u>call <SID>GrepLiteral(expand("%:h"))<CR>
 nmap <leader>cs :CocSearch<space>
 nmap <leader>ci :CocList grep<CR>
 nmap <leader>cg :CocGrep -regex<space>
@@ -908,6 +911,9 @@ nnoremap <silent> [n :CocCommand document.jumpToPrevSymbol<CR>
 map <leader>t :CocOutline<CR>
 map <leader>ho :call CocAction('showOutgoingCalls')<CR>
 map <leader>hi :call CocAction('showIncomingCalls')<CR>
+
+map <leader>y :<C-u>CocList -A --normal yank<cr>
+vmap <leader>y :<C-u>CocList -A --normal yank<cr>
 " show outline
 " autocmd VimEnter,Tabnew *
 "     \ if empty(&buftype) | call CocActionAsync('showOutline', 1) | endif
@@ -917,12 +923,16 @@ map <leader>hi :call CocAction('showIncomingCalls')<CR>
 let g:tmux_navigator_disable_when_zoomed = 1
 let g:tmux_navigator_no_mappings = 1
 nnoremap <silent> <c-h> :TmuxNavigateLeft<cr>
-nnoremap <silent><expr> <c-j> <SID>isCocList() ? "\<C-j>" : ":TmuxNavigateDown<cr>"
-nnoremap <silent><expr> <c-k> <SID>isCocList() ? "\<C-k>" : ":TmuxNavigateUp<cr>"
+nnoremap <silent><expr> <c-j> <SID>isCocList() ? "\<C-n>" : ":TmuxNavigateDown<cr>"
+nnoremap <silent><expr> <c-k> <SID>isCocList() ? "\<C-p>" : ":TmuxNavigateUp<cr>"
 nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
 " let g:tmux_navigator_preserve_zoom = 1
 " }}}
 
+" Copilot{{{
+" imap <silent><script><expr> <C-j> copilot#Accept("\<CR>")
+" let g:copilot_no_tab_map = v:true
+"}}}
 
 runtime lightline.vim
 runtime coc.vim

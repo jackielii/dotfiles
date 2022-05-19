@@ -49,13 +49,13 @@
   // "prettier.tslintIntegration": true,
   // "tsserver.trace.server": "verbose",
   "tsserver.maxTsServerMemory": 4096, // 4GB max-old-space-size
-  "tsserver.npm": "/home/linuxbrew/.linuxbrew/bin/npm",
+  "tsserver.npm": "$HOMEBRE_PREFIX/bin/npm",
   "typescript.suggest.completeFunctionCalls": false,
   // }}}
 
   // {{{ snippets
   "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
-  "snippets.priority": 99,
+  "snippets.priority": 90,
   // "snippets.trace": "verbose",
   // }}}
 
@@ -255,9 +255,9 @@
   "go.goplsOptions": {
     // "verboseOutput": true,
     "gofumpt": true,
+    // "semanticTokens": true,
     "experimentalWorkspaceModule": true,
     // "experimentalUseInvalidMetadata": false,
-    // "semanticTokens": true,
     // "hoverKind": "FullDocumentation",
     "staticcheck": true,
     "buildFlags": ["-tags=wireinject"],
@@ -305,7 +305,8 @@
   "explorer.icon.enableNerdfont": true,
   "explorer.keyMappings.global": {
     "<c-s>": "open:split",
-    "<c-v>": "open:vsplit"
+    "<c-v>": "open:vsplit",
+    "<cr>": ["expandable?", ["expanded?", "collapse", "expand"], "open"]
   },
   "explorer.quitOnOpen": true,
   "explorer.sources": [
@@ -330,6 +331,7 @@
   // }}}
 
   "semanticTokens.filetypes": ["go", "gomod"],
-  "Lua.telemetry.enable": true,
-  "sumneko-lua.enableNvimLuaDev": true
+  "sumneko-lua.enableNvimLuaDev": true,
+  "Lua.telemetry.enable": false,
+  "svelte.enable-ts-plugin": true
 }

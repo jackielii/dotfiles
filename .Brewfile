@@ -4,7 +4,6 @@
 cask "kitty"
 brew "tmux"
 brew "neovim"
-brew "coreutils"
 brew "fd"
 brew "starship"
 brew "zoxide" # z change directory
@@ -28,12 +27,26 @@ brew "tig"
 brew "imagemagick"
 brew "bufbuild/buf/buf"
 brew "tctl"
+brew "kubectx"
+brew "git-lfs"
+brew "libpq"
 
 brew "ccls" # C/C++/Objective-C language server
 # }}}
 
 # Mac {{{
 if OS.mac?
+# gnu utils {{{
+    brew "coreutils"
+    brew "findutils"
+    brew "gnu-indent"
+    brew "gnu-sed"
+    brew "gnutls"
+    brew "grep"
+    brew "gnu-tar"
+    brew "gawk"
+# }}}
+
     tap "koekeishiya/formulae"
     # see https://github.com/koekeishiya/yabai for installation steps on mac
     brew "koekeishiya/formulae/yabai", restart_service: :changed # window manager

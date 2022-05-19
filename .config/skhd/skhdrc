@@ -177,8 +177,8 @@
 
 # focus cmd - ? {{{
 cmd - h : yabai -m window --focus west || yabai -m display --focus west
-cmd - j : yabai -m window --focus stack.next || yabai -m window --focus south  || $(yabai -m display --focus south) || yabai -m window --focus stack.first
-cmd - k : yabai -m window --focus stack.prev || yabai -m window --focus north  || $(yabai -m display --focus north) || yabai -m window --focus stack.last
+cmd - j : yabai -m window --focus stack.next || yabai -m window --focus south || $(yabai -m display --focus south) || yabai -m window --focus stack.first
+cmd - k : yabai -m window --focus stack.prev || yabai -m window --focus north || $(yabai -m display --focus north) || yabai -m window --focus stack.last
 cmd - l : yabai -m window --focus east || yabai -m display --focus east
 
 cmd + ctrl - h : yabai -m space --focus prev

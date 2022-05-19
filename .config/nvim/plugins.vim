@@ -10,6 +10,9 @@ Plug 'numToStr/Comment.nvim'
 Plug 'tpope/vim-obsession'
 Plug 'tpope/vim-dotenv'
 
+" keep this on the top so that other plugins can use it
+Plug 'kyazdani42/nvim-web-devicons' " for file icons
+
 " Plug 'vim-scripts/argtextobj.vim' " `aa` for an argument, `ia` for inside argument
 Plug 'tommcdo/vim-exchange'      " cx{motion} to swap word, cxc to clear
 " Plug 'kana/vim-textobj-user' " user defined text object
@@ -23,6 +26,7 @@ Plug 'junegunn/vim-easy-align' " gaip align paragraph
 " Plug 'fatih/vim-go' ", { 'tag': 'v1.19' }   { 'tag': 'v1.20' }
 Plug 'jackielii/vim-gomod' " gomod only
 Plug 'chriskempson/base16-vim' " use base16_??? to switch theme
+" Plug 'RRethy/nvim-base16' " same as above, but better with treesitter
 
 " word motion: camelCase, snake_case etc. This should be after vim-sneak
 " because we're mapping , as leader for word motion
@@ -100,7 +104,6 @@ Plug 'dart-lang/dart-vim-plugin'
 Plug 'skywind3000/asynctasks.vim'
 Plug 'skywind3000/asyncrun.vim' " dependency for asynctasks
 
-Plug 'kyazdani42/nvim-web-devicons' " for file icons
 " Plug 'kyazdani42/nvim-tree.lua'
 
 " treesitter related
@@ -126,3 +129,5 @@ Plug 'sindrets/diffview.nvim' " quite nice diffview, :DiffViewFileHistory
 Plug 'mfussenegger/nvim-dap' " debug framework
 Plug 'leoluz/nvim-dap-go' " Dap UI for Go
 Plug 'rcarriga/nvim-dap-ui' " Dap widgets
+
+Plug 'neoclide/jsonc.vim' " jsonc for config file types

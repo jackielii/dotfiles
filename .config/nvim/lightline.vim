@@ -37,11 +37,11 @@ let g:lightline.active = {
 \    [ 'coc_info', 'coc_hints', 'coc_errors', 'coc_warnings' ],
 \ ]
 \}
-
-let g:lightline.tabline = {'left': [['buffers']], 'right': [['close']]}
+let g:lightline.tabline = {'left': [['buffers']], 'right': [['tabs']]}
 let g:lightline.component_raw = {'buffers': 1}
 let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
 let g:lightline.component_type = {'buffers': 'tabsel'}
+let g:lightline.tab = { 'active': [ 'tabnum' ], 'inactive': [ 'tabnum' ] }
 
 " https://github.com/josa42/vim-lightline-coc
 call lightline#coc#register()
@@ -68,7 +68,7 @@ let g:lightline#bufferline#shorten_path = 0
 let g:lightline#bufferline#unnamed      = '[No Name]'
 let g:lightline#bufferline#clickable    = 1
 let g:lightline#bufferline#enable_devicons = 0
-let g:lightline#bufferline#icon_position = 'right'
+let g:lightline#bufferline#icon_position = 'left'
 nmap <Leader>1 <Plug>lightline#bufferline#go(1)
 nmap <Leader>2 <Plug>lightline#bufferline#go(2)
 nmap <Leader>3 <Plug>lightline#bufferline#go(3)

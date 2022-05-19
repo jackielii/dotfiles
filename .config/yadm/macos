@@ -933,7 +933,7 @@ defaults write com.google.Chrome NSUserKeyEquivalents -dict-add 'Open Location..
 defaults write com.microsoft.Outlook NSUserKeyEquivalents -dict-add 'Outlook Items Search' '^K'
 defaults write com.microsoft.Outlook NSUserKeyEquivalents -dict-add 'Advanced Search...' '^$K'
 
-defaults write -g NSUserKeyEquivalents -dict-add 'Open With' '@$O'
+# defaults write -g NSUserKeyEquivalents -dict-add 'Open With' '@$O'
 
 # Below not really working, too much hassle, just use skhd
 # cat > $HOME/Library/KeyBindings/DefaultKeyBinding.dict <<EOF
