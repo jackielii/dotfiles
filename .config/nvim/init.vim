@@ -155,9 +155,9 @@ inoremap . .<c-g>u
 inoremap ! !<c-g>u
 inoremap ? ?<c-g>u
 
-" populate jump list when moving too much
-nnoremap <expr> j (v:count > 1 ? "m'" . v:count : "") . 'gj'
-nnoremap <expr> k (v:count > 1 ? "m'" . v:count : "") . 'gk'
+" populate jump list when moving with count
+" nnoremap <silent> <expr> j (v:count > 1 ? "m'" . v:count : "") . 'gj'
+" nnoremap <silent> <expr> k (v:count > 1 ? "m'" . v:count : "") . 'gk'
 
 " L/H to move to the next/previous capital letter
 nmap <silent> L :call search('\u', '', line('.'))<CR>
@@ -210,7 +210,7 @@ map <silent> ][ :eval search('}')<CR>b99]}
 map <silent> ]] j0[[%:silent! eval search('{')<CR>
 map <silent> [] k$][%:silent! eval search('}', 'b')<CR>
 
-nnoremap <silent> <leader><leader>o :only<CR>
+" nnoremap <silent> <leader><leader>o :only<CR> " ===> USE <C-w>o builtin
 nnoremap <silent> <leader><leader>r :registers<CR>
 map <leader>bd :bd<CR>
 " nmap <F4> :bd<CR>
@@ -236,6 +236,17 @@ cnoremap <C-n> <Down>
 cnoremap <M-b> <S-Left>
 cnoremap <M-f> <S-Right>
 
+" let g:markTimer = 0
+" function s:markCursor(timer)
+"   if g:markTimer != 0
+"     call timer_stop(g:markTimer)
+"   endif
+"   let g:markTimer = a:timer
+"   if mode() ==# 'n'
+"     execute "normal! m'"
+"   endif
+" endfunction
+" autocmd CursorHold * call timer_start(5000, funcref('s:markCursor'))
 " }}}
 
 call plug#begin('~/.config/nvim/plugged')
@@ -248,7 +259,7 @@ au ColorScheme * hi Normal ctermbg=none guibg=none
 " ~/.vimrc_background will be updated by base16-shell profile helper:
 " https://github.com/chriskempson/base16-shell/blob/master/README.md#base16-vim-users
 if filereadable(expand("~/.vimrc_background"))
-  let base16colorspace=256
+  " let base16colorspace=256
   source ~/.vimrc_background
 endif
 hi Comment gui=italic
@@ -289,7 +300,7 @@ nnoremap <silent> gX :<C-U>set opfunc=<SID>open_browser<CR>g@
 
 " buffer navigation
 map <leader>bo :BufOnly<CR>
-nnoremap <silent> <leader><leader>O :BufOnly<CR>
+nnoremap <silent> <leader><leader>o :BufOnly<CR>
 
 " fugitive git related {{{
 nmap <leader>g :Git<space>
@@ -566,13 +577,13 @@ nmap <silent> <leader>f :execute g:coc_explorer_cmd<CR>
 " }}}
 
 " F1 > cd g:project_path S-F1: cd buff_path
-" F2 > Files
+" F2 > lazygit
 " F3 > Rooter
 " F4 > CloseNonProjectBuffers
 " F5 > AsyncTask run_last
 " F6 > Paste
 " F7 > Clear floats / dap.discontinue()
-" F8 > Lazygit
+" F8 > dap run configurations
 " F9 > dap run_last
 " F10 > debug step over
 " F11 > debug step into
@@ -583,6 +594,7 @@ map <S-F1> <F13>
 nmap <F13> :execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h')<CR>
 nmap <F2> :Files<CR>
 nmap <F3> :Rooter<CR>
+nmap <F8> :Telescope dap configurations<CR>
 
 " targets.vim
 " to have argument object work in {} & []
@@ -612,11 +624,11 @@ let g:startify_session_autoload = 1
 " let g:indent_blankline_filetype = ['vim']
 
 " float terminal {{{
-nnoremap <silent>   <F20>    :FloatermToggle --width=0.9 --height=0.9<CR>
-tnoremap <silent>   <F20>    <C-\><C-n>:FloatermToggle<CR>
-inoremap <silent>   <F20>    <esc><C-\><C-n>:FloatermToggle<CR>
-nmap     <F8> :FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
-imap     <F8> <esc>:FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
+nnoremap <silent>   <F14>    :FloatermToggle --width=0.9 --height=0.9<CR>
+tnoremap <silent>   <F14>    <C-\><C-n>:FloatermToggle<CR>
+inoremap <silent>   <F14>    <esc><C-\><C-n>:FloatermToggle<CR>
+nmap     <F2> :FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
+imap     <F2> <esc>:FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
 let g:floaterm_width=0.8
 let g:floaterm_height=0.9
 let g:floaterm_title='Terminal'
@@ -718,7 +730,7 @@ inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
 
 vmap <C-l> <Plug>(coc-snippets-select)
 imap <C-l> <Plug>(coc-snippets-expand)
-" imap <C-j> <Plug>(coc-snippets-expand-jump)
+imap <C-j> <Plug>(coc-snippets-expand-jump)
 
 " Use `[d` and `]d` for navigate diagnostics
 nmap <silent> [d <Plug>(coc-diagnostic-prev)
@@ -755,7 +767,7 @@ endfunction
 
 " Highlight symbol under cursor on CursorHold
 autocmd CursorHold * silent call CocActionAsync('highlight')
-highlight CocHighlightText guifg=#ffffff guibg=#170022
+highlight CocHighlightText guifg=#edffe4 guibg=#0e2d2e
 
 " Remap for rename current word
 nmap <leader>rn <Plug>(coc-rename)
@@ -826,7 +838,7 @@ function! s:GrepLiteral(folder)
   let text = input(empty(a:folder) ? 'search cwd: ' : 'search '.a:folder.': ')
   let text = escape(text, ' ')
   if empty(text) | return | endif
-  execute 'CocList grep -S '.text.(empty(a:folder) ? '' : ' -- '.a:folder)
+  execute 'CocList --auto-preview grep -S '.text.(empty(a:folder) ? '' : ' -- '.a:folder)
 endfunction
 nmap <leader>/ :<C-u>call <SID>GrepLiteral("")<CR>
 nmap <leader>? :<C-u>call <SID>GrepLiteral(expand("%:h"))<CR>
@@ -930,8 +942,15 @@ nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
 " }}}
 
 " Copilot{{{
-" imap <silent><script><expr> <C-j> copilot#Accept("\<CR>")
-" let g:copilot_no_tab_map = v:true
+imap <silent><script><expr> <C-e> pumvisible() ? "\<C-e>" : copilot#Accept("\<C-e>")
+imap <silent><script><expr> <C-j> copilot#Accept("\<C-j>")
+let g:copilot_no_tab_map = v:true
+"}}}
+
+" more familiar highlights in treesitter {{{
+nnoremap <F10> :TSHighlightCapturesUnderCursor<CR>
+hi! link TSNamespace Normal
+hi! link TSVariable Normal
 "}}}
 
 runtime lightline.vim

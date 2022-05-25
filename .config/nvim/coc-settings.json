@@ -10,7 +10,8 @@
   "pairs.enableCharacters": ["(", "[", "{", "<", "'", "\"", "`"],
   "codeLens.enable": false,
   "highlight.colorNames.enable": false,
-  "highlight.document.enable": false,
+  "highlight.document.enable": true,
+  "colors.filetypes": ["*"],
   "coc.preferences.currentFunctionSymbolAutoUpdate": true, // this updates the cursor line
   "coc.preferences.enableMarkdown": true,
   // "coc.preferences.semanticTokensHighlights": true,

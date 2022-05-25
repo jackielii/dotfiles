@@ -209,4 +209,27 @@ require 'nvim-treesitter.configs'.setup {
     },
   },
 }
+local ft_to_parser = require"nvim-treesitter.parsers".filetype_to_parsername
+ft_to_parser.json = "jsonc"
+-- local parser_config = require"nvim-treesitter.parsers".get_parser_configs()
+-- parser_config.jsonc.used_by = "json"
+-- print(vim.inspect(parser_config.jsonc))
+-- print(vim.inspect(parser_config.json))
+-- parser_config.filetype_to_parsername["jsonc"] = "json"
 -- }}}
+
+-- Telescope {{{
+require('telescope').load_extension('dap')
+
+vim.cmd [[highlight! link TelescopeSelection    Visual]]
+vim.cmd [[highlight! link TelescopeNormal       Normal]]
+vim.cmd [[highlight! link TelescopePromptNormal TelescopeNormal]]
+vim.cmd [[highlight! link TelescopeBorder       TelescopeNormal]]
+vim.cmd [[highlight! link TelescopePromptBorder TelescopeBorder]]
+vim.cmd [[highlight! link TelescopeTitle        TelescopeBorder]]
+vim.cmd [[highlight! link TelescopePromptTitle  TelescopeTitle]]
+vim.cmd [[highlight! link TelescopeResultsTitle TelescopeTitle]]
+vim.cmd [[highlight! link TelescopePreviewTitle TelescopeTitle]]
+vim.cmd [[highlight! link TelescopePromptPrefix Identifier]]
+-- }}}
+

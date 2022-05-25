@@ -80,6 +80,17 @@ nmap <Leader>8 <Plug>lightline#bufferline#go(8)
 nmap <Leader>9 <Plug>lightline#bufferline#go(9)
 nmap <Leader>0 <Plug>lightline#bufferline#go(10)
 
+nmap <C-1> <Plug>lightline#bufferline#go(1)
+nmap <C-2> <Plug>lightline#bufferline#go(2)
+nmap <C-3> <Plug>lightline#bufferline#go(3)
+nmap <C-4> <Plug>lightline#bufferline#go(4)
+nmap <C-5> <Plug>lightline#bufferline#go(5)
+nmap <C-6> <Plug>lightline#bufferline#go(6)
+nmap <C-7> <Plug>lightline#bufferline#go(7)
+nmap <C-8> <Plug>lightline#bufferline#go(8)
+nmap <C-9> <Plug>lightline#bufferline#go(9)
+nmap <C-0> <Plug>lightline#bufferline#go(10)
+
 function! s:deleteToRight(direction) abort
   let i=0
   while 1

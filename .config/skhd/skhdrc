@@ -197,6 +197,7 @@ cmd + ctrl - l : yabai -m space --focus next
 #         (yabai -m query --spaces --display) \
 #             | jq -re '.[] | select(."is-visible" == true)."first-window"')
 
+# cmd + number is used in many applications. I have to get used to using ctrl
 cmd - 1 : yabai -m space --focus 1
 cmd - 2 : yabai -m space --focus 2
 cmd - 3 : yabai -m space --focus 3
@@ -207,15 +208,16 @@ cmd - 7 : yabai -m space --focus 7
 cmd - 8 : yabai -m space --focus 8
 cmd - 9 : yabai -m space --focus 9
 
-cmd + ctrl - 1 : yabai -m space --focus 11
-cmd + ctrl - 2 : yabai -m space --focus 12
-cmd + ctrl - 3 : yabai -m space --focus 13
-cmd + ctrl - 4 : yabai -m space --focus 14
-cmd + ctrl - 5 : yabai -m space --focus 15
-cmd + ctrl - 6 : yabai -m space --focus 16
-cmd + ctrl - 7 : yabai -m space --focus 17
-cmd + ctrl - 8 : yabai -m space --focus 18
-cmd + ctrl - 9 : yabai -m space --focus 19
+
+cmd + ctrl - 1 : yabai -m space --focus 1
+cmd + ctrl - 2 : yabai -m space --focus 2
+cmd + ctrl - 3 : yabai -m space --focus 3
+cmd + ctrl - 4 : yabai -m space --focus 4
+cmd + ctrl - 5 : yabai -m space --focus 5
+cmd + ctrl - 6 : yabai -m space --focus 6
+cmd + ctrl - 7 : yabai -m space --focus 7
+cmd + ctrl - 8 : yabai -m space --focus 8
+cmd + ctrl - 9 : yabai -m space --focus 9
 
 # focus full screen
 alt - 0x32 : yabai -m space --focus \
@@ -262,13 +264,13 @@ cmd + ctrl + shift - h: yabai -m window --resize left:-10:0 || yabai -m window e
 cmd + ctrl + shift - l: yabai -m window --resize right:10:0 || yabai -m window west --resize right:10:0
 # }}}
 
-# warp & stack (always with arrow keys) {{{
+# warp & stack {{{
 
-# warp window (similar to move but with arrow); further warp stacks
-# cmd + shift - up : yabai -m window --warp north || $(yabai -m window --stack south)
-# cmd + shift - down : yabai -m window --warp south || $(yabai -m window --stack north)
-# cmd + shift - left : yabai -m window --warp west || $(yabai -m window --stack east)
-# cmd + shift - right : yabai -m window --warp east || $(yabai -m window --stack west)
+# warp window with alt
+alt + cmd + shift - k : yabai -m window --warp north
+alt + cmd + shift - j : yabai -m window --warp south
+alt + cmd + shift - h : yabai -m window --warp west
+alt + cmd + shift - l : yabai -m window --warp east
 
 # stack similar to warp, add ctrl
 cmd + ctrl + shift - up: yabai -m window --stack north
@@ -305,6 +307,28 @@ cmd + shift - 0x18 : yabai -m space --balance y-axis
 cmd + shift - 0x1B : yabai -m space --balance x-axis
 # }}}
 
+# ctrl + number forward as cmd + number to applications {{{
+# _HACK_ to send ctrl + number as cmd + number to applications skipping existing mappings:
+# 1. define default & capture mode
+:: default
+:: tabmode
+
+# 2. define an impossible key to switch to capture mode
+hyper - 0x80 ; tabmode
+tabmode < hyper - 0x80 ; default
+
+# 3. define ctrl + number to send mode switch key, send cmd + number, switch back
+ctrl - 1 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 1" ; skhd -k "hyper - 0x80"
+ctrl - 2 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 2" ; skhd -k "hyper - 0x80"
+ctrl - 3 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 3" ; skhd -k "hyper - 0x80"
+ctrl - 4 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 4" ; skhd -k "hyper - 0x80"
+ctrl - 5 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 5" ; skhd -k "hyper - 0x80"
+ctrl - 6 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 6" ; skhd -k "hyper - 0x80"
+ctrl - 7 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 7" ; skhd -k "hyper - 0x80"
+ctrl - 8 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 8" ; skhd -k "hyper - 0x80"
+ctrl - 9 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 9" ; skhd -k "hyper - 0x80"
+# }}}
+
 # launch common apps {{{
 
 # switch to main first tmux listening to socket, if none, launch new one
@@ -326,6 +350,10 @@ alt - m : open -a "Microsoft Outlook.app"
 
 # for this mac: need to be more like linux {{{
 cmd + shift - x : yabai -m window --close
+
+ctrl + shift - t [
+    "Google Chrome" : skhd -k "cmd + shift - t"
+]
 # uk keyboard § to `
 # 0x0A : skhd -t "`"
 # shift - 0x0A : skhd -t "~"

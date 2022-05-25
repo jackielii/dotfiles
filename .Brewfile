@@ -63,6 +63,7 @@ if OS.mac?
     cask "xbar"
     brew "cliclick"
     cask "gimp"
+    cask "drawio"
 else
     # linux ones
 end

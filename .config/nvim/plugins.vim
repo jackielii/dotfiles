@@ -25,8 +25,8 @@ Plug 'junegunn/vim-easy-align' " gaip align paragraph
 " Plug 'junegunn/vim-peekaboo' " enhanced register & micro
 " Plug 'fatih/vim-go' ", { 'tag': 'v1.19' }   { 'tag': 'v1.20' }
 Plug 'jackielii/vim-gomod' " gomod only
-Plug 'chriskempson/base16-vim' " use base16_??? to switch theme
-" Plug 'RRethy/nvim-base16' " same as above, but better with treesitter
+" Plug 'chriskempson/base16-vim' " use base16_??? to switch theme
+Plug 'RRethy/nvim-base16' " same as above, but better with treesitter
 
 " word motion: camelCase, snake_case etc. This should be after vim-sneak
 " because we're mapping , as leader for word motion
@@ -109,6 +109,7 @@ Plug 'skywind3000/asyncrun.vim' " dependency for asynctasks
 " treesitter related
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 " Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+Plug 'nvim-treesitter/playground'
 
 " many text objects
 Plug 'wellle/targets.vim'
@@ -119,9 +120,10 @@ Plug 'lukas-reineke/indent-blankline.nvim'
 
 " octo.nvim
 Plug 'nvim-lua/plenary.nvim'
-"Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 "" Plug 'kyazdani42/nvim-web-devicons' " already included above
 "Plug 'pwntester/octo.nvim'
+Plug 'nvim-telescope/telescope-dap.nvim'
 
 Plug 'voldikss/vim-floaterm' " floating terminal within neovim
 Plug 'sindrets/diffview.nvim' " quite nice diffview, :DiffViewFileHistory

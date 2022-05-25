@@ -87,8 +87,6 @@ fi
 if [ "${OS}" = "Darwin" ]; then
 	# use gnu-utils on mac, it sets PATH correctly for ls, grep etc
 	plugins=(gnu-utils $plugins)
-	# use our own ls --color
-	alias ls="\gls --color=auto"
 fi
 
 
@@ -308,6 +306,8 @@ export GITHUB_TOKEN="${MY_GITHUB_API_TOKEN}"
 export GITHUB_API_TOKEN="${GITHUB_TOKEN}" # for coc-git
 
 ## macos libpq
-export PATH="$HOMEBREW_PREFIX/opt/libpq/bin:$PATH"
+if [ "${OS}" = "Darwin" ]; then
+	export PATH="$HOMEBREW_PREFIX/opt/libpq/bin:$PATH"
+fi
 
 # vim:set noet sts=0 sw=2 ts=2 tw=79 fdm=marker:
