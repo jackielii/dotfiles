@@ -79,22 +79,20 @@ snippet wireinject "wire inject" b
 
 endsnippet
 
-snippet "(\w+)\.fum" "fum method" r
+snippet /fum\.(\w+)/ "fum method" r
 func (${5:`!p snip.rv=match.group(1)[0].lower()`} ${6:*}`!p snip.rv=match.group(1)`) ${1:method}(${2}) ${3:error} {
 	${4:${VISUAL:panic("not implemented")}}
 }
 $0
 endsnippet
 
-snippet "(\w+)\.(\w+)\.fum" "fum + method" r
-func (${5:`!p snip.rv=match.group(1)[0].lower()`} ${6:*}`!p snip.rv=match.group(1)`) ${7:`!p snip.rv=match.group(2)`}(${1}) ${2:error} {
-	${4:${VISUAL:panic("not implemented")}}
-}
-$0
-endsnippet
+global !p
+def acronym(s):
+	return ''.join([c.lower() if i==0 or c.isupper() else '' for i, c in enumerate(s)])
+endglobal
 
-snippet "fum.(\w+)\.(\w+)" "fum + method" r
-func (${5:`!p snip.rv=match.group(1)[0].lower()`} ${6:*}`!p snip.rv=match.group(1)`) ${7:`!p snip.rv=match.group(2)`}(${1}) ${2:error} {
+snippet /fum.(\w+)\.(\w+)/ "fum + method" r
+func (${5:`!p snip.rv=acronym(match.group(1))`} ${6:*}`!p snip.rv=match.group(1)`) ${7:`!p snip.rv=match.group(2)`}(${1}) ${2:error} {
 	${4:${VISUAL:panic("not implemented")}}
 }
 $0
@@ -102,4 +100,14 @@ endsnippet
 
 snippet ve "var err error" b
 var err error
+endsnippet
+
+
+snippet fuzz "fuzz test" b
+func Fuzz${1:Xxx}(f *testing.F) {
+	f.Add(${2})
+	f.Fuzz(func(t *testing.T, ${3}) {
+		${4:${VISUAL:panic("not implemented")}}
+	})
+}
 endsnippet

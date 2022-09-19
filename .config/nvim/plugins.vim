@@ -75,7 +75,7 @@ Plug 'HerringtonDarkholme/yats.vim' " typescript language support
 "Plug 'Shougo/denite.nvim', {'tag': '*'}
 "Plug 'Shougo/neomru.vim'
 "Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}}
-" Plug 'godlygeek/tabular' " from vimcast: http://vimcasts.org/episodes/aligning-text-with-tabular-vim/
+Plug 'godlygeek/tabular' " from vimcast: http://vimcasts.org/episodes/aligning-text-with-tabular-vim/
 Plug 'preservim/vim-markdown'
 Plug 'mg979/vim-visual-multi'
 "Plug 'sebdah/vim-delve'
@@ -131,5 +131,6 @@ Plug 'sindrets/diffview.nvim' " quite nice diffview, :DiffViewFileHistory
 Plug 'mfussenegger/nvim-dap' " debug framework
 Plug 'leoluz/nvim-dap-go' " Dap UI for Go
 Plug 'rcarriga/nvim-dap-ui' " Dap widgets
+Plug 'theHamsta/nvim-dap-virtual-text'
 
 Plug 'neoclide/jsonc.vim' " jsonc for config file types

@@ -70,7 +70,6 @@ inoremap CC <Esc>cc
 
 
 let g:netrw_fastbrowse = 0 " remove netrw after opening file
-highlight WinSeparator guibg=none
 
 " ctrl-s to save and to normal mode
 noremap  <silent> <C-S> <esc>:update<CR>:nohl<CR>
@@ -79,10 +78,10 @@ inoremap <silent> <C-S> <esc>:update<CR>:nohl<CR>
 snoremap <silent> <C-S> <esc>:update<CR>:nohl<CR>
 
 " disable highlight various keys
-nnoremap <silent> <C-c> :nohl<CR>
+nnoremap <silent> <C-c> <C-c>:nohl<CR>
 inoremap <silent> <C-c> <Esc>:nohl<CR>
 vnoremap <silent> <C-c> <Esc>:nohl<CR>
-nnoremap <silent> <esc> :nohl<CR>
+nnoremap <silent> <esc> <Esc>:nohl<CR>
 inoremap <silent> <esc> <Esc>:nohl<CR>
 vnoremap <silent> <esc> <Esc>:nohl<CR>
 snoremap <silent> <esc> <Esc>:nohl<CR>
@@ -117,12 +116,12 @@ endfunction
 command! -register CopyMatches call CopyMatches(<q-reg>)
 
 " fast resize window
-if bufwinnr(1)
-  map <leader>= 6<C-W>+
-  map <leader>- 6<C-W>-
-  map <leader>. 6<C-W>>
-  map <leader>, 6<C-W><
-endif
+map <expr> - winnr() == winnr('$') ? '2<C-w>-' : ''
+map <expr> + winnr() == winnr('$') ? '2<C-w>+' : ''
+map <expr> <leader>= winnr() == winnr('$') ? '6<C-W>+' : ''
+map <expr> <leader>- winnr() == winnr('$') ? '6<C-W>-' : ''
+map <expr> <leader>. winnr() == winnr('$') ? '6<C-W>>' : ''
+map <expr> <leader>, winnr() == winnr('$') ? '6<C-W><' : ''
 
 " [c]lear [w]hitespace
 function! ClearWhitespace()
@@ -159,11 +158,27 @@ inoremap ? ?<c-g>u
 " nnoremap <silent> <expr> j (v:count > 1 ? "m'" . v:count : "") . 'gj'
 " nnoremap <silent> <expr> k (v:count > 1 ? "m'" . v:count : "") . 'gk'
 
+nmap <leader><leader>x :so % <bar> silent Sleuth<CR>
+
+function! MoveByWord(flag, visual)
+  " regex explained:
+  " \v very magical
+  " ((\a|_)+\A*){count} match full word + non word as group count times
+  " \zs match the pattern before and move cursor to next element
+  " ((\a|_)+) match a full word (cursor at beginning)
+  " call search('\v((\a|_)+\A*){'.(v:count).'}\zs((\a|_)+)', a:flag, line('.'))
+  if a:visual | execute "norm! gv" | endif
+  for n in range(v:count1)
+    call search('\v(\a|_)+', a:flag, line('.'))
+  endfor
+endfunction
+
 " L/H to move to the next/previous capital letter
-nmap <silent> L :call search('\u', '', line('.'))<CR>
-" nmap <silent> L :call search('\<\u', '', line('.'))<CR>
-nmap <silent> H :call search('\u', 'b', line('.'))<CR>
-nmap <leader><leader>x :so %<CR>
+" <C-u> to break the count, if <expr> use <esc> to break out the count
+map <silent> H :<C-u>call MoveByWord('b', 0)<CR>
+map <silent> L :<C-u>call MoveByWord('', 0)<CR>
+vmap <silent> H :<C-u>call MoveByWord('b', 1)<CR>
+vmap <silent> L :<C-u>call MoveByWord('', 1)<CR>
 
 " replace without yanking
 " vnoremap p "_dp
@@ -171,20 +186,13 @@ nmap <leader><leader>x :so %<CR>
 
 "set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<
 "set listchars=tab:..,trail:_,extends:>,precedes:<,nbsp:~
-set listchars=tab:.→,space:·,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
-
-" highlight trailing spaces
-autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
-match ExtraWhitespace /\s\+$/
-autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
-autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
-autocmd InsertLeave * match ExtraWhitespace /\s\+$/
-autocmd BufWinLeave * call clearmatches()
+set listchars=tab:-->,space:·,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 
 " Toggle Movements {{{
 " Helper function to use an alternate movement if the first
 " movement doesn't move the cursor.
-function! ToggleMovement(firstOp, thenOp)
+function! ToggleMovement(firstOp, thenOp, visual)
+  if a:visual | execute "norm! gv" | endif
   let pos = getpos('.')
   let c = v:count > 0 ? v:count : ''
   execute "normal! " . c . a:firstOp
@@ -194,9 +202,10 @@ function! ToggleMovement(firstOp, thenOp)
 endfunction
 
 " Warning: 0 uses ^ first, then 0
-nnoremap <silent> 0 :call ToggleMovement('^', '0')<CR>
-nnoremap <silent> ^ :call ToggleMovement('0', '^')<CR>
-nnoremap <silent> $ :call ToggleMovement('$', '^')<CR>
+nnoremap <silent> 0 :call ToggleMovement('^', '0', 0)<CR>
+vnoremap <silent> 0 :call ToggleMovement('^', '0', 1)<CR>
+nnoremap <silent> ^ :call ToggleMovement('0', '^', 0)<CR>
+nnoremap <silent> $ :call ToggleMovement('$', '^', 0)<CR>
 " }}}
 
 " jump to next / prev function block from :h section
@@ -247,6 +256,7 @@ cnoremap <M-f> <S-Right>
 "   endif
 " endfunction
 " autocmd CursorHold * call timer_start(5000, funcref('s:markCursor'))
+command! -nargs=* -complete=shellcmd R new | setlocal buftype=nofile bufhidden=hide noswapfile | r !<args>
 " }}}
 
 call plug#begin('~/.config/nvim/plugged')
@@ -254,15 +264,42 @@ runtime plugins.vim
 call plug#end()
 
 " {{{ color scheme and highlight
+
 " transparent background
-au ColorScheme * hi Normal ctermbg=none guibg=none
+" au ColorScheme * hi Normal ctermbg=none guibg=none
+" more recognisable matching brackets
+au ColorScheme * hi MatchParen gui=italic guibg=black guifg=NONE
+au ColorScheme * hi WinSeparator guibg=none
+au ColorScheme * hi Comment gui=italic
+au ColorScheme * hi CocListLine cterm=underline guibg=Grey40
+" au ColorScheme * hi Search ctermfg=237 ctermbg=11 guifg=#393939 guibg=#ffcc66
+
+set pumblend=15 " transparency for popup
+
+function! SynStack ()
+    for i1 in synstack(line("."), col("."))
+        let i2 = synIDtrans(i1)
+        let n1 = synIDattr(i1, "name")
+        let n2 = synIDattr(i2, "name")
+        echo n1 "->" n2
+    endfor
+endfunction
+map <leader>kss :call SynStack()<CR>
+
+" highlight trailing spaces
+autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()
+
 " ~/.vimrc_background will be updated by base16-shell profile helper:
 " https://github.com/chriskempson/base16-shell/blob/master/README.md#base16-vim-users
 if filereadable(expand("~/.vimrc_background"))
   " let base16colorspace=256
   source ~/.vimrc_background
 endif
-hi Comment gui=italic
 " }}}
 
 " python
@@ -281,6 +318,13 @@ endif
 set directory=/tmp
 " }}}
 
+" sleuth {{{
+" let g:sleuth_heuristics = 0
+let g:sleuth_editorconfig_overrides = {
+    \ expand('$HOMEBREW_PREFIX/.editorconfig'): '',
+    \ }
+" }}}
+
 " vim-markdown
 " let g:vim_markdown_no_default_key_mappings = 1
 let g:vim_markdown_folding_disabled = 1
@@ -292,8 +336,8 @@ vmap gx <Plug>(openbrowser-smart-search)
 function! s:open_browser(mode) abort
     call assert_true(a:mode ==# 'char')
     execute 'normal! `[v`]"xy'
-    let l:new_value = getreg('x')
-    call openbrowser#smart_search(l:new_value)
+    let new_value = getreg('x')
+    call openbrowser#smart_search(new_value)
 endfunction
 nnoremap <silent> gX :<C-U>set opfunc=<SID>open_browser<CR>g@
 " }}}
@@ -323,11 +367,25 @@ nmap <leader>ga :Git add --all<CR>
 " let g:rooter_patterns = ['prototool.yaml', 'Rakefile', '.git/']
 let g:rooter_manual_only = 1
 
-" vim easy align
+" vim easy align{{{
 " Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
+nmap <bar><bar> :TableFormat<CR>
+" auto indent for tables
+inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<CR>a
+function! s:align()
+  let p = '^\s*|\s.*\s|\s*$'
+  if exists(':Tabularize') && getline('.') =~# '^\s*|' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
+    let column = strlen(substitute(getline('.')[0:col('.')],'[^|]','','g'))
+    let position = strlen(matchstr(getline('.')[0:col('.')],'.*|\s*\zs.*'))
+    Tabularize/|/l1
+    normal! 0
+    call search(repeat('[^|]*|',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
+  endif
+endfunction
+"}}}
 
 " {{{ fzf
 let g:fzf_buffers_jump = 1
@@ -401,9 +459,10 @@ nmap <silent> <leader>e :Buffers<CR>
 " let g:go_highlight_types = 1
 augroup GoRelated
   autocmd!
+  autocmd FileType go let b:coc_pairs_disabled = ['<']
   autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4
   " autocmd BufNewFile,BufRead go.mod set filetype=gomod
-  autocmd FileType go let b:coc_root_patterns = ['.git', 'go.mod']
+  " autocmd FileType go let b:coc_root_patterns = ['.git', 'go.mod']
   " autocmd BufNewFile,BufRead go.mod set syntax=gomod
   autocmd BufReadPost,BufWritePre *.go call <SID>SetMark("import (\\_.\\{-})", "i") "http://vimregex.com/#Non-Greedy
   autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.organizeImport')
@@ -482,7 +541,7 @@ let g:VM_maps = {}
 let g:VM_maps['Find Under']         = '<A-n>'
 let g:VM_maps['Find Subword Under'] = '<A-n>'
 " <CR> to accept completion item
-autocmd User visual_multi_mappings  imap <buffer><expr> <CR> pumvisible() ? "\<C-Y>" : "\<Plug>(VM-I-Return)"
+" autocmd User visual_multi_mappings  imap <buffer><expr> <CR> pumvisible() ? "\<C-Y>" : "\<Plug>(VM-I-Return)"
 let g:VM_theme = 'ocean'
 
 " temporary work around for conflict with coc.nvim `:h vm-functions`
@@ -501,12 +560,12 @@ let g:VM_theme = 'ocean'
 " let g:vimwiki_list = [{'path': '~/notes/', 'syntax': 'markdown', 'ext': '.md'}]
 
 " wiki.vim: https://github.com/lervag/wiki.vim
-let g:wiki_root = '~/personal/notes'
-let g:wiki_map_link_create = 'WikiNewLinkFileName'
-let g:wiki_mappings_use_defaults = 'local'
+let g:wiki_map_text_to_link = 'WikiNewLinkFileName'
 function WikiNewLinkFileName(text) abort
-  return substitute(tolower(a:text), '\s\+', '-', 'g')
+  return [substitute(tolower(a:text), '\s\+', '-', 'g'), a:text]
 endfunction
+let g:wiki_root = '~/personal/notes'
+let g:wiki_mappings_use_defaults = 'local'
 let g:wiki_filetypes = ['md']
 let g:wiki_link_target_type = 'md'
 let g:wiki_link_extension = '.md'
@@ -574,6 +633,9 @@ nmap <silent> <leader>F :execute g:coc_explorer_cmd.' '.g:project_path<CR>
 " nmap <silent> <leader>f :NvimTreeFindFile<CR>
 " nmap <silent> <leader>f :lua NvimTreeFindFileAnywhere()<CR>
 nmap <silent> <leader>f :execute g:coc_explorer_cmd<CR>
+
+" git deleted highlight override
+hi! link CocExplorerGitDeleted CocExplorerGitContentChange
 " }}}
 
 " F1 > cd g:project_path S-F1: cd buff_path
@@ -609,14 +671,14 @@ autocmd User targets#mappings#user call targets#mappings#extend({
 let g:targets_seekRanges = 'cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB'
 
 " startify {{{
+let g:startify_files_number = 5
 let g:startify_lists = [
       \ { 'type': 'dir',       'header': ['   This MRU '. getcwd()] },
-      \ { 'type': 'sessions',  'header': ['   Sessions']       },
       \ { 'type': 'files',     'header': ['   MRU']            },
-      \ { 'type': 'bookmarks', 'header': ['   Bookmarks']      },
-      \ { 'type': 'commands',  'header': ['   Commands']       },
       \ ]
-
+      " \ { 'type': 'sessions',  'header': ['   Sessions']       },
+      " \ { 'type': 'bookmarks', 'header': ['   Bookmarks']      },
+      " \ { 'type': 'commands',  'header': ['   Commands']       },
 let g:startify_session_autoload = 1
 " }}}
 
@@ -653,6 +715,7 @@ function! CloseNonProjectBuffers(dir, bang)
     if buflisted(n)
       let p = expand('#' .. n .. ':p:h')
       let in_proj = p[0:len(dir)-1] ==# dir
+            \ && stridx(p, "/node_modules/") < 0 " exclude node_modules as well
       " echo n .. '; ' .. p .. '; ' .. in_proj
       if !in_proj
         if a:bang == '' && getbufvar(n, '&modified')
@@ -661,7 +724,7 @@ function! CloseNonProjectBuffers(dir, bang)
                 \ n '(add ! to override)'
           echohl None
         else
-          silent exe 'bdel' . a:bang . ' ' . n
+          silent exe 'bwipeout' . a:bang . ' ' . n
         endif
       endif
     endif
@@ -685,8 +748,6 @@ nnoremap <leader>bp :lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log
 nnoremap <F9> :lua require'dap'.run_last()<CR>
 nnoremap <leader>dd :lua require'dapui'.toggle()<CR>
 nnoremap <leader>dt :lua require'dap-go'.debug_test()<CR>
-" vnoremap <M-k> <Cmd>lua require("dapui").eval()<CR>
-" nnoremap <M-k> <Cmd>lua require("dapui").eval(vim.fn.expand("<cword>"))<CR>
 " }}}
 
 
@@ -705,11 +766,11 @@ let g:coc_node_args = ['--max-old-space-size=8192']
 
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+" inoremap <silent><expr> <TAB>
+"       \ coc#pum#visible() ? coc#pum#next(1) :
+"       \ <SID>check_back_space() ? "\<TAB>" :
+"       \ coc#refresh()
+" inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
 function! s:check_back_space() abort
   let col = col('.') - 1
@@ -721,7 +782,7 @@ inoremap <silent><expr> <c-space> coc#refresh()
 
 " Use <cr> for confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+inoremap <silent><expr> <cr> coc#pum#visible() ? coc#_select_confirm()
       \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " makes <CR> only break line, use <C-y> to confirm
@@ -730,11 +791,12 @@ inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
 
 vmap <C-l> <Plug>(coc-snippets-select)
 imap <C-l> <Plug>(coc-snippets-expand)
-imap <C-j> <Plug>(coc-snippets-expand-jump)
 
 " Use `[d` and `]d` for navigate diagnostics
 nmap <silent> [d <Plug>(coc-diagnostic-prev)
 nmap <silent> ]d <Plug>(coc-diagnostic-next)
+
+nmap <leader>kk :call CocAction('diagnosticPreview')<CR>
 
 " next or previous git chunk
 nmap <silent> [c <Plug>(coc-git-prevchunk)
@@ -786,14 +848,16 @@ augroup CocRelated
   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 augroup end
 
-inoremap <silent> <C-K> <C-\><C-O>:call CocActionAsync('showSignatureHelp')<CR>
+" imap <silent> <C-K> <C-\><C-O>:call CocActionAsync('showSignatureHelp')<CR>
+inoremap <silent> <M-i> <C-\><C-O>:call CocActionAsync('showSignatureHelp')<CR>
 
 " Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
 vmap <leader>a  <Plug>(coc-codeaction-selected)
 nmap <leader>a  <Plug>(coc-codeaction-selected)
 
 " Remap for do codeAction of current line
-nmap <leader>ac  <Plug>(coc-codeaction)
+nmap <leader>ac  <Plug>(coc-codeaction-current)
+nmap <leader>ag  <Plug>(coc-codeaction)
 " Fix autofix problem of current line
 nmap <leader>qf  <Plug>(coc-fix-current)
 
@@ -807,14 +871,16 @@ omap ic <Plug>(coc-classobj-i)
 xmap ac <Plug>(coc-classobj-a)
 omap ac <Plug>(coc-classobj-a)
 
+nmap <C-w>f :call coc#float#jump()<CR>
+
 " Remap <C-f> and <C-b> for scroll float windows/popups.
 if has('nvim-0.4.0') || has('patch-8.2.0750')
-  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1,1) : "\<C-d>"
-  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0,1) : "\<C-u>"
+  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1,1) : "\<C-f>"
+  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0,1) : "\<C-b>"
   inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1,1)\<cr>" : "\<Right>"
   inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0,1)\<cr>" : "\<Left>"
-  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1,1) : "\<C-d>"
-  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0,1) : "\<C-u>"
+  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1,1) : "\<C-f>"
+  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0,1) : "\<C-b>"
 endif
 
 " " Use <C-d> for select selections ranges, needs server support, like: coc-tsserver, coc-python
@@ -835,7 +901,7 @@ function! s:GrepArgs(...)
 endfunction
 
 function! s:GrepLiteral(folder)
-  let text = input(empty(a:folder) ? 'search cwd: ' : 'search '.a:folder.': ')
+  let text = input(empty(a:folder) ? 'search: ' : 'search '.a:folder.': ')
   let text = escape(text, ' ')
   if empty(text) | return | endif
   execute 'CocList --auto-preview grep -S '.text.(empty(a:folder) ? '' : ' -- '.a:folder)
@@ -942,16 +1008,30 @@ nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
 " }}}
 
 " Copilot{{{
-imap <silent><script><expr> <C-e> pumvisible() ? "\<C-e>" : copilot#Accept("\<C-e>")
-imap <silent><script><expr> <C-j> copilot#Accept("\<C-j>")
+imap <silent><script><expr> <C-e> coc#pum#visible() ? "\<C-e>" : copilot#Accept("\<C-e>")
+" imap <silent><script><expr> <C-j> copilot#Accept("\<C-j>")
 let g:copilot_no_tab_map = v:true
+let g:copilot_node_command = "$HOMEBREW_PREFIX/Cellar/node@16/16.16.0/bin/node"
 "}}}
+
+imap <expr><silent> <C-e> coc#pum#cancel()
+let g:coc_snippet_next = '<Plug>coc-snippet-next'
+let g:coc_snippet_prev = '<Plug>coc-snippet-prev'
+imap <expr><silent> <C-j> coc#pum#visible() ? coc#pum#next(0) : coc#jumpable() ? '<Plug>coc-snippet-next' : coc#refresh()
+imap <expr><silent> <C-k> coc#pum#visible() ? coc#pum#prev(0) : coc#jumpable() ? '<Plug>coc-snippet-prev' : CocActionAsync('showSignatureHelp')
+smap <expr><silent> <C-j> '<Plug>coc-snippet-next'
+smap <expr><silent> <C-k> '<Plug>coc-snippet-prev'
 
 " more familiar highlights in treesitter {{{
 nnoremap <F10> :TSHighlightCapturesUnderCursor<CR>
 hi! link TSNamespace Normal
 hi! link TSVariable Normal
 "}}}
+
+" Special keycodes see also kitty.conf {{{
+" nmap <C-M-k> :call CocAction('diagnosticPreview')<CR>
+nmap <C-M-k> <Plug>(coc-diagnostic-info)
+" }}}
 
 runtime lightline.vim
 runtime coc.vim

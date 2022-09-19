@@ -7,6 +7,8 @@
   "python.formatting.provider": "black",
   "git.enableGlobalStatus": false,
   "diagnostic.checkCurrentLine": true,
+  "diagnostic.messageTarget": "float",
+  "diagnostic.enableMessage": "jump",
   "pairs.enableCharacters": ["(", "[", "{", "<", "'", "\"", "`"],
   "codeLens.enable": false,
   "highlight.colorNames.enable": false,
@@ -30,7 +32,7 @@
 
   // {{{ workspace
   "workspace.workspaceFolderCheckCwd": false,
-  "workspace.workspaceFolderFallbackCwd": false,
+  "workspace.workspaceFolderFallbackCwd": true,
   // "workspace.bottomUpFiletypes": ["go"],
   "workspace.ignoredFolders": [
     "$HOME",
@@ -61,9 +63,9 @@
   // }}}
 
   // {{{ suggest
-  "suggest.noselect": false, // don't select first entry
-  "suggest.enablePreselect": false, // put recently used on top
-  "suggest.selection": "recentlyUsedByPrefix",
+  // "suggest.noselect": false, // don't select first entry
+  // "suggest.enablePreselect": false, // put recently used on top
+  // "suggest.selection": "recentlyUsedByPrefix",
   "suggest.languageSourcePriority": 99,
   "suggest.maxCompleteItemCount": 50,
   "suggest.lowPrioritySourceLimit": 10,
@@ -80,7 +82,9 @@
   },
   "diagnostic.floatConfig": {
     "border": true,
-    "title": "Diagnostic"
+    "title": "Diagnostic",
+    // "maxHeight": 120,
+    "winblend": 0
   },
   "signature.floatConfig": {
     "border": true,
@@ -122,6 +126,7 @@
   // {{{ sources
   "coc.source.word.priority": 1,
   "coc.source.dictionary.priority": 80,
+  "yank.priority": 80,
   "coc.source.buffer.priority": 2,
   // }}}
 
@@ -142,11 +147,11 @@
     //   "port": 8080,
     //   "filetypes": ["kotlin"]
     // },
-    // "kotlin": {
-    //   // "trace.server": "verbose",
-    //   "command": "/home/jackieli/kotlin/kotlin-language-server/server/build/install/server/bin/kotlin-language-server",
-    //   "filetypes": ["kotlin"]
-    // },
+    "kotlin": {
+      // "trace.server": "verbose",
+      "command": "$HOME/personal/kotlin-language-server/server/build/install/server/bin/kotlin-language-server",
+      "filetypes": ["kotlin"]
+    },
     //"gopls": {
     //  "command": "gopls",
     //  "filetypes": ["go"],
@@ -255,13 +260,22 @@
   // {{{ go
   "go.goplsOptions": {
     // "verboseOutput": true,
-    "gofumpt": true,
+    "gofumpt": false,
     // "semanticTokens": true,
     "experimentalWorkspaceModule": true,
     // "experimentalUseInvalidMetadata": false,
     // "hoverKind": "FullDocumentation",
     "staticcheck": true,
     "buildFlags": ["-tags=wireinject"],
+    "hints": {
+      // "assignVariableTypes": true,
+      // "compositeLiteralFields": true,
+      // "compositeLiteralTypes": true,
+      // "constantValues": true,
+      // "functionTypeParameters": true,
+      // "parameterNames": true,
+      // "rangeVariableTypes": true
+    },
     "analyses": {
       "fillreturns": true,
       "undeclaredname": true,
@@ -301,13 +315,27 @@
   // }}}
 
   // {{{ coc-explorer
+  "explorer.position": "left",
+  "explorer.width": 60,
   "explorer.git.showIgnored": true,
+  "explorer.git.enable": true,
   "explorer.file.showHiddenFiles": true,
   "explorer.icon.enableNerdfont": true,
   "explorer.keyMappings.global": {
     "<c-s>": "open:split",
     "<c-v>": "open:vsplit",
-    "<cr>": ["expandable?", ["expanded?", "collapse", "expand"], "open"]
+    "<cr>": [
+      "wait",
+      "expandable?",
+      ["expanded?", "collapse", "expand"],
+      "open"
+    ],
+    "l": [
+      "wait",
+      "expandable?",
+      ["expanded?", "collapse", "expand"],
+      "open"
+    ]
   },
   "explorer.quitOnOpen": true,
   "explorer.sources": [
@@ -331,8 +359,42 @@
   "tree.key.close": "q",
   // }}}
 
-  "semanticTokens.filetypes": ["go", "gomod"],
+  // {{{ general diagnostics
+  "diagnostic-languageserver.debug": false,
+  "diagnostic-languageserver.filetypes": {
+    "markdown": "vale"
+  },
+  "diagnostic-languageserver.linters": {
+    "vale": {
+      "command": "vale",
+      "debounce": 100,
+      "args": ["--no-exit", "--output", "JSON", "--ext", ".md"],
+      "sourceName": "vale",
+      "parseJson": {
+        "errorsRoot": "stdin.md",
+        "line": "Line",
+        "column": "Span[0]",
+        "endLine": "Line",
+        "endColumn": "Span[1]",
+        "message": "${Message}\n${Link}",
+        "security": "Severity"
+      },
+      "securities": {
+        "error": "hint",
+        "warning": "hint",
+        "suggestion": "hint"
+      }
+    }
+  },
+  // }}}
+
+  // rust{{{
+
+  //}}}
+
+  "semanticTokens.enable": true,
   "sumneko-lua.enableNvimLuaDev": true,
   "Lua.telemetry.enable": false,
-  "svelte.enable-ts-plugin": true
+  "svelte.enable-ts-plugin": true,
+  "java.format.settings.url": "/Users/jackieli/.config/coc/extensions/node_modules/redhat.java/eclipse-formatter.xml"
 }

@@ -45,7 +45,7 @@
 	smudge = git-lfs smudge -- %f
 
 [url "git@github.com:"]
-	; insteadof = https://github.com
+	insteadof = https://github.com
 
 ;[sendemail]
 ;        smtpserver = smtp.gmail.com

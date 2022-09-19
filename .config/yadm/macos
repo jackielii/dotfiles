@@ -932,6 +932,7 @@ defaults write com.google.Chrome NSUserKeyEquivalents -dict-add 'Open Location..
 # defaults write com.apple.finder NSUserKeyEquivalents -dict-add 'Open Location...' '^L'
 defaults write com.microsoft.Outlook NSUserKeyEquivalents -dict-add 'Outlook Items Search' '^K'
 defaults write com.microsoft.Outlook NSUserKeyEquivalents -dict-add 'Advanced Search...' '^$K'
+defaults write com.tinyspeck.slackmacgap NSUserKeyEquivalents -dict-add 'Switch to Channel' '^K'
 
 # defaults write -g NSUserKeyEquivalents -dict-add 'Open With' '@$O'
 

@@ -77,6 +77,7 @@ plugins=(
 	# # zsh-vim-mode
 	you-should-use
 	gh
+	gpg-agent
 )
 
 if [ -d ~/.ssh ] && [ -f ~/.ssh/id_rsa ]; then
@@ -284,9 +285,6 @@ bindkey "^[[3;3~" vi-kill-eol
 
 [ -f ~/.secrets ] && source ~/.secrets
 
-export GPG_TTY=$(tty)
-export GO111MODULE=on
-
 # enable bash completion functions
 autoload -U +X bashcompinit && bashcompinit
 alias gci='git commit'
@@ -309,5 +307,6 @@ export GITHUB_API_TOKEN="${GITHUB_TOKEN}" # for coc-git
 if [ "${OS}" = "Darwin" ]; then
 	export PATH="$HOMEBREW_PREFIX/opt/libpq/bin:$PATH"
 fi
+export PATH="/Users/jackieli/.local/bin:$PATH"
 
 # vim:set noet sts=0 sw=2 ts=2 tw=79 fdm=marker:

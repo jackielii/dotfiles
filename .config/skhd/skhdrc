@@ -225,7 +225,12 @@ alt - 0x32 : yabai -m space --focus \
         || yabai -m space --focus recent
 
 # focus previous window: there is no way to switch to recent floating window
-cmd - tab : yabai -m window --focus recent || yabai -m space --focus recent
+# cmd - tab : yabai -m window --focus recent || yabai -m space --focus recent
+cmd - f15 : yabai -m window --focus recent || yabai -m space --focus recent
+# cycle through all windows in current space
+cmd + ctrl - tab : id=$(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id') && yabai -m window --focus $id
+# reverse cycle through all windows in current space
+cmd + ctrl + shift - tab : id=$(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | .[map(."has-focus") | index(true)-1].id') && yabai -m window --focus $id
 
 # }}}
 
@@ -298,7 +303,7 @@ cmd + ctrl + shift - w : yabai -m window --toggle border; sleep 0.5; yabai -m co
 ## 0x2F is dot
 cmd + ctrl + shift - 0x2F : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
 ## f15 is Pause
-cmd - f15 : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
+# cmd - f15 : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
 ## 0x4C is Enter
 0x4C : yabai -m window --focus mouse
 
@@ -316,6 +321,8 @@ cmd + shift - 0x1B : yabai -m space --balance x-axis
 # 2. define an impossible key to switch to capture mode
 hyper - 0x80 ; tabmode
 tabmode < hyper - 0x80 ; default
+# cmd - x ; tabmode
+# tabmode < cmd - x ; default
 
 # 3. define ctrl + number to send mode switch key, send cmd + number, switch back
 ctrl - 1 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 1" ; skhd -k "hyper - 0x80"
