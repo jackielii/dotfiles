@@ -16,11 +16,10 @@ yadm add $HOME/.config/yadm/com.apple.symbolichotkeys.plist
 yadm add $HOME/.local/share/yadm/archive
 yadm add $HOME/.config/nvim/coc-settings.json
 yadm add $HOME/.config/nvim/tasks.ini
-yadm add $HOME/.config/nvim/coc.vim
 yadm add $HOME/.config/nvim/init.vim
 yadm add $HOME/.config/nvim/lightline.vim
-yadm add $HOME/.config/nvim/plugins.vim
-yadm add $HOME/.config/nvim/scratch.vim
+yadm add $HOME/.config/nvim/plugin/*
+yadm add $HOME/.config/nvim/lua/*
 yadm add $HOME/.config/nvim/luainit.lua
 yadm add $HOME/.config/coc/ultisnips/*
 yadm add $HOME/.config/coc/extensions/package.json

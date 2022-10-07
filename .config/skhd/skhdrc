@@ -288,7 +288,7 @@ cmd + ctrl + shift - right: yabai -m window --stack east
 #cmd - s : yabai -m space --layout stack
 cmd - e : [ $(yabai -m query --spaces --space | jq -re '.type') = 'bsp' ] && yabai -m space --layout stack || yabai -m space --layout bsp
 cmd + shift - space : yabai -m window --toggle float; yabai -m window --grid 8:8:1:1:6:6
-cmd + ctrl + shift - space : yabai -m space --rotate 270
+cmd + ctrl + shift - space : yabai -m window --toggle topmost
 
 ## fullscreen
 cmd - f11 : yabai -m window --toggle native-fullscreen

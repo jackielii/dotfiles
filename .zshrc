@@ -78,6 +78,7 @@ plugins=(
 	you-should-use
 	gh
 	gpg-agent
+	fzf
 )
 
 if [ -d ~/.ssh ] && [ -f ~/.ssh/id_rsa ]; then
@@ -226,6 +227,7 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --history=$HOME/.fzf_history"
 [ -n "$BASE16_THEME" ] && \
 	[ -f $HOME/.config/base16-fzf/bash/base16-${BASE16_THEME}.config ] && \
 		source $HOME/.config/base16-fzf/bash/base16-${BASE16_THEME}.config
+
 # }}}
 
 
@@ -234,7 +236,7 @@ export EDITOR=nvim
 export PAGER=less
 export PROMPT_COMMAND='history -a'
 export HISTSIZE=100000
-export HISTFILESIZE=2000000
+export HISTFILESIZE=200000
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
 

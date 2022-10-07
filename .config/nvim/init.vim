@@ -1,4 +1,5 @@
 " vim:set et sw=2 ts=2 tw=79 fdm=marker:
+
 " {{{ Basic Settings:  can be copyied around
 
 " leader is space
@@ -169,7 +170,7 @@ function! MoveByWord(flag, visual)
   " call search('\v((\a|_)+\A*){'.(v:count).'}\zs((\a|_)+)', a:flag, line('.'))
   if a:visual | execute "norm! gv" | endif
   for n in range(v:count1)
-    call search('\v(\a|_)+', a:flag, line('.'))
+    call search('\v(\w|_)+', a:flag, line('.'))
   endfor
 endfunction
 
@@ -259,9 +260,146 @@ cnoremap <M-f> <S-Right>
 command! -nargs=* -complete=shellcmd R new | setlocal buftype=nofile bufhidden=hide noswapfile | r !<args>
 " }}}
 
+" plugins {{{
 call plug#begin('~/.config/nvim/plugged')
-runtime plugins.vim
+" Make sure you use single quotes
+Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-repeat'
+" MixedCase (crm), camelCase (crc), snake_case (crs), UPPER_CASE (cru),
+" dash-case (cr-), dot.case (cr.), space case (cr<space>), and Title Case (crt)
+Plug 'tpope/vim-abolish'
+" Plug 'tpope/vim-commentary'
+Plug 'numToStr/Comment.nvim'
+Plug 'tpope/vim-obsession'
+Plug 'tpope/vim-dotenv'
+
+" keep this on the top so that other plugins can use it
+Plug 'kyazdani42/nvim-web-devicons' " for file icons
+
+" Plug 'vim-scripts/argtextobj.vim' " `aa` for an argument, `ia` for inside argument
+Plug 'tommcdo/vim-exchange'      " cx{motion} to swap word, cxc to clear
+" Plug 'kana/vim-textobj-user' " user defined text object
+" Plug 'fvictorio/vim-textobj-backticks'
+" Plug 'glts/vim-textobj-comment' " ic for inside comment
+Plug 'will133/vim-dirdiff' " diff directories
+
+" Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
+Plug 'junegunn/vim-easy-align' " gaip align paragraph
+" Plug 'junegunn/vim-peekaboo' " enhanced register & micro
+" Plug 'fatih/vim-go' ", { 'tag': 'v1.19' }   { 'tag': 'v1.20' }
+Plug 'jackielii/vim-gomod' " gomod only
+" Plug 'chriskempson/base16-vim' " use base16_??? to switch theme
+Plug 'RRethy/nvim-base16' " same as above, but better with treesitter
+
+" word motion: camelCase, snake_case etc. This should be after vim-sneak
+" because we're mapping , as leader for word motion
+Plug 'chaoren/vim-wordmotion'
+Plug 'christoomey/vim-tmux-navigator'
+
+Plug 'itchyny/lightline.vim'
+Plug 'daviesjamie/vim-base16-lightline'
+Plug 'mengelbrecht/lightline-bufferline'
+Plug 'josa42/vim-lightline-coc'
+" Plug 'vim-airline/vim-airline'
+" Plug 'vim-airline/vim-airline-themes'
+
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+Plug 'vim-scripts/BufOnly.vim'
+"Plug 'terryma/vim-multiple-cursors'
+"" ysiw to insert cs"' to change
+Plug 'tpope/vim-surround'
+" Plug 'easymotion/vim-easymotion'
+Plug 'justinmk/vim-sneak'
+Plug 'airblade/vim-rooter'
+Plug 'tpope/vim-sleuth' " auto detect indent
+" Plug 'triglav/vim-visual-increment' " increment a block
+" Plug 'roxma/vim-tmux-clipboard'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rhubarb' " Gbrowse for github
+Plug 'shumphrey/fugitive-gitlab.vim' " Gbrowse for gitlab
+Plug 'Shougo/echodoc.vim'
+" Plug 'majutsushi/tagbar'
+" Plug 'bkad/CamelCaseMotion'
+" Plug 'scrooloose/nerdtree'
+" Plug 'scrooloose/nerdcommenter'
+"Plug 'jiangmiao/auto-pairs'
+
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Plug 'neoclide/coc.nvim', {'tag': 'v0.0.77'}
+Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
+"Plug 'neoclide/coc-denite'
+"Plug 'w0rp/ale'
+"Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+"Plug 'blueyed/vim-diminactive'
+Plug 'szw/vim-maximizer'
+Plug 'HerringtonDarkholme/yats.vim' " typescript language support
+"Plug 'Shougo/denite.nvim', {'tag': '*'}
+"Plug 'Shougo/neomru.vim'
+"Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}}
+Plug 'godlygeek/tabular' " from vimcast: http://vimcasts.org/episodes/aligning-text-with-tabular-vim/
+Plug 'preservim/vim-markdown'
+Plug 'mg979/vim-visual-multi'
+"Plug 'sebdah/vim-delve'
+" Plug 'wellle/tmux-complete.vim' " add tmux buffer to completioin list
+Plug 'mbbill/undotree'
+Plug 'udalov/kotlin-vim'
+"Plug '~/nvim/proto'
+" Plug 'uber/prototool', { 'rtp':'vim/prototool' }
+" Plug 'mattn/webapi-vim'
+" Plug 'mattn/vim-gist'
+" Plug 'vimwiki/vimwiki'
+Plug 'lervag/wiki.vim'
+" Plug 'lervag/wiki-ft.vim' " wiki file type
+Plug 'lervag/lists.vim' " for toggle todo list item
+
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
+Plug 'cespare/vim-toml'
+
+" Intellij completion
+" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'beeender/Comrade'
+Plug 'tyru/open-browser.vim'
+Plug 'dart-lang/dart-vim-plugin'
+
+" tasks
+Plug 'skywind3000/asynctasks.vim'
+Plug 'skywind3000/asyncrun.vim' " dependency for asynctasks
+
+" Plug 'kyazdani42/nvim-tree.lua'
+
+" treesitter related
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+" Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+Plug 'nvim-treesitter/playground'
+
+" many text objects
+Plug 'wellle/targets.vim'
+Plug 'mhinz/vim-startify'
+Plug 'cespare/vim-toml'
+Plug 'github/copilot.vim'
+Plug 'lukas-reineke/indent-blankline.nvim'
+
+" octo.nvim
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+"" Plug 'kyazdani42/nvim-web-devicons' " already included above
+"Plug 'pwntester/octo.nvim'
+Plug 'nvim-telescope/telescope-dap.nvim'
+
+Plug 'voldikss/vim-floaterm' " floating terminal within neovim
+Plug 'sindrets/diffview.nvim' " quite nice diffview, :DiffViewFileHistory
+
+Plug 'mfussenegger/nvim-dap' " debug framework
+" Plug 'leoluz/nvim-dap-go' " Dap UI for Go
+Plug 'rcarriga/nvim-dap-ui' " Dap widgets
+" Plug 'theHamsta/nvim-dap-virtual-text'
+
+Plug 'neoclide/jsonc.vim' " jsonc for config file types
 call plug#end()
+" }}}
 
 " {{{ color scheme and highlight
 
@@ -302,9 +440,10 @@ if filereadable(expand("~/.vimrc_background"))
 endif
 " }}}
 
-" python
+" python{{{
 let g:python3_host_prog = $HOMEBREW_PREFIX .. '/bin/python3'
 set pyxversion=3
+"}}}
 
 " undotree {{{
 set shada='1000 " 1000 files in history
@@ -325,9 +464,10 @@ let g:sleuth_editorconfig_overrides = {
     \ }
 " }}}
 
-" vim-markdown
+" vim-markdown{{{
 " let g:vim_markdown_no_default_key_mappings = 1
 let g:vim_markdown_folding_disabled = 1
+"}}}
 
 " open-browser {{{
 let g:netrw_nogx = 1 " disable netrw's gx mapping.
@@ -342,9 +482,10 @@ endfunction
 nnoremap <silent> gX :<C-U>set opfunc=<SID>open_browser<CR>g@
 " }}}
 
-" buffer navigation
+" bufOnly{{{
 map <leader>bo :BufOnly<CR>
 nnoremap <silent> <leader><leader>o :BufOnly<CR>
+"}}}
 
 " fugitive git related {{{
 nmap <leader>g :Git<space>
@@ -363,9 +504,10 @@ nmap <leader>gla :Git log<CR>
 nmap <leader>ga :Git add --all<CR>
 " }}}
 
-" auto root vim rooter
+" Rooter: auto root vim rooter{{{
 " let g:rooter_patterns = ['prototool.yaml', 'Rakefile', '.git/']
 let g:rooter_manual_only = 1
+"}}}
 
 " vim easy align{{{
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -447,7 +589,6 @@ nmap <silent> <leader>e :Buffers<CR>
 " noremap <M-l> :Buffers<CR>
 " }}}
 
-
 " {{{ go related binding
 " au FileType go nmap <buffer> <leader>gb <Plug>(go-build)
 " "au FileType go nmap <buffer> <leader>ds :GoDecls<CR>
@@ -498,7 +639,7 @@ let g:go_metalinter_enabled = 0
 " autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.format')
 " }}}
 
-" prototool
+" proto format{{{
 " au FileType proto nnoremap <buffer> <leader>gfa :execute '!prototool format -w %' <bar> edit<CR>
 function s:delayedRefresh() abort
   call timer_start(500, { tid -> execute("edit")})
@@ -506,54 +647,45 @@ endfunction
 au! FileType proto nnoremap <buffer> <leader>gff :execute 'AsyncTask buf-format' <bar> call<SID>delayedRefresh()<CR>
 au! FileType proto nnoremap <buffer> <leader>kf :execute 'AsyncTask buf-format' <bar> call<SID>delayedRefresh()<CR>
 " au FileType proto nnoremap <buffer> <leader>gff :call PrototoolFormatFix()<CR>
+"}}}
 
-" sneak
+" sneak{{{
 let g:sneak#use_ic_scs = 1
 let g:sneak#label = 1
 let g:sneak#s_next = 1
 nmap S <Plug>Sneak_S
+"}}}
 
-" tagbar
-" let g:tagbar_show_linenumbers = 0
-" let g:tagbar_autoshowtag = 1
-" map <leader>t :TagbarOpenAutoClose<CR>
-" let g:tagbar_sort = 0
-
-" echodoc
+" echodoc{{{
 let g:echodoc_enable_at_startup = 1
 let g:echodoc#type = 'signature'
 " let g:echodoc#type = 'virtual'
 " let g:echodoc#highlight_identifier = 1
+"}}}
 
-" CamelCaseMotion
-" call camelcasemotion#CreateMotionMappings('<leader>')
-
-" vim-maximizer
+" vim-maximizer{{{
 nnoremap <silent><C-w>z :MaximizerToggle<CR>
 vnoremap <silent><C-w>z :MaximizerToggle<CR>gv
 let g:maximizer_restore_on_winleave = 1
 let g:maximizer_set_default_mapping = 0
-
 "inoremap <silent><C-w>z <C-o>:MaximizerToggle<CR>
+"}}}
 
 " vim-visual-multi {{{
 let g:VM_maps = {}
 let g:VM_maps['Find Under']         = '<A-n>'
 let g:VM_maps['Find Subword Under'] = '<A-n>'
+" let g:VM_maps['I CtrlD'] = ''
 " <CR> to accept completion item
 " autocmd User visual_multi_mappings  imap <buffer><expr> <CR> pumvisible() ? "\<C-Y>" : "\<Plug>(VM-I-Return)"
 let g:VM_theme = 'ocean'
 
-" temporary work around for conflict with coc.nvim `:h vm-functions`
-" https://github.com/mg979/vim-visual-multi/issues/75#issuecomment-1091401897
-" function! MyVmStart()
-"   execute 'CocDisable'
-" endfunction
-" function! MyVmExit()
-"   execute 'CocEnable'
-" endfunction
-" autocmd User visual_multi_start   call MyVmStart()
-" autocmd User visual_multi_exit    call MyVmExit()
+function! MyVmStart()
+endfunction
+function! MyVmExit()
+endfunction
+autocmd User visual_multi_start   call MyVmStart()
+autocmd User visual_multi_exit    call MyVmExit()
 " }}}
 
 " vim.wiki {{{
@@ -590,13 +722,15 @@ augroup END
 
 " }}}
 
-" spec file related
+" spec file related{{{
 augroup spec
   au!
   autocmd BufNewFile,BufRead *.ttrigger set syntax=sql
   autocmd BufNewFile,BufRead *.tview set syntax=sql
 augroup END
+"}}}
 
+" set Mark{{{
 function! s:SetMark(pattern, m)
   " echom a:pattern a:m
   " execute '$?'.a:pattern.'?mark '.a:m
@@ -612,16 +746,18 @@ augroup typescript
   au!
   autocmd BufReadPost,BufWritePost *.js,*.jsx,*.ts,*.tsx call <SID>SetMark("^import ", "i")
 augroup END
+"}}}
 
-
-" chaoren/vim-wordmotion
+" chaoren/vim-wordmotion{{{
 let g:wordmotion_prefix = ','
 nnoremap ,, ,
 nnoremap , <Nop>
+"}}}
 
-" asynctask
+" asynctask{{{
 let g:asynctasks_config_name = '.vim/tasks.ini'
 let g:asyncrun_open = 6
+"}}}
 
 " nvim-tree.lua {{{ using coc-explorer now
 au! VimEnter * let g:project_path = getcwd(-1,-1)
@@ -638,6 +774,7 @@ nmap <silent> <leader>f :execute g:coc_explorer_cmd<CR>
 hi! link CocExplorerGitDeleted CocExplorerGitContentChange
 " }}}
 
+" dap config{{{
 " F1 > cd g:project_path S-F1: cd buff_path
 " F2 > lazygit
 " F3 > Rooter
@@ -653,12 +790,23 @@ hi! link CocExplorerGitDeleted CocExplorerGitContentChange
 nmap <F1> :execute 'lcd '.g:project_path <bar> echo g:project_path<CR>
 " on mac, <C-v>F1 produces <F13>, on Linux it produces <S-F1>
 map <S-F1> <F13>
+map <S-F11> <F35>
 nmap <F13> :execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h')<CR>
 nmap <F2> :Files<CR>
 nmap <F3> :Rooter<CR>
 nmap <F8> :Telescope dap configurations<CR>
 
-" targets.vim
+nnoremap <leader>bb :lua require'dap'.toggle_breakpoint()<CR>
+nnoremap <leader>bB :lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>
+nnoremap <leader>bp :lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>
+" nnoremap <leader>dr :lua require'dap'.repl.open()<CR>
+nnoremap <F9> :lua require'dap'.run_last()<CR>
+nnoremap <leader>dd :lua require'dapui'.toggle({ reset = true })<CR>
+" }}}
+
+"}}}
+
+" targets.vim{{{
 " to have argument object work in {} & []
 autocmd User targets#mappings#user call targets#mappings#extend({
       \ 'a': {'argument': [{'o': '[{([]', 'c': '[])}]', 's': ','}]},
@@ -669,6 +817,7 @@ autocmd User targets#mappings#user call targets#mappings#extend({
 
 " Only consider targets around cursor:
 let g:targets_seekRanges = 'cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB'
+"}}}
 
 " startify {{{
 let g:startify_files_number = 5
@@ -681,9 +830,6 @@ let g:startify_lists = [
       " \ { 'type': 'commands',  'header': ['   Commands']       },
 let g:startify_session_autoload = 1
 " }}}
-
-" indent blank lines
-" let g:indent_blankline_filetype = ['vim']
 
 " float terminal {{{
 nnoremap <silent>   <F14>    :FloatermToggle --width=0.9 --height=0.9<CR>
@@ -736,22 +882,7 @@ map <F4> :CloseNonProjectBuffers<CR>
 map <leader><leader>p :CloseNonProjectBuffers<CR>
 " }}}
 
-if has('macunix')
-  " mac specific stuff
-endif
-
-" {{{ temporary dap mappings
-nnoremap <leader>bb :lua require'dap'.toggle_breakpoint()<CR>
-nnoremap <leader>bB :lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>
-nnoremap <leader>bp :lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>
-" nnoremap <leader>dr :lua require'dap'.repl.open()<CR>
-nnoremap <F9> :lua require'dap'.run_last()<CR>
-nnoremap <leader>dd :lua require'dapui'.toggle()<CR>
-nnoremap <leader>dt :lua require'dap-go'.debug_test()<CR>
-" }}}
-
-
-" {{{ coc.nvim
+" coc.nvim {{{
 let g:coc_node_path = $HOMEBREW_PREFIX .. '/bin/node'
 let g:coc_node_args = ['--max-old-space-size=8192']
 " let g:node_client_debug = 1
@@ -771,6 +902,10 @@ let g:coc_node_args = ['--max-old-space-size=8192']
 "       \ <SID>check_back_space() ? "\<TAB>" :
 "       \ coc#refresh()
 " inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+" jsonc files
+" autocmd BufNewFile,BufRead .prettierrc.json setlocal filetype=jsonc
+autocmd BufNewFile,BufRead .eslintrc.json setlocal filetype=jsonc
 
 function! s:check_back_space() abort
   let col = col('.') - 1
@@ -995,6 +1130,18 @@ vmap <leader>y :<C-u>CocList -A --normal yank<cr>
 " show outline
 " autocmd VimEnter,Tabnew *
 "     \ if empty(&buftype) | call CocActionAsync('showOutline', 1) | endif
+
+imap <expr><silent> <C-e> coc#pum#cancel()
+let g:coc_snippet_next = '<Plug>coc-snippet-next'
+let g:coc_snippet_prev = '<Plug>coc-snippet-prev'
+imap <expr><silent> <C-j> coc#pum#visible() ? coc#pum#next(0) : coc#jumpable() ? '<Plug>coc-snippet-next' : coc#refresh()
+imap <expr><silent> <C-k> coc#pum#visible() ? coc#pum#prev(0) : coc#jumpable() ? '<Plug>coc-snippet-prev' : CocActionAsync('showSignatureHelp')
+smap <expr><silent> <C-j> '<Plug>coc-snippet-next'
+smap <expr><silent> <C-k> '<Plug>coc-snippet-prev'
+
+" env dependent coc config
+call coc#config("python.formatting.blackPath", $HOMEBREW_PREFIX . "/bin/black")
+
 " }}}
 
 " {{{ tmux-navigator
@@ -1008,19 +1155,11 @@ nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
 " }}}
 
 " Copilot{{{
-imap <silent><script><expr> <C-e> coc#pum#visible() ? "\<C-e>" : copilot#Accept("\<C-e>")
+imap <silent><script><expr> <C-e> coc#pum#visible() ? coc#pum#cancel() : copilot#Accept("\<C-e>")
 " imap <silent><script><expr> <C-j> copilot#Accept("\<C-j>")
 let g:copilot_no_tab_map = v:true
 let g:copilot_node_command = "$HOMEBREW_PREFIX/Cellar/node@16/16.16.0/bin/node"
 "}}}
-
-imap <expr><silent> <C-e> coc#pum#cancel()
-let g:coc_snippet_next = '<Plug>coc-snippet-next'
-let g:coc_snippet_prev = '<Plug>coc-snippet-prev'
-imap <expr><silent> <C-j> coc#pum#visible() ? coc#pum#next(0) : coc#jumpable() ? '<Plug>coc-snippet-next' : coc#refresh()
-imap <expr><silent> <C-k> coc#pum#visible() ? coc#pum#prev(0) : coc#jumpable() ? '<Plug>coc-snippet-prev' : CocActionAsync('showSignatureHelp')
-smap <expr><silent> <C-j> '<Plug>coc-snippet-next'
-smap <expr><silent> <C-k> '<Plug>coc-snippet-prev'
 
 " more familiar highlights in treesitter {{{
 nnoremap <F10> :TSHighlightCapturesUnderCursor<CR>
@@ -1033,7 +1172,5 @@ hi! link TSVariable Normal
 nmap <C-M-k> <Plug>(coc-diagnostic-info)
 " }}}
 
-runtime lightline.vim
-runtime coc.vim
-runtime scratch.vim
 runtime luainit.lua
+runtime lightline.vim

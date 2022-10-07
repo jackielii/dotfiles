@@ -119,5 +119,3 @@ nmap <silent><leader>dH :call <SID>deleteToRight(-1)<CR>
 
 " let g:lightline.tabline          = {'left': [['buffers']], 'right': [['close']]}
 set showtabline=2
-
-

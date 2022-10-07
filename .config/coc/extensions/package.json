@@ -35,11 +35,14 @@
     "coc-webpack": ">=1.5.0",
     "coc-word": "^1.2.2",
     "coc-yaml": ">=1.8.0",
-    "coc-yank": ">=1.2.1"
+    "coc-yank": ">=1.2.1",
+    "coc-prisma": ">=0.11.0"
   },
   "disabled": [
     "coc-tag",
-    "coc-spell-checker"
+    "coc-spell-checker",
+    "coc-vimlsp"
   ],
-  "locked": []
+  "locked": [],
+  "lastUpdate": 1665075570108
 }

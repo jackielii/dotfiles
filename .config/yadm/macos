@@ -929,6 +929,8 @@ sudo mdutil -E / > /dev/null
 # @ for command, ~ for option, ^ for control, $ for shift
 
 defaults write com.google.Chrome NSUserKeyEquivalents -dict-add 'Open Location...' '^L'
+# cmd + Home to go to blank page
+defaults write com.google.Chrome NSUserKeyEquivalents -dict-add 'Home' '@\UF729'
 # defaults write com.apple.finder NSUserKeyEquivalents -dict-add 'Open Location...' '^L'
 defaults write com.microsoft.Outlook NSUserKeyEquivalents -dict-add 'Outlook Items Search' '^K'
 defaults write com.microsoft.Outlook NSUserKeyEquivalents -dict-add 'Advanced Search...' '^$K'

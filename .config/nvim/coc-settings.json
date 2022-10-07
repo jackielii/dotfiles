@@ -262,7 +262,7 @@
     // "verboseOutput": true,
     "gofumpt": false,
     // "semanticTokens": true,
-    "experimentalWorkspaceModule": true,
+    // "experimentalWorkspaceModule": true,
     // "experimentalUseInvalidMetadata": false,
     // "hoverKind": "FullDocumentation",
     "staticcheck": true,
