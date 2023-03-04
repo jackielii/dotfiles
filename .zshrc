@@ -1,5 +1,6 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
+zmodload zsh/zprof # for profiling, use `zprof` to see the results
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -7,8 +8,8 @@ export ZSH="$HOME/.oh-my-zsh"
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="robbyrussell"
-# ZSH_THEME="agnoster"
+# ZSH_THEME="robbyrussell"
+ZSH_THEME="agnoster"
 
 DEFAULT_USER="jackieli"
 
@@ -69,7 +70,7 @@ OS=$(uname -s)
 plugins=(
 	git
 	kubectl
-	golang
+	# golang
 	tmux
 	zsh-autosuggestions
 	docker
@@ -207,10 +208,11 @@ eval "$(zoxide init zsh)"
 # }}}
 
 # Base16 Shell
-BASE16_SHELL="$HOME/.config/base16-shell/"
+export BASE16_SHELL="$HOME/.config/base16-shell/"
 [ -n "$PS1" ] && \
 	[ -s "$BASE16_SHELL/profile_helper.sh" ] && \
-		eval "$("$BASE16_SHELL/profile_helper.sh")"
+		source "$BASE16_SHELL/profile_helper.sh"
+export BASE16_SHELL_HOOKS="$HOME/.config/base16-shell-hooks/"
 
 # {{{ fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -218,16 +220,32 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
 # export FZF_TMUX=1
 # export FZF_TMUX_OPTS="-p60%,70%"
 
-export FZF_DEFAULT_COMMAND="fd . $HOME"
+export FZF_DEFAULT_COMMAND="fd ."
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND="fd -t d . $HOME"
-export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --history=$HOME/.fzf_history"
+export FZF_ALT_C_COMMAND="fd -t d ."
+function fzf-default-opts() {
+	export FZF_DEFAULT_OPTS="--history=$HOME/.fzf_history"
+	[ -n "$BASE16_THEME" ] && \
+		[ -f $HOME/.config/base16-fzf/bash/base16-${BASE16_THEME}.config ] && \
+			source $HOME/.config/base16-fzf/bash/base16-${BASE16_THEME}.config
+}
+fzf-default-opts
 
-# Base16 fzf
-[ -n "$BASE16_THEME" ] && \
-	[ -f $HOME/.config/base16-fzf/bash/base16-${BASE16_THEME}.config ] && \
-		source $HOME/.config/base16-fzf/bash/base16-${BASE16_THEME}.config
-
+# automatically update fzf colors when base16 theme changes
+function base16_fzf_sync() {
+	SCRIPT=$(readlink -f ~/.base16_theme)
+	SCRIPT_NAME=${SCRIPT##*/}
+	THEME_NAME=${SCRIPT_NAME%.*}
+	THEME=${THEME_NAME#*-}
+	# if [ "$THEME" != "$BASE16_THEME" ]; then
+		# echo "old theme: $BASE16_THEME"
+		export BASE16_THEME=$THEME
+		# echo "new theme: $BASE16_THEME"
+		fzf-default-opts
+	# fi
+}
+add-zsh-hook preexec base16_fzf_sync # run command in existing prompt
+add-zsh-hook precmd base16_fzf_sync # new prompt line without command
 # }}}
 
 
@@ -251,7 +269,7 @@ if [ "${OS}" = "Darwin" ]; then
 		# use gnu ls etc
 		# https://formulae.brew.sh/formula/coreutils -> moved to zsh plugin
 		# https://docs.brew.sh/Homebrew-and-Python#python-3y
-		export PATH=$PATH:${HOMEBREW_PREFIX}/opt/python@3.9/libexec/bin
+		export PATH=$PATH:${HOMEBREW_PREFIX}/opt/python/libexec/bin
 	fi
 	# https://github.com/kovidgoyal/kitty/issues/838#issuecomment-770328902
 	bindkey "\e[1;3D" backward-word # ⌥←
@@ -296,7 +314,6 @@ alias ns='kubens'
 alias ctx='kubectx'
 alias gs='gst'
 alias lg='lazygit'
-unalias gops
 
 export JAVA_HOME=$HOME/.jdks/current # managed by intellij
 export PATH="$JAVA_HOME/bin:$PATH"
@@ -310,5 +327,23 @@ if [ "${OS}" = "Darwin" ]; then
 	export PATH="$HOMEBREW_PREFIX/opt/libpq/bin:$PATH"
 fi
 export PATH="/Users/jackieli/.local/bin:$PATH"
+
+## yarn global bin
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
+## deno
+export PATH="$HOME/.deno/bin:$PATH"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/jackieli/Applications/google-cloud-sdk/path.zsh.inc' ]; then
+	source '/Users/jackieli/Applications/google-cloud-sdk/path.zsh.inc';
+fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/jackieli/Applications/google-cloud-sdk/completion.zsh.inc' ]; then
+	source '/Users/jackieli/Applications/google-cloud-sdk/completion.zsh.inc';
+fi
+
+export NPM_TOKEN=${PRIVATE_NPM_TOKEN}
 
 # vim:set noet sts=0 sw=2 ts=2 tw=79 fdm=marker:

@@ -49,6 +49,7 @@ set updatetime=300
 set shortmess=a
 " always show sign column
 set signcolumn=yes
+set scrolloff=3 " keep more lines above and below cursor
 
 syntax sync fromstart " more reliable syntax highlight
 
@@ -69,6 +70,7 @@ inoremap Pp <Esc>P
 inoremap PP <Esc>pa
 inoremap CC <Esc>cc
 
+map <M-a> ggVG
 
 let g:netrw_fastbrowse = 0 " remove netrw after opening file
 
@@ -89,15 +91,18 @@ snoremap <silent> <esc> <Esc>:nohl<CR>
 
 " leader-tab to previous buffer
 nnoremap <leader><tab> <C-^>
-nnoremap <C-Q> <C-^>
-inoremap <C-Q> <esc><C-^>
 inoremap <C-^> <esc><C-^>
+nnoremap <S-Tab> <C-^>
+inoremap <S-Tab> <esc><C-^>
+nnoremap <A-Tab> <C-^>
+inoremap <A-Tab> <esc><C-^>
 
 nnoremap c* :let @/ = expand("<cword>")<CR>cgn
 nnoremap c# :let @/ = expand("<cword>")<CR>cgN
 
 " visual mode put selected to search
 vnoremap // y/\V<C-r>=escape(@",'/\')<CR><CR>N
+vnoremap $ g_
 
 " last-position-jump when re-opening a file
 autocmd BufReadPost *
@@ -117,12 +122,12 @@ endfunction
 command! -register CopyMatches call CopyMatches(<q-reg>)
 
 " fast resize window
-map <expr> - winnr() == winnr('$') ? '2<C-w>-' : ''
-map <expr> + winnr() == winnr('$') ? '2<C-w>+' : ''
-map <expr> <leader>= winnr() == winnr('$') ? '6<C-W>+' : ''
-map <expr> <leader>- winnr() == winnr('$') ? '6<C-W>-' : ''
-map <expr> <leader>. winnr() == winnr('$') ? '6<C-W>>' : ''
-map <expr> <leader>, winnr() == winnr('$') ? '6<C-W><' : ''
+map <expr> - winnr('$') > 1 ? '2<C-w>-' : ''
+map <expr> + winnr('$') > 1 ? '2<C-w>+' : ''
+map <expr> <leader>= winnr('$') > 1 ? '6<C-W>+' : ''
+map <expr> <leader>- winnr('$') > 1 ? '6<C-W>-' : ''
+map <expr> <leader>. winnr('$') > 1 ? '6<C-W>>' : ''
+map <expr> <leader>, winnr('$') > 1 ? '6<C-W><' : ''
 
 " [c]lear [w]hitespace
 function! ClearWhitespace()
@@ -185,8 +190,8 @@ vmap <silent> L :<C-u>call MoveByWord('', 1)<CR>
 " vnoremap p "_dp
 " vnoremap P "_dP
 
-"set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<
-"set listchars=tab:..,trail:_,extends:>,precedes:<,nbsp:~
+" set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<
+" set listchars=tab:..,trail:_,extends:>,precedes:<,nbsp:~
 set listchars=tab:-->,space:·,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 
 " Toggle Movements {{{
@@ -206,7 +211,7 @@ endfunction
 nnoremap <silent> 0 :call ToggleMovement('^', '0', 0)<CR>
 vnoremap <silent> 0 :call ToggleMovement('^', '0', 1)<CR>
 nnoremap <silent> ^ :call ToggleMovement('0', '^', 0)<CR>
-nnoremap <silent> $ :call ToggleMovement('$', '^', 0)<CR>
+" nnoremap <silent> $ :call ToggleMovement('$', '^', 0)<CR>
 " }}}
 
 " jump to next / prev function block from :h section
@@ -230,6 +235,10 @@ map <leader>bw :bw<CR>
 map <leader>bW :bw!<CR>
 map <leader>kn :enew<CR>
 
+map <leader>tw :tabclose!<CR>
+map <leader>tc :tabclose<CR>
+map <leader>tq :tabclose<CR>
+
 " comment
 augroup comment
   autocmd!
@@ -239,10 +248,10 @@ augroup comment
   autocmd FileType proto setlocal commentstring=//\ %s
 augroup end
 
-cnoremap <C-a> <Home>
-cnoremap <C-e> <End>
-cnoremap <C-p> <Up>
-cnoremap <C-n> <Down>
+" cnoremap <C-a> <Home>
+" cnoremap <C-e> <End>
+" cnoremap <C-p> <Up>
+" cnoremap <C-n> <Down>
 cnoremap <M-b> <S-Left>
 cnoremap <M-f> <S-Right>
 
@@ -298,7 +307,7 @@ Plug 'chaoren/vim-wordmotion'
 Plug 'christoomey/vim-tmux-navigator'
 
 Plug 'itchyny/lightline.vim'
-Plug 'daviesjamie/vim-base16-lightline'
+Plug 'jackielii/nvim-base16-lightline'
 Plug 'mengelbrecht/lightline-bufferline'
 Plug 'josa42/vim-lightline-coc'
 " Plug 'vim-airline/vim-airline'
@@ -312,7 +321,7 @@ Plug 'vim-scripts/BufOnly.vim'
 Plug 'tpope/vim-surround'
 " Plug 'easymotion/vim-easymotion'
 Plug 'justinmk/vim-sneak'
-Plug 'airblade/vim-rooter'
+" Plug 'airblade/vim-rooter'
 Plug 'tpope/vim-sleuth' " auto detect indent
 " Plug 'triglav/vim-visual-increment' " increment a block
 " Plug 'roxma/vim-tmux-clipboard'
@@ -329,7 +338,8 @@ Plug 'Shougo/echodoc.vim'
 " Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Plug 'neoclide/coc.nvim', {'tag': 'v0.0.77'}
 Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
-"Plug 'neoclide/coc-denite'
+" Plug '~/personal/coc.nvim'
+
 "Plug 'w0rp/ale'
 "Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
@@ -351,6 +361,7 @@ Plug 'udalov/kotlin-vim'
 " Plug 'mattn/webapi-vim'
 " Plug 'mattn/vim-gist'
 " Plug 'vimwiki/vimwiki'
+Plug 'mattn/emmet-vim'
 Plug 'lervag/wiki.vim'
 " Plug 'lervag/wiki-ft.vim' " wiki file type
 Plug 'lervag/lists.vim' " for toggle todo list item
@@ -398,6 +409,15 @@ Plug 'rcarriga/nvim-dap-ui' " Dap widgets
 " Plug 'theHamsta/nvim-dap-virtual-text'
 
 Plug 'neoclide/jsonc.vim' " jsonc for config file types
+
+Plug 'lbrayner/vim-rzip' " view zip file content
+Plug 'jjo/vim-cue' " cue syntax
+Plug 'ntpeters/vim-better-whitespace' " highlight trailing whitespace
+
+Plug '~/personal/coc-java' " coc-java dev
+Plug '~/personal/coc-java-ext' " coc-java dev
+" Plug 'jackielii/coc-lists', {'do': 'yarn'}
+" Plug '~/personal/coc-lists' " coc-java dev
 call plug#end()
 " }}}
 
@@ -409,8 +429,6 @@ call plug#end()
 au ColorScheme * hi MatchParen gui=italic guibg=black guifg=NONE
 au ColorScheme * hi WinSeparator guibg=none
 au ColorScheme * hi Comment gui=italic
-au ColorScheme * hi CocListLine cterm=underline guibg=Grey40
-" au ColorScheme * hi Search ctermfg=237 ctermbg=11 guifg=#393939 guibg=#ffcc66
 
 set pumblend=15 " transparency for popup
 
@@ -424,24 +442,44 @@ function! SynStack ()
 endfunction
 map <leader>kss :call SynStack()<CR>
 
-" highlight trailing spaces
-autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
-match ExtraWhitespace /\s\+$/
-autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
-autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
-autocmd InsertLeave * match ExtraWhitespace /\s\+$/
-autocmd BufWinLeave * call clearmatches()
+" highlight trailing spaces -- using vim-better-whitespace stead
+" autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+" match ExtraWhitespace /\s\+$/
+" autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+" autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+" autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+" autocmd BufWinLeave * call clearmatches()
+
+" more familiar highlights in treesitter {{{
+nnoremap <F10> :TSHighlightCapturesUnderCursor<CR>
+autocmd ColorScheme * highlight! link TSNamespace Normal
+autocmd ColorScheme * highlight! link TSVariable Normal
+" highlight! link TSProperty Identifier
+"}}}
 
 " ~/.vimrc_background will be updated by base16-shell profile helper:
 " https://github.com/chriskempson/base16-shell/blob/master/README.md#base16-vim-users
-if filereadable(expand("~/.vimrc_background"))
-  " let base16colorspace=256
-  source ~/.vimrc_background
+if exists('$BASE16_THEME')
+      \ && (!exists('g:colors_name') || g:colors_name != 'base16-$BASE16_THEME')
+    let base16colorspace=256
+    colorscheme base16-$BASE16_THEME
 endif
+
+au ColorScheme * call UpdateLightlineBase16()
+" Sync color wihout restarting vim
+function! Base16Sync()
+  " theme would be symlinked to ~/.base16_theme
+  let l:theme = trim(system('echo ${$(basename $(readlink -f ~/.base16_theme) .sh)#*-}'))
+  if len(l:theme) == 0 | return | endif
+  let l:fzf = trim(system('source ~/.config/base16-fzf/bash/base16-'..l:theme..'.config && echo $FZF_DEFAULT_OPTS'))
+  let $FZF_DEFAULT_OPTS = l:fzf
+  exec 'colorscheme base16-' .. l:theme
+endfunction
+
 " }}}
 
 " python{{{
-let g:python3_host_prog = $HOMEBREW_PREFIX .. '/bin/python3'
+let g:python3_host_prog = $HOME .. '/.pyenv/versions/3.11.2/bin/python3'
 set pyxversion=3
 "}}}
 
@@ -498,15 +536,15 @@ nmap <leader>gda :tab Git diff<CR>
 nmap <leader>gdd :tab Git diff %<CR>
 nmap <leader>gp :Git pull<CR>
 nmap <leader>gP :Git push<CR>
-nmap <leader>gll :0Gclog<CR>
-vmap <leader>gll :Gclog<CR>
-nmap <leader>gla :Git log<CR>
+nmap <leader>gll :tabnew % <bar> 0Gclog<CR>
+vmap <leader>gll :tabnew % <bar> Gclog<CR>
+nmap <leader>gla :tabnew % <bar> Git log<CR>
 nmap <leader>ga :Git add --all<CR>
 " }}}
 
 " Rooter: auto root vim rooter{{{
 " let g:rooter_patterns = ['prototool.yaml', 'Rakefile', '.git/']
-let g:rooter_manual_only = 1
+" let g:rooter_manual_only = 1
 "}}}
 
 " vim easy align{{{
@@ -540,7 +578,10 @@ map <silent> <leader>zf :execute 'Files '.expand('%:p:h')<CR>
 "     \ '\) -print | sed "s:^..::"'}, <bang>0)
 command! -bang -nargs=? -complete=dir HFiles
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview({'source': 'fd -t f -uu -L -E .git -E node_modules'}), <bang>0)
+command! -bang -nargs=? -complete=dir AFiles
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview({'source': 'fd -t f -uu -L -E .git'}), <bang>0)
 map <leader>zh :HFiles<CR>
+map <leader>za :AFiles<CR>
 
 " This is the default extra key bindings
 let g:fzf_action = {
@@ -587,6 +628,7 @@ nmap <silent> <leader>e :Buffers<CR>
 " map <leader>l :Buffers<CR>
 " map <leader>ll :Buffers<CR>
 " noremap <M-l> :Buffers<CR>
+
 " }}}
 
 " {{{ go related binding
@@ -606,7 +648,7 @@ augroup GoRelated
   " autocmd FileType go let b:coc_root_patterns = ['.git', 'go.mod']
   " autocmd BufNewFile,BufRead go.mod set syntax=gomod
   autocmd BufReadPost,BufWritePre *.go call <SID>SetMark("import (\\_.\\{-})", "i") "http://vimregex.com/#Non-Greedy
-  autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.organizeImport')
+  " autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.organizeImport')
 augroup END
 nmap <leader>kgr :CocCommand go.gopls.tidy<CR>
 nmap <leader>kgt :CocCommand go.gopls.runTests<CR>
@@ -697,7 +739,7 @@ function WikiNewLinkFileName(text) abort
   return [substitute(tolower(a:text), '\s\+', '-', 'g'), a:text]
 endfunction
 let g:wiki_root = '~/personal/notes'
-let g:wiki_mappings_use_defaults = 'local'
+let g:wiki_mappings_use_defaults = 'none'
 let g:wiki_filetypes = ['md']
 let g:wiki_link_target_type = 'md'
 let g:wiki_link_extension = '.md'
@@ -705,6 +747,9 @@ nmap <leader>kp :WikiFzfPages<CR>
 let g:wiki_mappings_local = {
       \ '<plug>(wiki-link-next)' : ']w',
       \ '<plug>(wiki-link-prev)' : '[w',
+      \ '<plug>(wiki-link-follow)' : '<C-]>',
+      \ '<plug>(wiki-link-toggle-operator)' : 'gl',
+      \ 'x_<plug>(wiki-link-toggle-visual)' : '<cr>'
       \}
 
 function s:ToggleList() abort
@@ -776,11 +821,11 @@ hi! link CocExplorerGitDeleted CocExplorerGitContentChange
 
 " dap config{{{
 " F1 > cd g:project_path S-F1: cd buff_path
-" F2 > lazygit
-" F3 > Rooter
+" F2 > lazygit S-F2: floatterm
+" F3 > cd $(buffer path)
 " F4 > CloseNonProjectBuffers
 " F5 > AsyncTask run_last
-" F6 > Paste
+" F6 > Paste mode
 " F7 > Clear floats / dap.discontinue()
 " F8 > dap run configurations
 " F9 > dap run_last
@@ -790,10 +835,10 @@ hi! link CocExplorerGitDeleted CocExplorerGitContentChange
 nmap <F1> :execute 'lcd '.g:project_path <bar> echo g:project_path<CR>
 " on mac, <C-v>F1 produces <F13>, on Linux it produces <S-F1>
 map <S-F1> <F13>
-map <S-F11> <F35>
+map <S-F11> <F35> " step out
 nmap <F13> :execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h')<CR>
 nmap <F2> :Files<CR>
-nmap <F3> :Rooter<CR>
+nmap <F3> :execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h')<CR>
 nmap <F8> :Telescope dap configurations<CR>
 
 nnoremap <leader>bb :lua require'dap'.toggle_breakpoint()<CR>
@@ -870,7 +915,7 @@ function! CloseNonProjectBuffers(dir, bang)
                 \ n '(add ! to override)'
           echohl None
         else
-          silent exe 'bwipeout' . a:bang . ' ' . n
+          silent exe 'bwipeout' . ' ' . n
         endif
       endif
     endif
@@ -885,7 +930,54 @@ map <leader><leader>p :CloseNonProjectBuffers<CR>
 " coc.nvim {{{
 let g:coc_node_path = $HOMEBREW_PREFIX .. '/bin/node'
 let g:coc_node_args = ['--max-old-space-size=8192']
-" let g:node_client_debug = 1
+
+let g:coc_global_extensions = [
+  \ "coc-css",
+  \ "coc-diagnostic",
+  \ "coc-dictionary",
+  \ "coc-docker",
+  \ "coc-eslint",
+  \ "coc-explorer",
+  \ "coc-floaterm",
+  \ "coc-flutter",
+  \ "coc-git",
+  \ "coc-go",
+  \ "coc-highlight",
+  \ "coc-html",
+  \ "coc-json",
+  \ "coc-marketplace",
+  \ "coc-pairs",
+  \ "coc-prettier",
+  \ "coc-pyright",
+  \ "coc-react-refactor",
+  \ "coc-rust-analyzer",
+  \ "coc-snippets",
+  \ "coc-spell-checker",
+  \ "coc-sql",
+  \ "coc-sumneko-lua",
+  \ "coc-svelte",
+  \ "coc-syntax",
+  \ "coc-tag",
+  \ "coc-tasks",
+  \ "coc-tsserver",
+  \ "coc-vimlsp",
+  \ "coc-webpack",
+  \ "coc-word",
+  \ "coc-yaml",
+  \ "coc-yank",
+  \ "coc-prisma",
+  \ "coc-deno",
+  \ "coc-xml",
+  \ "coc-emmet",
+  \ "coc-lists",
+  \ "coc-flow",
+  \ ]
+
+
+" """"https://github.com/neoclide/coc.nvim/wiki/Debug-coc.nvim
+" " let g:node_client_debug = 1
+" let g:coc_node_args = ['--nolazy', '--inspect=6045', '-r', expand('~/.config/yarn/global/node_modules/source-map-support/register')]
+" """"
 
 " enable semantic highlight
 " g:coc_default_semantic_highlight_groups = 1
@@ -964,7 +1056,7 @@ endfunction
 
 " Highlight symbol under cursor on CursorHold
 autocmd CursorHold * silent call CocActionAsync('highlight')
-highlight CocHighlightText guifg=#edffe4 guibg=#0e2d2e
+" highlight CocHighlightText guifg=#edffe4 guibg=#0e2d2e
 
 " Remap for rename current word
 nmap <leader>rn <Plug>(coc-rename)
@@ -991,8 +1083,8 @@ vmap <leader>a  <Plug>(coc-codeaction-selected)
 nmap <leader>a  <Plug>(coc-codeaction-selected)
 
 " Remap for do codeAction of current line
-nmap <leader>ac  <Plug>(coc-codeaction-current)
-nmap <leader>ag  <Plug>(coc-codeaction)
+nmap <leader>ac  <Plug>(coc-codeaction-line)
+nmap <leader>ag  <Plug>(coc-codeaction-source)
 " Fix autofix problem of current line
 nmap <leader>qf  <Plug>(coc-fix-current)
 
@@ -1010,12 +1102,12 @@ nmap <C-w>f :call coc#float#jump()<CR>
 
 " Remap <C-f> and <C-b> for scroll float windows/popups.
 if has('nvim-0.4.0') || has('patch-8.2.0750')
-  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1,1) : "\<C-f>"
-  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0,1) : "\<C-b>"
-  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1,1)\<cr>" : "\<Right>"
-  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0,1)\<cr>" : "\<Left>"
-  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1,1) : "\<C-f>"
-  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0,1) : "\<C-b>"
+  nnoremap <silent><nowait><expr> <C-f> coc#float#has_float() ? coc#float#scroll(1,1) : "\<C-f>"
+  nnoremap <silent><nowait><expr> <C-b> coc#float#has_float() ? coc#float#scroll(0,1) : "\<C-b>"
+  inoremap <silent><nowait><expr> <C-f> coc#float#has_float() ? "\<c-r>=coc#float#scroll(1,1)\<cr>" : "\<Right>"
+  inoremap <silent><nowait><expr> <C-b> coc#float#has_float() ? "\<c-r>=coc#float#scroll(0,1)\<cr>" : "\<Left>"
+  vnoremap <silent><nowait><expr> <C-f> coc#float#has_float() ? coc#float#scroll(1,1) : "\<C-f>"
+  vnoremap <silent><nowait><expr> <C-b> coc#float#has_float() ? coc#float#scroll(0,1) : "\<C-b>"
 endif
 
 " " Use <C-d> for select selections ranges, needs server support, like: coc-tsserver, coc-python
@@ -1045,7 +1137,7 @@ nmap <leader>/ :<C-u>call <SID>GrepLiteral("")<CR>
 nmap <leader>? :<C-u>call <SID>GrepLiteral(expand("%:h"))<CR>
 nmap <leader>cs :CocSearch<space>
 nmap <leader>ci :CocList grep<CR>
-nmap <leader>cg :CocGrep -regex<space>
+nmap <leader>cg :CocGrep<space>
 
 " Using CocList
 " Show all diagnostics
@@ -1060,6 +1152,7 @@ nnoremap <silent> <leader>cm  :<C-u>CocList marketplace<cr>
 " Show commands
 nnoremap <silent> <leader>cc  :<C-u>CocList commands<cr>
 nnoremap <silent> <leader>cl  :<C-u>CocList<cr>
+nnoremap <silent> <leader>co  :CocCommand workspace.showOutput<cr>
 " Do default action for next item.
 " nnoremap <silent> <leader>gj  :<C-u>CocNext<CR>
 nnoremap <silent> ]g  :<C-u>CocNext<CR>
@@ -1083,6 +1176,13 @@ nnoremap <leader>gi :call CocAction('runCommand', 'editor.action.organizeImport'
 " use normal command like `<leader>xi(`
 " nmap <leader>x  <Plug>(coc-cursors-operator)
 nmap <leader>rf <Plug>(coc-refactor)
+
+" Remap keys for apply refactor code actions.
+nmap <silent> <leader>re <Plug>(coc-codeaction-refactor)
+xmap <silent> <leader>r  <Plug>(coc-codeaction-refactor-selected)
+nmap <silent> <leader>r  <Plug>(coc-codeaction-refactor-selected)
+
+nmap <leader>rl  <Plug>(coc-codelens-action)
 
 " coc list grep by motion
 vnoremap <leader>dg :<C-u>call <SID>GrepFromSelected(visualmode())<CR>
@@ -1121,7 +1221,7 @@ imap <F5> <C-\><C-O>:CocCommand tasks.runLastTask<CR>
 nnoremap <silent> ]n :CocCommand document.jumpToNextSymbol<CR>
 nnoremap <silent> [n :CocCommand document.jumpToPrevSymbol<CR>
 
-map <leader>t :CocOutline<CR>
+map <leader>ko :CocOutline<CR>
 map <leader>ho :call CocAction('showOutgoingCalls')<CR>
 map <leader>hi :call CocAction('showIncomingCalls')<CR>
 
@@ -1138,6 +1238,8 @@ imap <expr><silent> <C-j> coc#pum#visible() ? coc#pum#next(0) : coc#jumpable() ?
 imap <expr><silent> <C-k> coc#pum#visible() ? coc#pum#prev(0) : coc#jumpable() ? '<Plug>coc-snippet-prev' : CocActionAsync('showSignatureHelp')
 smap <expr><silent> <C-j> '<Plug>coc-snippet-next'
 smap <expr><silent> <C-k> '<Plug>coc-snippet-prev'
+cnoremap <C-j> <C-n>
+cnoremap <C-k> <C-p>
 
 " env dependent coc config
 call coc#config("python.formatting.blackPath", $HOMEBREW_PREFIX . "/bin/black")
@@ -1158,13 +1260,7 @@ nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
 imap <silent><script><expr> <C-e> coc#pum#visible() ? coc#pum#cancel() : copilot#Accept("\<C-e>")
 " imap <silent><script><expr> <C-j> copilot#Accept("\<C-j>")
 let g:copilot_no_tab_map = v:true
-let g:copilot_node_command = "$HOMEBREW_PREFIX/Cellar/node@16/16.16.0/bin/node"
-"}}}
-
-" more familiar highlights in treesitter {{{
-nnoremap <F10> :TSHighlightCapturesUnderCursor<CR>
-hi! link TSNamespace Normal
-hi! link TSVariable Normal
+" let g:copilot_node_command = "$HOMEBREW_PREFIX/Cellar/node@16/16.16.0/bin/node"
 "}}}
 
 " Special keycodes see also kitty.conf {{{

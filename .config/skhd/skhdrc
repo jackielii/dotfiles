@@ -226,7 +226,7 @@ alt - 0x32 : yabai -m space --focus \
 
 # focus previous window: there is no way to switch to recent floating window
 # cmd - tab : yabai -m window --focus recent || yabai -m space --focus recent
-cmd - f15 : yabai -m window --focus recent || yabai -m space --focus recent
+cmd - f14 : yabai -m window --focus recent || yabai -m space --focus recent
 # cycle through all windows in current space
 cmd + ctrl - tab : id=$(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id') && yabai -m window --focus $id
 # reverse cycle through all windows in current space
@@ -294,16 +294,18 @@ cmd + ctrl + shift - space : yabai -m window --toggle topmost
 cmd - f11 : yabai -m window --toggle native-fullscreen
 ctrl + cmd - f : yabai -m window --toggle native-fullscreen
 
-## f15 is pause
-f15 : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
+## f15 is pause, f14 is screenlock
+f14 : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
 ## 0x32 is `
 cmd + ctrl - 0x32 : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
+
+## ctrl+pause to cycle through windows on the same spaces
+ctrl - f14 : id=$(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id') && yabai -m window --focus $id
+
 ## flash window border for active window
 cmd + ctrl + shift - w : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
 ## 0x2F is dot
 cmd + ctrl + shift - 0x2F : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
-## f15 is Pause
-# cmd - f15 : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
 ## 0x4C is Enter
 0x4C : yabai -m window --focus mouse
 
@@ -336,13 +338,13 @@ ctrl - 8 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 8" ; skhd -k "hyper - 0x80"
 ctrl - 9 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 9" ; skhd -k "hyper - 0x80"
 # }}}
 
+# some common shortcuts conflicts with current mappings {{{
+ctrl + cmd - k : skhd -k "hyper - 0x80" ; skhd -k "cmd - k" ; skhd -k "hyper - 0x80"
+# }}}
+
 # launch common apps {{{
 
 # switch to main first tmux listening to socket, if none, launch new one
-# f14 : HHKB: FN+T
-f14 : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
-    kitty --listen-on=unix:/tmp/mykitty -d ~ \
-        zsh -c "source ~/.base16_theme; tmux attach"
 alt - t : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
     kitty --listen-on=unix:/tmp/mykitty -d ~ \
         zsh -c "source ~/.base16_theme; tmux attach"
@@ -380,41 +382,52 @@ ctrl + shift - right : skhd -k "alt + shift - right"
 # Home & end hack
 home [
     "kitty" ~
+    "dota2" ~
     *       : skhd -k "cmd - left"
 ]
 end [
     "kitty" ~
+    "dota2" ~
     *       : skhd -k "cmd - right"
 ]
 shift - home [
     "kitty" ~
+    "dota2" ~
     *       : skhd -k "cmd + shift - left"
 ]
 shift - end [
     "kitty" ~
+    "dota2" ~
     *       : skhd -k "cmd + shift - right"
 ]
 # ctrl + home/end hack
 ctrl - home [
     "kitty" ~
+    "dota2" ~
     *       : skhd -k "cmd - up"
 ]
 ctrl - end [
     "kitty" ~
+    "dota2" ~
     *       : skhd -k "cmd - down"
 ]
 ctrl + shift - home [
     "kitty" ~
+    "dota2" ~
     *       : skhd -k "cmd + shift - up"
 ]
 ctrl + shift - end [
     "kitty" ~
+    "dota2" ~
     *       : skhd -k "cmd + shift - down"
 ]
 # }}}
 
 # focus on floating
 # cmd + ctrl - a : yabai -m window --focus "$( yabai -m query --windows --space | jq -re "[sort_by(.id) | .[] | select(.floating == 1) | .id] | nth(1 + index($( yabai -m query --windows --window | jq '.id'))) // first")"
+
+# fn - space to toggle
+fn - space : fntoggle
 
 # reload yabai
 ctrl + shift + cmd - r : launchctl kickstart -k "gui/${UID}/homebrew.mxcl.yabai"

@@ -10,25 +10,36 @@
   "diagnostic.messageTarget": "float",
   "diagnostic.enableMessage": "jump",
   "pairs.enableCharacters": ["(", "[", "{", "<", "'", "\"", "`"],
+  "pairs.enableBackspace": true,
+  "pairs.disableLanguages": [],
+  "pairs.alwaysPairCharacters": [],
   "codeLens.enable": false,
   "highlight.colorNames.enable": false,
   "highlight.document.enable": true,
-  "colors.filetypes": ["*"],
+  "colors.enable": true,
+  "semanticTokens.enable": false,
   "coc.preferences.currentFunctionSymbolAutoUpdate": true, // this updates the cursor line
   "coc.preferences.enableMarkdown": true,
-  // "coc.preferences.semanticTokensHighlights": true,
-  "coc.preferences.formatOnSaveFiletypes": [
-    "go",
-    "typescriptreact",
-    "typescript",
-    "javascript",
-    "python",
-    "dart",
-    "rust"
-  ],
-  "html.enable": true,
+  "coc.preferences.formatOnSave": true,
+  "[sql][json]": {
+    "coc.preferences.formatOnSave": false
+  },
+  // "coc.preferences.formatOnSaveFiletypes": [
+  //   "go",
+  //   "typescriptreact",
+  //   "typescript",
+  //   "javascript",
+  //   "python",
+  //   "dart",
+  //   "rust"
+  // ],
   "refactor.showMenu": "",
   // }}}
+
+  // notification
+  "coc.preferences.enableMessageDialog": false,
+  // "notification.statusLineProgress": true,
+  //
 
   // {{{ workspace
   "workspace.workspaceFolderCheckCwd": false,
@@ -45,14 +56,19 @@
   "list.source.files.args": ["--hidden", "--files"],
   "list.source.files.excludePatterns": ["**/.git/*"],
   "list.source.grep.excludePatterns": ["**/.git/*"],
+  "list.source.files.defaultArgs": ["--files"],
   // }}}
 
   // {{{ javascript
+  "prettier.tabWidth": 2,
+  "prettier.semi": false,
+  "prettier.singleQuote": true,
   // "prettier.eslintIntegration": true,
   // "prettier.tslintIntegration": true,
   // "tsserver.trace.server": "verbose",
   "tsserver.maxTsServerMemory": 4096, // 4GB max-old-space-size
   "tsserver.npm": "$HOMEBRE_PREFIX/bin/npm",
+  "tsserver.useLocalTsdk": true,
   "typescript.suggest.completeFunctionCalls": false,
   // }}}
 
@@ -70,24 +86,27 @@
   "suggest.maxCompleteItemCount": 50,
   "suggest.lowPrioritySourceLimit": 10,
   "suggest.floatConfig": {
-    "border": true
-    // "maxWidth": 90
+    "border": true,
+    "maxWidth": 200
   },
   // }}}
 
   // {{{ floatConfig
   "hover.floatConfig": {
-    "border": true
-    // "maxWidth": 90
+    "border": true,
+    "maxWidth": 200
   },
   "diagnostic.floatConfig": {
     "border": true,
     "title": "Diagnostic",
-    // "maxHeight": 120,
+    "maxWidth": 200,
+    "maxHeight": 200,
     "winblend": 0
   },
   "signature.floatConfig": {
     "border": true,
+    "maxWidth": 200,
+    "maxHeight": 200,
     "title": "Signature"
   },
   // }}}
@@ -132,6 +151,11 @@
 
   // {{{ language server
   "languageserver": {
+    "bufls": {
+      "command": "bufls",
+      "args": ["serve"],
+      "filetypes": ["proto"]
+    },
     "ccls": {
       "command": "ccls",
       "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"],
@@ -259,7 +283,10 @@
 
   // {{{ go
   "go.goplsOptions": {
+    // "linksInHover": false,
+    // "hoverKind": "Structured",
     // "verboseOutput": true,
+    "vulncheck": "Imports",
     "gofumpt": false,
     // "semanticTokens": true,
     // "experimentalWorkspaceModule": true,
@@ -316,26 +343,24 @@
 
   // {{{ coc-explorer
   "explorer.position": "left",
-  "explorer.width": 60,
+  "explorer.width": 40,
   "explorer.git.showIgnored": true,
-  "explorer.git.enable": true,
-  "explorer.file.showHiddenFiles": true,
+  "explorer.git.enable": false,
+  "explorer.file.showHiddenFiles": false,
   "explorer.icon.enableNerdfont": true,
   "explorer.keyMappings.global": {
     "<c-s>": "open:split",
     "<c-v>": "open:vsplit",
+    "o": "cd",
     "<cr>": [
       "wait",
       "expandable?",
       ["expanded?", "collapse", "expand"],
       "open"
     ],
-    "l": [
-      "wait",
-      "expandable?",
-      ["expanded?", "collapse", "expand"],
-      "open"
-    ]
+    "l": ["wait", "expandable?", ["expanded?", "collapse", "expand"], "open"],
+    "f": "search:recursive:noIgnore",
+    "F": ["resolveRoot", "search:recursive:noIgnore"]
   },
   "explorer.quitOnOpen": true,
   "explorer.sources": [
@@ -347,6 +372,8 @@
   "explorer.file.reveal.auto": true,
   "explorer.focus": true,
   "explorer.openAction.strategy": "previousBuffer",
+  "explorer.diagnostic.displayMax": 0,
+  "explorer.root.strategies": ["workspace", "cwd", "sourceBuffer", "reveal"],
   // }}}
 
   // {{{ outline
@@ -362,7 +389,7 @@
   // {{{ general diagnostics
   "diagnostic-languageserver.debug": false,
   "diagnostic-languageserver.filetypes": {
-    "markdown": "vale"
+    // "markdown": "vale"
   },
   "diagnostic-languageserver.linters": {
     "vale": {
@@ -392,9 +419,15 @@
 
   //}}}
 
-  "semanticTokens.enable": true,
+  // emmet {{{
+  // "emmet.includeLanguages": {},
+  // "emmet.showExpandedAbbreviation": "never",
+  // "emmet.showSuggestionsAsSnippets": true,
+  // }}}
+
+  "java-ext.debug": true,
   "sumneko-lua.enableNvimLuaDev": true,
-  "Lua.telemetry.enable": false,
+  "Lua.hint.enable": false,
   "svelte.enable-ts-plugin": true,
-  "java.format.settings.url": "/Users/jackieli/.config/coc/extensions/node_modules/redhat.java/eclipse-formatter.xml"
+  "snippets.ultisnips.pythonPrompt": false
 }

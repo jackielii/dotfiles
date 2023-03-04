@@ -4,6 +4,7 @@ let g:lightline.colorscheme = 'base16'
 
 function! CocCurrentFunction()
   let l:s = get(b:, 'coc_current_function', '')
+  if strlen(l:s) > 20 | let l:s = l:s[0:20] . '...' | endif
   if empty(l:s) | return '' | else | return '' .. l:s | endif
 endfunction
 
@@ -45,7 +46,6 @@ let g:lightline.tab = { 'active': [ 'tabnum' ], 'inactive': [ 'tabnum' ] }
 
 " https://github.com/josa42/vim-lightline-coc
 call lightline#coc#register()
-
 
 " let g:lightline = {
 " \ 'active': {
@@ -91,7 +91,7 @@ nmap <C-8> <Plug>lightline#bufferline#go(8)
 nmap <C-9> <Plug>lightline#bufferline#go(9)
 nmap <C-0> <Plug>lightline#bufferline#go(10)
 
-function! s:deleteToRight(direction) abort
+function! s:deleteToRight(direction)
   let i=0
   while 1
     if i > 50 | break | endif " stop loop during hacking

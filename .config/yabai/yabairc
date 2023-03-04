@@ -29,7 +29,7 @@ yabai -m config window_opacity_duration      0.0
 yabai -m config window_shadow                float
 
 yabai -m config active_window_opacity        1
-yabai -m config normal_window_opacity        0.95
+# yabai -m config normal_window_opacity        0.95
 yabai -m config split_ratio                  0.55
 yabai -m config auto_balance                 off
 
@@ -46,7 +46,7 @@ yabai -m config mouse_action2                resize
 
 # general space settings
 yabai -m config layout                       bsp
-yabai -m config top_padding                  2
+yabai -m config top_padding                  6
 yabai -m config bottom_padding               9
 yabai -m config left_padding                 16
 yabai -m config right_padding                16
@@ -67,6 +67,8 @@ yabai -m rule --add app='^GIMP-' manage=off
 # yabai -m rule --add app='^VLC$' manage=off
 yabai -m rule --add app='^WeChat$' manage=off
 yabai -m rule --add app='^Webex$' manage=off
+yabai -m rule --add app='^Steam.*$' manage=off
+yabai -m rule --add app='Dota 2' manage=off
 
 #SPACEBAR_HEIGHT=$(spacebar -m config height)
 #yabai -m config external_bar all:${SPACEBAR_HEIGHT}:0

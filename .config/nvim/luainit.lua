@@ -5,6 +5,8 @@ require('Comment').setup()
 require('indent_blankline').setup {
   char = '┊',
   show_trailing_blankline_indent = false,
+  show_current_context = true,
+  use_treesitter_scope = true,
 }
 
 -- dap setup {{{
@@ -73,7 +75,7 @@ require 'nvim-treesitter.configs'.setup {
     -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
     -- the name of the parser)
     -- list of language that will be disabled
-    -- disable = { "c", "rust" },
+    -- disable = { "tsx" },
 
     -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
@@ -92,7 +94,7 @@ require 'nvim-treesitter.configs'.setup {
     },
   },
 }
-local ft_to_parser = require"nvim-treesitter.parsers".filetype_to_parsername
+local ft_to_parser = require "nvim-treesitter.parsers".filetype_to_parsername
 ft_to_parser.json = "jsonc"
 -- local parser_config = require"nvim-treesitter.parsers".get_parser_configs()
 -- parser_config.jsonc.used_by = "json"
@@ -125,4 +127,3 @@ vim.cmd [[highlight! link TelescopeResultsTitle TelescopeTitle]]
 vim.cmd [[highlight! link TelescopePreviewTitle TelescopeTitle]]
 vim.cmd [[highlight! link TelescopePromptPrefix Identifier]]
 -- }}}
-
