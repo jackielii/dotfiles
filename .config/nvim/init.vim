@@ -454,7 +454,7 @@ map <leader>kss :call SynStack()<CR>
 nnoremap <F10> :TSHighlightCapturesUnderCursor<CR>
 autocmd ColorScheme * highlight! link TSNamespace Normal
 autocmd ColorScheme * highlight! link TSVariable Normal
-" highlight! link TSProperty Identifier
+autocmd ColorScheme * highlight! link TSParameterReference Identifier
 "}}}
 
 " ~/.vimrc_background will be updated by base16-shell profile helper:
@@ -469,7 +469,8 @@ au ColorScheme * call UpdateLightlineBase16()
 " Sync color wihout restarting vim
 function! Base16Sync()
   " theme would be symlinked to ~/.base16_theme
-  let l:theme = trim(system('echo ${$(basename $(readlink -f ~/.base16_theme) .sh)#*-}'))
+  let l:theme_path = trim(system('readlink -f ~/.base16_theme'))
+  let l:theme = fnamemodify(l:theme_path, ":t:r")[7:]
   if len(l:theme) == 0 | return | endif
   let l:fzf = trim(system('source ~/.config/base16-fzf/bash/base16-'..l:theme..'.config && echo $FZF_DEFAULT_OPTS'))
   let $FZF_DEFAULT_OPTS = l:fzf

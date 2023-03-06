@@ -227,6 +227,7 @@ alt - 0x32 : yabai -m space --focus \
 # focus previous window: there is no way to switch to recent floating window
 # cmd - tab : yabai -m window --focus recent || yabai -m space --focus recent
 cmd - f14 : yabai -m window --focus recent || yabai -m space --focus recent
+f15 : yabai -m space --focus recent
 # cycle through all windows in current space
 cmd + ctrl - tab : id=$(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id') && yabai -m window --focus $id
 # reverse cycle through all windows in current space
