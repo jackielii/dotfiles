@@ -207,12 +207,13 @@ eval "$(direnv hook zsh)"
 eval "$(zoxide init zsh)"
 # }}}
 
-# Base16 Shell
+# Base16 Shell{{{
 export BASE16_SHELL="$HOME/.config/base16-shell/" # already set in .zprofile
 export BASE16_SHELL_HOOKS="$HOME/.config/base16-shell-hooks/"
 [ -n "$PS1" ] && \
 	[ -s "$BASE16_SHELL/profile_helper.sh" ] && \
 		source "$BASE16_SHELL/profile_helper.sh"
+# }}}
 
 # {{{ fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -248,7 +249,6 @@ add-zsh-hook preexec base16_fzf_sync # run command in existing prompt
 add-zsh-hook precmd base16_fzf_sync # new prompt line without command
 # }}}
 
-
 export PATH=$HOME/bin:$PATH:$HOME/go/bin
 export EDITOR=nvim
 export PAGER=less
@@ -256,11 +256,15 @@ export PROMPT_COMMAND='history -a'
 export HISTSIZE=100000
 export HISTFILESIZE=200000
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
-export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
+## github related
+export GITHUB_TOKEN="${MY_GITHUB_API_TOKEN}"
+export GITHUB_API_TOKEN="${GITHUB_TOKEN}" # for coc-git
+export NPM_TOKEN=${PRIVATE_NPM_TOKEN}
 
 if [ "${OS}" = "Linux" ]; then
 	alias open="xdg-open"
 	export PATH=$PATH:$HOME/pycode:$HOME/app/flutter/bin:$HOME/app/android-studio/bin
+	export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
 fi
 
 if [ "${OS}" = "Darwin" ]; then
@@ -288,13 +292,22 @@ command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 # }}}
 
+# alias {{{
 alias cls='echo -ne "\033c"'
 alias rm='rm -i'
 alias dh='dirs -v'
 alias v='nvim'
 alias vi='nvim'
 alias dc='docker-compose'
+alias ns='kubens'
+alias ctx='kubectx'
+alias gs='gst'
+alias lg='lazygit'
+alias l='lf'
+alias gci='git commit'
+# }}}
 
+# familiar bash keybindings {{{
 unsetopt AUTOCD
 # ctrl+u kill to beginning
 autoload -U select-word-style
@@ -311,28 +324,20 @@ bindkey '^W' backward-kill-word-space
 # alt+delete delete to eol, used cat to show the escape sequence
 bindkey "^[[3;3~" vi-kill-eol
 bindkey "^[k" vi-kill-eol # alt+k, also ctrl+alt+k with skhd
-
-[ -f ~/.secrets ] && source ~/.secrets
+bindkey "^[[76;6u" clear-screen # ctrl+shift+l
 
 # enable bash completion functions
 autoload -U +X bashcompinit && bashcompinit
-alias gci='git commit'
+# }}}
+
+[ -f ~/.secrets ] && source ~/.secrets
+
 
 # prompt
 eval "$(starship init zsh)"
 
-alias ns='kubens'
-alias ctx='kubectx'
-alias gs='gst'
-alias lg='lazygit'
-alias l='lf'
-
 export JAVA_HOME=$HOME/.jdks/current # managed by intellij
 export PATH="$JAVA_HOME/bin:$PATH"
-
-## github related
-export GITHUB_TOKEN="${MY_GITHUB_API_TOKEN}"
-export GITHUB_API_TOKEN="${GITHUB_TOKEN}" # for coc-git
 
 ## macos libpq
 if [ "${OS}" = "Darwin" ]; then
@@ -355,7 +360,5 @@ fi
 if [ -f '/Users/jackieli/Applications/google-cloud-sdk/completion.zsh.inc' ]; then
 	source '/Users/jackieli/Applications/google-cloud-sdk/completion.zsh.inc';
 fi
-
-export NPM_TOKEN=${PRIVATE_NPM_TOKEN}
 
 # vim:set noet sts=0 sw=2 ts=2 tw=79 fdm=marker:

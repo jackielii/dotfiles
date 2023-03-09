@@ -195,7 +195,7 @@ handle_image() {
   esac
 }
 
-function hold() {
+hold() {
   tput civis >/dev/tty 2>/dev/null # hide cursor
   read -n 1 -s -r
   # stty raw
@@ -206,8 +206,8 @@ function hold() {
 
 draw() {
   if [ "$PAGE_MODE" ]; then
-    WIDTH=$(tput cols)
-    HEIGHT=$(tput lines)
+    WIDTH=${lf_width:=$(tput cols)}
+    HEIGHT=${lf_height:=$(tput lines)}
     X=0
     Y=0
   fi

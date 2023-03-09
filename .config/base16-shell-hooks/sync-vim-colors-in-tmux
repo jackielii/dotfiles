@@ -5,12 +5,8 @@
 # 2.1 vim's Base16Sync sets color scheme and $FZF_DEFAULT_OPTS
 # 3. fzf's color changes using precmd hook in ~/.zshrc
 
-BASE16_THEME=${$(basename $(readlink -f ~/.base16_theme) .sh)#*-}
-
-for pix in $(tmux list-panes -a -F '#{session_name}:#{window_index}.#{pane_index}')
-do
-    is_vim="ps -o state= -o comm= -t '#{pane_tty}'  | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?\$'"
-    tmux if-shell -t "$pix" "$is_vim" "send-keys -t $pix escape"
-    tmux if-shell -t "$pix" "$is_vim" "send-keys -t $pix ':call Base16Sync()' ENTER"
+for pix in $(tmux list-panes -a -F '#{session_name}:#{window_index}.#{pane_index}'); do
+  is_vim="ps -o state= -o comm= -t '#{pane_tty}'  | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?\$'"
+  tmux if-shell -t "$pix" "$is_vim" "send-keys -t $pix escape"
+  tmux if-shell -t "$pix" "$is_vim" "send-keys -t $pix ':call Base16Sync()' ENTER"
 done
-

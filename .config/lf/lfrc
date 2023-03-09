@@ -1,10 +1,11 @@
-# interpreter for shell commands
 set shell sh
 set sortby natural
 set reverse
 set icons on
 set incsearch
 set incfilter
+set scrolloff 10
+set promptfmt "\033[32;1m%u@%h\033[0m:\033[34;1m%d\033[0m" # remove file name
 
 # set previewer stpv
 # set cleaner stpvimgclr
@@ -14,7 +15,7 @@ set incfilter
 
 set previewer ~/.config/lf/preview
 set cleaner ~/.config/lf/clean
-map i $~/.config/lf/preview $f
+map i preview
 
 # set '-eu' options for shell commands
 # These options are used to have safer shell commands. Option '-e' is used to
@@ -31,9 +32,6 @@ set shellopts '-eu'
 # is newline. You need to consider the values of these options and create your
 # commands accordingly.
 set ifs "\n"
-
-# leave some space at the top and the bottom of the screen
-# set scrolloff 10
 
 # Use the `dim` attribute instead of underline for the cursor in the preview pane
 set cursorpreviewfmt "\033[7;2m"
@@ -77,15 +75,15 @@ map fc setfilter
 map fz fzf_jump
 map <c-p> fzf_jump
 
+map a push :mkdir<space>
+map E push $$EDITOR<space>
+map <backspace2> updir # somehow backspace2 is actual backspace on HHKB, <c-h> is <backspace>
+
+map l lfopen
+map <enter> open
+map z<space> push :z<space>
 map <c-c> :redraw; reload
 map <tab> :toggle; down
-
-map z<space> push :z<space>
-
-map a push :mkdir<space>
-
-map <enter> open
-map l opendir
 map <space> quicklook
 map <delete> delete
 map <c-c> clear
@@ -95,9 +93,19 @@ cmd quicklook &{{
     qlmanage -p $f &>/dev/null
 }}
 
-cmd opendir ${{
+cmd lfopen ${{
     if [ -d "$f" ]; then
         lf -remote "send $id cd '$f'"
+    elif [ -f "$f" ]; then
+        ~/.config/lf/preview "$f"
+    fi
+}}
+
+cmd preview ${{
+    if [[ -f "$f" ]]; then
+        ~/.config/lf/preview "$f"
+    elif [[ -d "$f" ]]; then
+        ls -lh --color=always "$f" | less -R
     fi
 }}
 
@@ -107,8 +115,32 @@ cmd delete ${{
     set -f
     printf "$fx\n\n"
     printf "Delete? [y/N]"
-    read ans
+    read -n1 ans
     [ "$ans" = "y" ] && rm -rf $fx
+}}
+
+cmd recol ${{
+    if [ $lf_width -le 80 ]; then # small window
+        lf -remote "send $id :set preview!; set ratios 1"
+        # I think there is a bug: https://github.com/gokcehan/lf/issues/825
+        # lf -remote "send $id :set preview off; set ratios 1"
+    elif [ $lf_ratios != "1:2:3" -o $lf_preview != "true" ]; then # if not already 3 column mode
+        lf -remote "send $id set preview; set ratios 1:2:3"
+        # lf -remote "send $id set preview on; set ratios 1:2:3"
+    fi
+}}
+recol # check column on startup
+# TODO: add mapping to toggle recolumn
+
+cmd on-quit ${{
+    # replace or append ' register
+    marks=$HOME/.local/share/lf/marks
+    grep -q -e "^':.*$" $marks
+    if [ $? -eq 0 ]; then
+        # BSD sed doesn't support -i without an extension
+        sed -i '' "/^':.*$/d" $marks
+    fi
+    echo "':${f%/*}" >> $marks
 }}
 
 # extract the current file with the right command

@@ -684,11 +684,10 @@ let g:go_metalinter_enabled = 0
 
 " proto format{{{
 " au FileType proto nnoremap <buffer> <leader>gfa :execute '!prototool format -w %' <bar> edit<CR>
-function s:delayedRefresh() abort
-  call timer_start(500, { tid -> execute("edit")})
-endfunction
-au! FileType proto nnoremap <buffer> <leader>gff :execute 'AsyncTask buf-format' <bar> call<SID>delayedRefresh()<CR>
-au! FileType proto nnoremap <buffer> <leader>kf :execute 'AsyncTask buf-format' <bar> call<SID>delayedRefresh()<CR>
+" function s:delayedRefresh() abort
+"   call timer_start(500, { tid -> execute("edit")})
+" endfunction
+au! FileType proto nnoremap <buffer> <leader>kf :AsyncTask buf-format<CR>
 " au FileType proto nnoremap <buffer> <leader>gff :call PrototoolFormatFix()<CR>
 "}}}
 
@@ -802,7 +801,8 @@ nnoremap , <Nop>
 
 " asynctask{{{
 let g:asynctasks_config_name = '.vim/tasks.ini'
-let g:asyncrun_open = 6
+let g:asyncrun_open = 4
+let g:asynctasks_term_pos = 'bottom'
 "}}}
 
 " nvim-tree.lua {{{ using coc-explorer now
@@ -1217,8 +1217,8 @@ nmap <silent><F7> <Plug>(coc-float-hide):nohl<CR> " <bar> CocCommand git.refresh
 imap <silent><F7> <C-\><C-O>:execute "normal \<Plug>(coc-float-hide)"<CR>
 nmap <leader>ki :CocCommand git.chunkInfo<CR>
 nmap <leader>ku :CocCommand git.chunkUndo<CR>
-nmap <F5> :CocCommand tasks.runLastTask<CR>
-imap <F5> <C-\><C-O>:CocCommand tasks.runLastTask<CR>
+nmap <F5> :AsyncTaskLast<CR>
+imap <F5> <C-\><C-O>:AsyncTaskLast<CR>
 
 nnoremap <silent> ]n :CocCommand document.jumpToNextSymbol<CR>
 nnoremap <silent> [n :CocCommand document.jumpToPrevSymbol<CR>
