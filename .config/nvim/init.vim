@@ -972,6 +972,7 @@ let g:coc_global_extensions = [
   \ "coc-emmet",
   \ "coc-lists",
   \ "coc-flow",
+  \ "coc-sh",
   \ ]
 
 
@@ -1250,10 +1251,11 @@ call coc#config("python.formatting.blackPath", $HOMEBREW_PREFIX . "/bin/black")
 " {{{ tmux-navigator
 let g:tmux_navigator_disable_when_zoomed = 1
 let g:tmux_navigator_no_mappings = 1
-nnoremap <silent> <c-h> :TmuxNavigateLeft<cr>
-nnoremap <silent><expr> <c-j> <SID>isCocList() ? "\<C-n>" : ":TmuxNavigateDown<cr>"
-nnoremap <silent><expr> <c-k> <SID>isCocList() ? "\<C-p>" : ":TmuxNavigateUp<cr>"
-nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
+nnoremap <silent> <C-h> :<C-U>TmuxNavigateLeft<cr>
+nnoremap <silent><expr> <C-j> <SID>isCocList() ? "\<C-n>" : ":<C-U>TmuxNavigateDown<cr>"
+nnoremap <silent><expr> <C-k> <SID>isCocList() ? "\<C-p>" : ":<C-U>TmuxNavigateUp<cr>"
+nnoremap <silent> <C-l> :<C-U>TmuxNavigateRight<cr>
+nnoremap <silent> <M-`> :<C-U>TmuxNavigatePrevious<cr>
 " let g:tmux_navigator_preserve_zoom = 1
 " }}}
 
@@ -1271,3 +1273,4 @@ nmap <C-M-k> <Plug>(coc-diagnostic-info)
 
 runtime luainit.lua
 runtime lightline.vim
+

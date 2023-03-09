@@ -346,14 +346,17 @@ ctrl + cmd - k : skhd -k "hyper - 0x80" ; skhd -k "cmd - k" ; skhd -k "hyper - 0
 # launch common apps {{{
 
 # switch to main first tmux listening to socket, if none, launch new one
-alt - t : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
-    kitty --listen-on=unix:/tmp/mykitty -d ~ \
-        zsh -c "source ~/.base16_theme; tmux attach"
-cmd + shift - return : kitty -d ~
+alt - t : ~/bin/kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
+    ~/bin/kitty --listen-on=unix:/tmp/mykitty -d ~ \
+        zsh -c "source ~/.base16_theme; tmux new-session -A -s main"
+# alt - f : kitty -d ~ --title 'MY-|-Filer' lf
+alt - f : ~/bin/kitty -d ~ --title 'MY-|-Filer' zsh -ci lf
+
+cmd + shift - return : ~/bin/kitty -d ~
 cmd + ctrl - return : open "/Applications/Google Chrome.app"
 cmd + ctrl + shift - return : open ~
 alt - w : open "/Applications/Google Chrome.app"
-alt - f : open ~
+# alt - f : open ~
 alt - m : open -a "Microsoft Outlook.app"
 # cmd + ctrl + shift - return : kitty -1 -d ~ zsh -c "source ~/.base16_theme; ranger"
 # }}}

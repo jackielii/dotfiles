@@ -24,6 +24,7 @@ yadm add $HOME/.config/nvim/luainit.lua
 yadm add $HOME/.config/coc/ultisnips/*
 yadm add $HOME/.config/starship.toml
 yadm add $HOME/.config/base16-shell-hooks/
+yadm add $HOME/.config/lf/
 yadm add $HOME/bin/yadm-add
 yadm add $HOME/.direnvrc
 yadm add $HOME/.gnupg/gpg-agent.conf

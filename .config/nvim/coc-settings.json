@@ -18,10 +18,11 @@
   "highlight.document.enable": true,
   "colors.enable": true,
   "semanticTokens.enable": false,
+  "inlayHint.enable": false,
   "coc.preferences.currentFunctionSymbolAutoUpdate": true, // this updates the cursor line
   "coc.preferences.enableMarkdown": true,
   "coc.preferences.formatOnSave": true,
-  "[sql][json]": {
+  "[sql][json][python]": {
     "coc.preferences.formatOnSave": false
   },
   // "coc.preferences.formatOnSaveFiletypes": [
@@ -194,13 +195,13 @@
       "command": "docker-langserver",
       "filetypes": ["dockerfile"],
       "args": ["--stdio"]
-    },
-    "bash": {
-      "command": "bash-language-server",
-      "args": ["start"],
-      "filetypes": ["sh"],
-      "ignoredRootPaths": ["~"]
     }
+    // "bash": {
+    //   "command": "bash-language-server",
+    //   "args": ["start"],
+    //   "filetypes": ["sh"],
+    //   "ignoredRootPaths": ["~"]
+    // }
     // "efm": {
     //   "command": "efm-langserver",
     //   "args": [],

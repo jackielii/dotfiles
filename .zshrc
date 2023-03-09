@@ -208,11 +208,11 @@ eval "$(zoxide init zsh)"
 # }}}
 
 # Base16 Shell
-export BASE16_SHELL="$HOME/.config/base16-shell/"
+export BASE16_SHELL="$HOME/.config/base16-shell/" # already set in .zprofile
+export BASE16_SHELL_HOOKS="$HOME/.config/base16-shell-hooks/"
 [ -n "$PS1" ] && \
 	[ -s "$BASE16_SHELL/profile_helper.sh" ] && \
 		source "$BASE16_SHELL/profile_helper.sh"
-export BASE16_SHELL_HOOKS="$HOME/.config/base16-shell-hooks/"
 
 # {{{ fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -265,12 +265,13 @@ fi
 
 if [ "${OS}" = "Darwin" ]; then
 	if [ -n "${HOMEBREW_PREFIX}" ]; then
-		# python3 -> python
+		# python3 -> python; (DEPRECATED, using pyenv instead)
 		# use gnu ls etc
 		# https://formulae.brew.sh/formula/coreutils -> moved to zsh plugin
 		# https://docs.brew.sh/Homebrew-and-Python#python-3y
-		export PATH=$PATH:${HOMEBREW_PREFIX}/opt/python/libexec/bin
+		# export PATH=$PATH:${HOMEBREW_PREFIX}/opt/python/libexec/bin
 	fi
+	alias locate="/usr/bin/locate" # use system locate instead of glocate
 	# https://github.com/kovidgoyal/kitty/issues/838#issuecomment-770328902
 	bindkey "\e[1;3D" backward-word # ⌥←
 	bindkey "\e[1;3C" forward-word # ⌥→
@@ -281,12 +282,19 @@ if [ "${OS}" = "Darwin" ]; then
 	bindkey '\e[3~' delete-char
 fi
 
+# pyenv {{{
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+# }}}
+
 alias cls='echo -ne "\033c"'
 alias rm='rm -i'
 alias dh='dirs -v'
 alias v='nvim'
 alias vi='nvim'
 alias dc='docker-compose'
+alias r='ranger'
 
 unsetopt AUTOCD
 # ctrl+u kill to beginning
@@ -308,12 +316,15 @@ bindkey "^[[3;3~" vi-kill-eol
 # enable bash completion functions
 autoload -U +X bashcompinit && bashcompinit
 alias gci='git commit'
+
+# prompt
 eval "$(starship init zsh)"
 
 alias ns='kubens'
 alias ctx='kubectx'
 alias gs='gst'
 alias lg='lazygit'
+alias l='lf'
 
 export JAVA_HOME=$HOME/.jdks/current # managed by intellij
 export PATH="$JAVA_HOME/bin:$PATH"

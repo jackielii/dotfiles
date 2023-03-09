@@ -92,8 +92,6 @@ ${HOMEBREW_PREFIX}/bin/pip3 install pynvim # coc snippet requirement
 pushd ~/.config/coc/extensions && yarn -s && popd # coc extensions
 
 # lsp servers
-go install golang.org/x/tools/gopls@latest
-yarn global add bash-language-server
 # }}}
 
 # Neovim {{{

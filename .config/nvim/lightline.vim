@@ -69,6 +69,7 @@ let g:lightline#bufferline#unnamed      = '[No Name]'
 let g:lightline#bufferline#clickable    = 1
 let g:lightline#bufferline#enable_devicons = 0
 let g:lightline#bufferline#icon_position = 'left'
+let g:lightline#bufferline#unicode_symbols = 0
 nmap <Leader>1 <Plug>lightline#bufferline#go(1)
 nmap <Leader>2 <Plug>lightline#bufferline#go(2)
 nmap <Leader>3 <Plug>lightline#bufferline#go(3)

@@ -69,6 +69,7 @@ yabai -m rule --add app='^WeChat$' manage=off
 yabai -m rule --add app='^Webex$' manage=off
 yabai -m rule --add app='^Steam.*$' manage=off
 yabai -m rule --add app='Dota 2' manage=off
+yabai -m rule --add title='^MY-|-Filer$' manage=off grid=8:8:1:1:6:6
 
 #SPACEBAR_HEIGHT=$(spacebar -m config height)
 #yabai -m config external_bar all:${SPACEBAR_HEIGHT}:0

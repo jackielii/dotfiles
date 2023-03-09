@@ -63,14 +63,14 @@ symbol = " "
 symbol = " "
 
 [custom.direnv]
-symbol = " "
+symbol = " "
 when = """ test -n "$DIRENV_DIR" """
 
 [custom.work]
 # symbol = " "
-symbol = " "
+# symbol = " "
 command = " test $GITHUB_TOKEN = $TES_GITHUB_API_TOKEN && echo Tes || echo JL"
-when = """ test -n "$GITHUB_TOKEN""""
+when = """ test -n "$GITHUB_TOKEN" """
 style = "blue"
 format = "[$symbol($output)]($style) "
 
@@ -80,3 +80,9 @@ format = "[$symbol($output)]($style) "
 # ahead = ""
 # behind = ""
 # diverged = ""
+
+[custom.ls_level]
+command = "echo $LF_LEVEL"
+when = """ test -n "$LF_LEVEL" """
+style = "fg:purple"
+format = "[(LF@$output)]($style)"
