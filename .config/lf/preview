@@ -7,7 +7,7 @@ X="${4}"         # X coordinate of the preview pane
 Y="${5}"         # Y coordinate of the preview pane
 
 if ! [ -f "$FILE_PATH" ] && ! [ -h "$FILE_PATH" ]; then
-  return
+  exit
 fi
 
 FILE_EXTENSION="${FILE_PATH##*.}"
@@ -197,9 +197,10 @@ handle_image() {
 
 function hold() {
   tput civis >/dev/tty 2>/dev/null # hide cursor
-  stty raw
-  dd bs=1 count=1 &>/dev/null
-  stty cooked
+  read -n 1 -s -r
+  # stty raw
+  # dd bs=1 count=1 &>/dev/null
+  # stty cooked
   tput cnorm >/dev/tty 2>/dev/null # show cursor
 }
 

@@ -294,14 +294,14 @@ alias dh='dirs -v'
 alias v='nvim'
 alias vi='nvim'
 alias dc='docker-compose'
-alias r='ranger'
 
 unsetopt AUTOCD
 # ctrl+u kill to beginning
 autoload -U select-word-style
 # select-word-style bash
 bindkey \^U backward-kill-line
-export WORDCHARS='@*?_.[]~=&;!#$%^(){}<>'
+# export WORDCHARS='@*?_.[]~=&;!#$%^(){}<>'
+export WORDCHARS='@*?.[]~=&!#$%^(){}<>'
 
 # ctrl+w backward kill to space
 autoload -U backward-kill-word-match
@@ -310,6 +310,7 @@ zstyle ':zle:backward-kill-word-space' word-style space
 bindkey '^W' backward-kill-word-space
 # alt+delete delete to eol, used cat to show the escape sequence
 bindkey "^[[3;3~" vi-kill-eol
+bindkey "^[k" vi-kill-eol # alt+k, also ctrl+alt+k with skhd
 
 [ -f ~/.secrets ] && source ~/.secrets
 

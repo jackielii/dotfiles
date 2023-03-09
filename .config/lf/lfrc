@@ -1,9 +1,10 @@
 # interpreter for shell commands
 set shell sh
-set sortby atime
+set sortby natural
 set reverse
 set icons on
 set incsearch
+set incfilter
 
 # set previewer stpv
 # set cleaner stpvimgclr
@@ -60,28 +61,31 @@ map yn $printf "%s" "${fx##*/}" | pbcopy # filename
 map yb $printf "%s" "${fx%/*}" | pbcopy  # basename
 
 map d
-map p
-map P paste
 map dd cut
 map dD delete
 map DD trash
 map dT trash
+map p
+map pp paste
 
-map <c-k>a fzf_search_all
-map <c-k>g push :fzf_grep<space>
-map F
-map Fa fzf_search_all
-map Fg push :fzf_grep<space>
+map F fzf_jump
+map f
+map fa fzf_search_all
+map fg push :fzf_grep<space>
+map ff filter
+map fc setfilter
+map fz fzf_jump
 map <c-p> fzf_jump
 
-map <c-o> jump-prev
-map <tab> jump-next
+map <c-c> :redraw; reload
+map <tab> :toggle; down
 
-map zz push :z<space>
+map z<space> push :z<space>
 
 map a push :mkdir<space>
 
-map <enter> :toggle; down
+map <enter> open
+map l opendir
 map <space> quicklook
 map <delete> delete
 map <c-c> clear
@@ -91,9 +95,9 @@ cmd quicklook &{{
     qlmanage -p $f &>/dev/null
 }}
 
-cmd open ${{
+cmd opendir ${{
     if [ -d "$f" ]; then
-        lf -remote "send $id cd $f"
+        lf -remote "send $id cd '$f'"
     fi
 }}
 
@@ -139,12 +143,12 @@ cmd zip ${{
 
 cmd z %{{
 	result="$(zoxide query --exclude $PWD $@)"
-	lf -remote "send $id cd $result"
+	lf -remote "send $id cd \"$result\""
 }}
 
 cmd zi ${{
 	result="$(zoxide query -i)"
-	lf -remote "send $id cd $result"
+	lf -remote "send $id cd \"$result\""
 }}
 
 cmd mkdir %{{
