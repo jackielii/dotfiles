@@ -111,3 +111,16 @@ func Fuzz${1:Xxx}(f *testing.F) {
 	})
 }
 endsnippet
+
+# https://blog.cloudflare.com/using-go-as-a-scripting-language-in-linux/
+# https://github.com/erning/gorun/#example
+snippet gorun "go run shabang line" b
+/// 2>/dev/null ; gorun "$\0" "$@" ; exit $?
+//go:build ignore
+
+package main
+
+func main() {
+	${0:${VISUAL}}
+}
+endsnippet

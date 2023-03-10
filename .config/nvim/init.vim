@@ -400,6 +400,7 @@ Plug 'nvim-telescope/telescope.nvim'
 "Plug 'pwntester/octo.nvim'
 Plug 'nvim-telescope/telescope-dap.nvim'
 
+Plug 'ptzz/lf.vim' " lf file manager
 Plug 'voldikss/vim-floaterm' " floating terminal within neovim
 Plug 'sindrets/diffview.nvim' " quite nice diffview, :DiffViewFileHistory
 
@@ -649,7 +650,7 @@ augroup GoRelated
   " autocmd FileType go let b:coc_root_patterns = ['.git', 'go.mod']
   " autocmd BufNewFile,BufRead go.mod set syntax=gomod
   autocmd BufReadPost,BufWritePre *.go call <SID>SetMark("import (\\_.\\{-})", "i") "http://vimregex.com/#Non-Greedy
-  " autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.organizeImport')
+  autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.organizeImport')
 augroup END
 nmap <leader>kgr :CocCommand go.gopls.tidy<CR>
 nmap <leader>kgt :CocCommand go.gopls.runTests<CR>
@@ -822,7 +823,7 @@ hi! link CocExplorerGitDeleted CocExplorerGitContentChange
 
 " dap config{{{
 " F1 > cd g:project_path S-F1: cd buff_path
-" F2 > lazygit S-F2: floatterm
+" F2 > lazygit S-F2: floaterm
 " F3 > cd $(buffer path)
 " F4 > CloseNonProjectBuffers
 " F5 > AsyncTask run_last
@@ -883,9 +884,12 @@ tnoremap <silent>   <F14>    <C-\><C-n>:FloatermToggle<CR>
 inoremap <silent>   <F14>    <esc><C-\><C-n>:FloatermToggle<CR>
 nmap     <F2> :FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
 imap     <F2> <esc>:FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
+
 let g:floaterm_width=0.8
 let g:floaterm_height=0.9
 let g:floaterm_title='Terminal'
+
+let g:lf_command_override = 'TERM=xterm-kitty lf'
 " }}}
 
 " close all non project buffers {{{
@@ -939,7 +943,6 @@ let g:coc_global_extensions = [
   \ "coc-docker",
   \ "coc-eslint",
   \ "coc-explorer",
-  \ "coc-floaterm",
   \ "coc-flutter",
   \ "coc-git",
   \ "coc-go",
@@ -1270,6 +1273,13 @@ let g:copilot_no_tab_map = v:true
 " nmap <C-M-k> :call CocAction('diagnosticPreview')<CR>
 nmap <C-M-k> <Plug>(coc-diagnostic-info)
 " }}}
+
+" lf {{{
+let g:lf_map_keys = 0
+map <leader>lf :<C-u>Lf<CR>
+" }}}
+
+map <leader>N :silent BufRenumber<CR>
 
 runtime luainit.lua
 runtime lightline.vim

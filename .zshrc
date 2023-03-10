@@ -106,11 +106,6 @@ if [ $TERM = "xterm-kitty" ]; then
 	# alias ssh="kitty +kitten ssh"
 fi
 
-[ -z "${HOMEBREW_PREFIX}" ] && eval "$(brew shellenv)"
-
-# When logging in from tty .profile will not be sourced because we use zsh as
-# login shell: https://gist.github.com/pbrisbin/45654dc74787c18e858c However,
-# when logging in via UI, .profile will be sourced:
 # https://github.com/canonical/lightdm/blob/1.26.0/debian/lightdm-session#L38
 # We put the env vars in .profile because we need the PATH etc to be present
 # for GUI apps. If we source .profile in .zshrc directly, it'll be sourced
@@ -119,6 +114,8 @@ fi
 [[ $_DOT_PROFILE_SOURCED != "yes" && -f ~/.profile ]] && source ~/.profile
 
 eval "$(direnv hook zsh)"
+export NODE_VERSIONS="$HOME/.nvm/versions/node"
+export NODE_VERSION_PREFIX=
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -176,7 +173,7 @@ eval "$(direnv hook zsh)"
 
 # {{{ nvm.sh
 # the original load nvm is very slow, load manually
-# export NVM_DIR="$HOME/.nvm"
+export NVM_DIR="$HOME/.nvm"
 # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
 # Install zsh-async if it’s not present

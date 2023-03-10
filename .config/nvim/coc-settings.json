@@ -21,9 +21,9 @@
   "inlayHint.enable": false,
   "coc.preferences.currentFunctionSymbolAutoUpdate": true, // this updates the cursor line
   "coc.preferences.enableMarkdown": true,
-  "coc.preferences.formatOnSave": true,
-  "[sql][json][python]": {
-    "coc.preferences.formatOnSave": false
+  "coc.preferences.formatOnSave": false,
+  "[go][javascript][typescript]": {
+    "coc.preferences.formatOnSave": true
   },
   // "coc.preferences.formatOnSaveFiletypes": [
   //   "go",
@@ -172,11 +172,11 @@
     //   "port": 8080,
     //   "filetypes": ["kotlin"]
     // },
-    "kotlin": {
-      // "trace.server": "verbose",
-      "command": "$HOME/personal/kotlin-language-server/server/build/install/server/bin/kotlin-language-server",
-      "filetypes": ["kotlin"]
-    },
+    // "kotlin": {
+    //   // "trace.server": "verbose",
+    //   "command": "$HOME/personal/kotlin-language-server/server/build/install/server/bin/kotlin-language-server",
+    //   "filetypes": ["kotlin"]
+    // },
     //"gopls": {
     //  "command": "gopls",
     //  "filetypes": ["go"],
@@ -191,11 +191,11 @@
     //    // "hoverKind": "FullDocumentation"
     //  }
     //},
-    "dockerfile": {
-      "command": "docker-langserver",
-      "filetypes": ["dockerfile"],
-      "args": ["--stdio"]
-    }
+    // "dockerfile": {
+    //   "command": "docker-langserver",
+    //   "filetypes": ["dockerfile"],
+    //   "args": ["--stdio"]
+    // }
     // "bash": {
     //   "command": "bash-language-server",
     //   "args": ["start"],
@@ -347,7 +347,7 @@
   "explorer.width": 40,
   "explorer.git.showIgnored": true,
   "explorer.git.enable": false,
-  "explorer.file.showHiddenFiles": false,
+  "explorer.file.showHiddenFiles": true,
   "explorer.icon.enableNerdfont": true,
   "explorer.keyMappings.global": {
     "<c-s>": "open:split",

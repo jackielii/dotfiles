@@ -1,3 +1,6 @@
+# single column on small panes
+$[ $lf_width -le 80 ] && lf -remote "send $id :set preview!; set ratios 1" || exit 0
+
 set shell sh
 set sortby natural
 set reverse
@@ -6,12 +9,6 @@ set incsearch
 set incfilter
 set scrolloff 10
 set promptfmt "\033[32;1m%u@%h\033[0m:\033[34;1m%d\033[0m" # remove file name
-
-# set previewer stpv
-# set cleaner stpvimgclr
-# &stpvimg --listen $id
-# cmd on-quit $stpvimg --end $id
-# map i $stpv $f
 
 set previewer ~/.config/lf/preview
 set cleaner ~/.config/lf/clean
@@ -36,9 +33,11 @@ set ifs "\n"
 # Use the `dim` attribute instead of underline for the cursor in the preview pane
 set cursorpreviewfmt "\033[7;2m"
 
+map R :reload; recol
+
 map gh cd ~
-map gd cd ~/Documents
-map gs cd ~/Downloads
+map gd cd ~/Downloads
+map gs cd ~/Documents
 map gp cd ~/personal
 map gn cd ~/personal/notes
 map gw cd ~/work
@@ -51,12 +50,13 @@ map xx extract
 
 map o $open $f
 map O $open -R $f
+map Q $lf -remote "send quit" # close all window
 
 map y
 map yy copy
 map yp $printf "%s" "$fx" | pbcopy       # full path
 map yn $printf "%s" "${fx##*/}" | pbcopy # filename
-map yb $printf "%s" "${fx%/*}" | pbcopy  # basename
+map yd $printf "%s" "${fx%/*}" | pbcopy  # dirname
 
 map d
 map dd cut
@@ -70,8 +70,8 @@ map F fzf_jump
 map f
 map fa fzf_search_all
 map fg push :fzf_grep<space>
-map ff filter
-map fc setfilter
+map ff setfilter
+map f<space> filter
 map fz fzf_jump
 map <c-p> fzf_jump
 
@@ -87,7 +87,23 @@ map <tab> :toggle; down
 map <space> quicklook
 map <delete> delete
 map <c-c> clear
-map ? doc
+map ?
+map ?? list-maps
+map ?s list-selections
+map ?b list-buffers
+
+map +x chmod +x
+map +w chmod +w
+map +r chmod +r
+map -x chmod -x
+map -w chmod -w
+map -r chmod -r
+
+cmd chmod ${{
+	[ $# -ne 1 ] && exit
+	eval "chmod u$1 '$f'"
+	lf -remote "send $id reload"
+}}
 
 cmd quicklook &{{
     qlmanage -p $f &>/dev/null
@@ -119,28 +135,32 @@ cmd delete ${{
     [ "$ans" = "y" ] && rm -rf $fx
 }}
 
+cmd deleteImmediately ${{
+	rm -rf $fx
+}}
+
 cmd recol ${{
     if [ $lf_width -le 80 ]; then # small window
         lf -remote "send $id :set preview!; set ratios 1"
         # I think there is a bug: https://github.com/gokcehan/lf/issues/825
         # lf -remote "send $id :set preview off; set ratios 1"
     elif [ $lf_ratios != "1:2:3" -o $lf_preview != "true" ]; then # if not already 3 column mode
-        lf -remote "send $id set preview; set ratios 1:2:3"
+        lf -remote "send $id set ratios 1:2:3; set preview"
         # lf -remote "send $id set preview on; set ratios 1:2:3"
     fi
 }}
-recol # check column on startup
 # TODO: add mapping to toggle recolumn
 
 cmd on-quit ${{
     # replace or append ' register
-    marks=$HOME/.local/share/lf/marks
-    grep -q -e "^':.*$" $marks
-    if [ $? -eq 0 ]; then
-        # BSD sed doesn't support -i without an extension
-        sed -i '' "/^':.*$/d" $marks
-    fi
-    echo "':${f%/*}" >> $marks
+    ~/.config/lf/mark-on-quit.go "${f%/*}"
+    # marks=$HOME/.local/share/lf/marks
+    # grep -q -e "^':.*$" $marks
+    # if [ $? -eq 0 ]; then
+    #     # BSD sed doesn't support -i without an extension
+    #     sed -i '' "/^':.*$/d" $marks
+    # fi
+    # echo "':${f%/*}" >> $marks
 }}
 
 # extract the current file with the right command
