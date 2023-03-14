@@ -127,3 +127,11 @@ vim.cmd [[highlight! link TelescopeResultsTitle TelescopeTitle]]
 vim.cmd [[highlight! link TelescopePreviewTitle TelescopeTitle]]
 vim.cmd [[highlight! link TelescopePromptPrefix Identifier]]
 -- }}}
+
+-- Autopairs {{{
+require("nvim-autopairs").setup({
+  map_cr = false,
+  ignored_next_char = [=[[%w%%%'%[%{%(%"%.%`%$]]=],
+  fast_wrap = {},
+})
+-- }}}

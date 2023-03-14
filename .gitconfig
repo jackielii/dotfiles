@@ -60,3 +60,5 @@
 	defaultBranch = main
 [commit]
 	gpgSign = true
+[push]
+	followTags = true

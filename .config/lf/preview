@@ -35,10 +35,11 @@ handle_image() {
   ## specifying only one dimension while keeping the aspect ratio, the width
   ## will be used.
   local DEFAULT_SIZE
-  DEFAULT_SIZE=$(kitty +kitten icat --print-window-size)
-  if [ -z "$DEFAULT_SIZE" ]; then
-    DEFAULT_SIZE="1024x768"
-  fi
+  DEFAULT_SIZE="1024x768"
+  # DEFAULT_SIZE=$(kitty +kitten icat --print-window-size)
+  # if [ -z "$DEFAULT_SIZE" ]; then
+  #   DEFAULT_SIZE="1024x768"
+  # fi
 
   case "${MIME_TYPE}" in
   ## SVG

@@ -112,6 +112,7 @@ fi
 # twice when the tty emulator starts which calls zsh which will eval .zshrc.
 # Hense the following line
 [[ $_DOT_PROFILE_SOURCED != "yes" && -f ~/.profile ]] && source ~/.profile
+[[ $_DOT_PROFILE_SOURCED != "yes" && -f ~/.zprofile ]] && source ~/.zprofile
 
 eval "$(direnv hook zsh)"
 export NODE_VERSIONS="$HOME/.nvm/versions/node"
@@ -148,75 +149,17 @@ export NODE_VERSION_PREFIX=
 # export KEYTIMEOUT=1
 # bindkey -v
 
-# ## more keys for easier editing: best of emacs & vim
-# bindkey "^a" beginning-of-line
-# bindkey "^e" end-of-line
-# bindkey "^f" history-incremental-search-forward
-# bindkey "^g" send-break
-# bindkey "^h" backward-delete-char
-# bindkey "^n" down-history
-# bindkey "^p" up-history
-# bindkey "^r" history-incremental-search-backward
-# bindkey "^u" redo
-# bindkey "^w" backward-kill-word
-# bindkey "^?" backward-delete-char
-# bindkey -M viins '^[.' insert-last-word
-# backward-kill-dir () {
-#     local WORDCHARS=${WORDCHARS/\/}
-#     zle backward-kill-word
-# }
-# zle -N backward-kill-dir
-# bindkey '^[^?' backward-kill-dir
-# bindkey "^[[1;3C" forward-word
-# bindkey "^[[1;3D" backward-word
-# }}} vim+emacs mode
-
 # {{{ nvm.sh
-# the original load nvm is very slow, load manually
+# the original load nvm is very slow, load manually with . $NVM_DIR/nvm.sh
 export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-
-# Install zsh-async if it’s not present
-# if [[ ! -a ~/.zsh-async ]]; then
-#   git clone git@github.com:mafredri/zsh-async.git ~/.zsh-async
-# fi
-# source ~/.zsh-async/async.zsh
-# export NVM_DIR="$HOME/.nvm"
-# function load_nvm() {
-#     [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-#     [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-# }
-# async_start_worker nvm_worker -n
-# async_register_callback nvm_worker load_nvm
-# async_job nvm_worker sleep 0.1
-
-# alternative
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" --no-use # This loads nvm
-# alias node='unalias node ; unalias npm ; nvm use default ; node $@'
-# alias npm='unalias node ; unalias npm ; nvm use default ; npm $@'
-# alias loadnvm="source $NVM_DIR/nvm.sh"
-# }}}
-#
 
 # {{{ zoxide zsh-z alternative
 # https://github.com/ajeetdsouza/zoxide
 eval "$(zoxide init zsh)"
 # }}}
 
-# Base16 Shell{{{
-export BASE16_SHELL="$HOME/.config/base16-shell/" # already set in .zprofile
-export BASE16_SHELL_HOOKS="$HOME/.config/base16-shell-hooks/"
-[ -n "$PS1" ] && \
-	[ -s "$BASE16_SHELL/profile_helper.sh" ] && \
-		source "$BASE16_SHELL/profile_helper.sh"
-# }}}
-
 # {{{ fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# export FZF_TMUX=1
-# export FZF_TMUX_OPTS="-p60%,70%"
 
 export FZF_DEFAULT_COMMAND="fd ."
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
@@ -248,6 +191,7 @@ add-zsh-hook precmd base16_fzf_sync # new prompt line without command
 
 export PATH=$HOME/bin:$PATH:$HOME/go/bin
 export EDITOR=nvim
+export LESSKEYIN=~/.config/lesskey
 export PAGER=less
 export PROMPT_COMMAND='history -a'
 export HISTSIZE=100000

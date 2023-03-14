@@ -223,6 +223,7 @@ cmd + ctrl - 9 : yabai -m space --focus 9
 alt - 0x32 : yabai -m space --focus \
     $(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == true).index)|.[0]') \
         || yabai -m space --focus recent
+cmd + ctrl - d : yabai -m space --toggle show-desktop
 
 # focus previous window: there is no way to switch to recent floating window
 # cmd - tab : yabai -m window --focus recent || yabai -m space --focus recent

@@ -9,10 +9,10 @@
   "diagnostic.checkCurrentLine": true,
   "diagnostic.messageTarget": "float",
   "diagnostic.enableMessage": "jump",
-  "pairs.enableCharacters": ["(", "[", "{", "<", "'", "\"", "`"],
-  "pairs.enableBackspace": true,
-  "pairs.disableLanguages": [],
-  "pairs.alwaysPairCharacters": [],
+  // "pairs.enableCharacters": ["(", "[", "{", "<", "'", "\"", "`"],
+  // "pairs.enableBackspace": true,
+  // "pairs.disableLanguages": [],
+  // "pairs.alwaysPairCharacters": [],
   "codeLens.enable": false,
   "highlight.colorNames.enable": false,
   "highlight.document.enable": true,
@@ -429,6 +429,7 @@
   "java-ext.debug": true,
   "sumneko-lua.enableNvimLuaDev": true,
   "Lua.hint.enable": false,
+  "sumneko-lua.checkUpdate": false,
   "svelte.enable-ts-plugin": true,
   "snippets.ultisnips.pythonPrompt": false
 }

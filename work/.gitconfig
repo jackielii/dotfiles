@@ -9,4 +9,4 @@
 [commit]
    gpgSign = true
 [push]
-   followTags = true
+	followTags = true

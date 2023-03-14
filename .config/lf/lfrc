@@ -1,5 +1,5 @@
 # single column on small panes
-$[ $lf_width -le 80 ] && lf -remote "send $id :set preview!; set ratios 1" || exit 0
+$[ $lf_width -le 80 ] && lf -remote "send $id :set nopreview; set ratios 1" || exit 0
 
 set shell sh
 set sortby natural
@@ -7,12 +7,12 @@ set reverse
 set icons on
 set incsearch
 set incfilter
-set scrolloff 10
+set scrolloff 2
 set promptfmt "\033[32;1m%u@%h\033[0m:\033[34;1m%d\033[0m" # remove file name
+set hidden
 
-set previewer ~/.config/lf/preview
-set cleaner ~/.config/lf/clean
-map i preview
+set previewer ~/.config/lf/preview.go
+set cleaner ~/.config/lf/clean.go
 
 # set '-eu' options for shell commands
 # These options are used to have safer shell commands. Option '-e' is used to
@@ -51,6 +51,7 @@ map xx extract
 map o $open $f
 map O $open -R $f
 map Q $lf -remote "send quit" # close all window
+map i $$lf_previewer "$f"
 
 map y
 map yy copy
@@ -81,12 +82,16 @@ map <backspace2> updir # somehow backspace2 is actual backspace on HHKB, <c-h> i
 
 map l lfopen
 map <enter> open
+map Z push :zi<space>
 map z<space> push :z<space>
 map <c-c> :redraw; reload
 map <tab> :toggle; down
 map <space> quicklook
 map <delete> delete
 map <c-c> clear
+map g. set hidden!
+map zp set preview!
+
 map ?
 map ?? list-maps
 map ?s list-selections
@@ -98,6 +103,16 @@ map +r chmod +r
 map -x chmod -x
 map -w chmod -w
 map -r chmod -r
+
+map z1 :set nopreview; set ratios 1
+map z3 :set ratios 1:2:3; set preview
+
+cmd cfg_reload source ~/.config/lf/lfrc
+cmd follow_link %{{
+  lf -remote "send ${id} select '$(readlink $f)'"
+}}
+map gL follow_link
+map S $$SHELL
 
 cmd chmod ${{
 	[ $# -ne 1 ] && exit
@@ -113,15 +128,7 @@ cmd lfopen ${{
     if [ -d "$f" ]; then
         lf -remote "send $id cd '$f'"
     elif [ -f "$f" ]; then
-        ~/.config/lf/preview "$f"
-    fi
-}}
-
-cmd preview ${{
-    if [[ -f "$f" ]]; then
-        ~/.config/lf/preview "$f"
-    elif [[ -d "$f" ]]; then
-        ls -lh --color=always "$f" | less -R
+        "$lf_previewer" "$f"
     fi
 }}
 
@@ -139,18 +146,6 @@ cmd deleteImmediately ${{
 	rm -rf $fx
 }}
 
-cmd recol ${{
-    if [ $lf_width -le 80 ]; then # small window
-        lf -remote "send $id :set preview!; set ratios 1"
-        # I think there is a bug: https://github.com/gokcehan/lf/issues/825
-        # lf -remote "send $id :set preview off; set ratios 1"
-    elif [ $lf_ratios != "1:2:3" -o $lf_preview != "true" ]; then # if not already 3 column mode
-        lf -remote "send $id set ratios 1:2:3; set preview"
-        # lf -remote "send $id set preview on; set ratios 1:2:3"
-    fi
-}}
-# TODO: add mapping to toggle recolumn
-
 cmd on-quit ${{
     # replace or append ' register
     ~/.config/lf/mark-on-quit.go "${f%/*}"
@@ -161,6 +156,15 @@ cmd on-quit ${{
     #     sed -i '' "/^':.*$/d" $marks
     # fi
     # echo "':${f%/*}" >> $marks
+}}
+
+cmd recol ${{
+    w=$(tput cols)
+    if [ $w -le 80 ]; then
+        lf -remote "send $id :set nopreview; set ratios 1" || exit 0
+    else
+        lf -remote "send $id set ratios 1:2:3; set preview" || exit 0
+    fi
 }}
 
 # extract the current file with the right command

@@ -414,6 +414,7 @@ Plug 'neoclide/jsonc.vim' " jsonc for config file types
 Plug 'lbrayner/vim-rzip' " view zip file content
 Plug 'jjo/vim-cue' " cue syntax
 Plug 'ntpeters/vim-better-whitespace' " highlight trailing whitespace
+Plug 'windwp/nvim-autopairs'
 
 Plug '~/personal/coc-java' " coc-java dev
 Plug '~/personal/coc-java-ext' " coc-java dev
@@ -681,6 +682,12 @@ let g:go_metalinter_enabled = 0
 "au FileType go nmap <buffer> <leader>gi :GoImports<CR>
 " auto format on save
 " autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.format')
+
+" https://github.com/jackielii/gorun
+map <leader>kgs :call GorunSave()<CR>
+map <leader>kgd :call GorunReset()<CR>
+" https://github.com/jackielii/gorun-mod
+map <leader>kga :$read !gorun-mod %<CR>
 " }}}
 
 " proto format{{{
@@ -724,8 +731,12 @@ let g:VM_maps['Find Subword Under'] = '<A-n>'
 let g:VM_theme = 'ocean'
 
 function! MyVmStart()
+  lua require('nvim-autopairs').disable()
 endfunction
 function! MyVmExit()
+  " need to reset autopairs keymaps as <BS> is remapped to <Plug>(VM-BS)
+  lua require('nvim-autopairs').enable()
+  lua require('nvim-autopairs').force_attach()
 endfunction
 autocmd User visual_multi_start   call MyVmStart()
 autocmd User visual_multi_exit    call MyVmExit()
@@ -950,7 +961,6 @@ let g:coc_global_extensions = [
   \ "coc-html",
   \ "coc-json",
   \ "coc-marketplace",
-  \ "coc-pairs",
   \ "coc-prettier",
   \ "coc-pyright",
   \ "coc-react-refactor",
@@ -1011,11 +1021,12 @@ endfunction
 
 " Use <c-space> for trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
-
 " Use <cr> for confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
-inoremap <silent><expr> <cr> coc#pum#visible() ? coc#_select_confirm()
-      \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+" inoremap <silent><expr> <cr> coc#pum#visible() ? coc#_select_confirm() :
+inoremap <silent><expr> <cr> coc#pum#visible() ? coc#pum#confirm() :
+  \ "\<C-g>u\<c-r>=v:lua.require'nvim-autopairs'.autopairs_cr()\<CR>"
+  " \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>" " use only coc
 
 " makes <CR> only break line, use <C-y> to confirm
 " CocConfig: suggest.noselect: false
@@ -1283,4 +1294,3 @@ map <leader>N :silent BufRenumber<CR>
 
 runtime luainit.lua
 runtime lightline.vim
-
