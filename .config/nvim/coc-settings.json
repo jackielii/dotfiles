@@ -22,7 +22,7 @@
   "coc.preferences.currentFunctionSymbolAutoUpdate": true, // this updates the cursor line
   "coc.preferences.enableMarkdown": true,
   "coc.preferences.formatOnSave": false,
-  "[go][javascript][typescript]": {
+  "[go][javascript][typescript][typescriptreact]": {
     "coc.preferences.formatOnSave": true
   },
   // "coc.preferences.formatOnSaveFiletypes": [
@@ -48,8 +48,12 @@
   // "workspace.bottomUpFiletypes": ["go"],
   "workspace.ignoredFolders": [
     "$HOME",
+    "$HOME/.cargo/**",
+    "$HOME/.rustup/**",
     "$HOME/.dotfiles",
-    "$HOME/go/pkg/mod/**"
+    "$HOME/go/pkg/mod/**",
+    "$HOMEBREW_PREFIX",
+    "$HOMEBREW_PREFIX/**"
   ],
   // }}}
 
@@ -64,6 +68,7 @@
   "prettier.tabWidth": 2,
   "prettier.semi": false,
   "prettier.singleQuote": true,
+  "prettier.ignorePath": "",
   // "prettier.eslintIntegration": true,
   // "prettier.tslintIntegration": true,
   // "tsserver.trace.server": "verbose",
@@ -80,7 +85,7 @@
   // }}}
 
   // {{{ suggest
-  // "suggest.noselect": false, // don't select first entry
+  "suggest.noselect": false, // don't select first entry
   // "suggest.enablePreselect": false, // put recently used on top
   // "suggest.selection": "recentlyUsedByPrefix",
   "suggest.languageSourcePriority": 99,
@@ -157,16 +162,16 @@
       "args": ["serve"],
       "filetypes": ["proto"]
     },
-    "ccls": {
-      "command": "ccls",
-      "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"],
-      "rootPatterns": [".ccls", "compile_commands.json", ".git/", ".hg/"],
-      "initializationOptions": {
-        "cache": {
-          "directory": "/tmp/ccls"
-        }
-      }
-    },
+    // "ccls": {
+    //   "command": "ccls",
+    //   "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"],
+    //   "rootPatterns": [".ccls", "compile_commands.json", ".git/", ".hg/"],
+    //   "initializationOptions": {
+    //     "cache": {
+    //       "directory": "/tmp/ccls"
+    //     }
+    //   }
+    // },
     // "kotlin": {
     //   "host": "127.0.0.1",
     //   "port": 8080,
@@ -420,6 +425,7 @@
 
   //}}}
 
+  "zls.debugLog": true,
   // emmet {{{
   // "emmet.includeLanguages": {},
   // "emmet.showExpandedAbbreviation": "never",
@@ -431,5 +437,6 @@
   "Lua.hint.enable": false,
   "sumneko-lua.checkUpdate": false,
   "svelte.enable-ts-plugin": true,
-  "snippets.ultisnips.pythonPrompt": false
+  "snippets.ultisnips.pythonPrompt": false,
+  "zig.zls.path": "/Users/jackieli/.config/coc/extensions/coc-zls-data/zls_install/zls"
 }

@@ -2,12 +2,12 @@
 $[ $lf_width -le 80 ] && lf -remote "send $id :set nopreview; set ratios 1" || exit 0
 
 set shell sh
-set sortby natural
+set sortby time
 set reverse
-set icons on
+set icons
 set incsearch
 set incfilter
-set scrolloff 2
+# set scrolloff 0
 set promptfmt "\033[32;1m%u@%h\033[0m:\033[34;1m%d\033[0m" # remove file name
 set hidden
 
@@ -33,7 +33,7 @@ set ifs "\n"
 # Use the `dim` attribute instead of underline for the cursor in the preview pane
 set cursorpreviewfmt "\033[7;2m"
 
-map R :reload; recol
+map R :reload; recol; cfg_reload
 
 map gh cd ~
 map gd cd ~/Downloads
@@ -42,6 +42,7 @@ map gp cd ~/personal
 map gn cd ~/personal/notes
 map gw cd ~/work
 map ga cd /Applications
+map gv cd /Volumes
 map gc cd ~/.config
 
 map xz zip
@@ -62,6 +63,7 @@ map yd $printf "%s" "${fx%/*}" | pbcopy  # dirname
 map d
 map dd cut
 map dD delete
+map dF delete
 map DD trash
 map dT trash
 map p
@@ -71,18 +73,22 @@ map F fzf_jump
 map f
 map fa fzf_search_all
 map fg push :fzf_grep<space>
-map ff setfilter
 map f<space> filter
+map ff filter
+map fc setfilter
 map fz fzf_jump
 map <c-p> fzf_jump
 
-map a push :mkdir<space>
+map J :updir; set dironly true; down; set dironly false; open
+map K :updir; set dironly true; up; set dironly false; open
+
+map a push :create<space>
 map E push $$EDITOR<space>
 map <backspace2> updir # somehow backspace2 is actual backspace on HHKB, <c-h> is <backspace>
 
 map l lfopen
 map <enter> open
-map Z push :zi<space>
+map Z zi
 map z<space> push :z<space>
 map <c-c> :redraw; reload
 map <tab> :toggle; down
@@ -91,11 +97,12 @@ map <delete> delete
 map <c-c> clear
 map g. set hidden!
 map zp set preview!
+map zd set dirfirst!
 
 map ?
-map ?? list-maps
-map ?s list-selections
-map ?b list-buffers
+map ?? maps
+# map ?s list-selections
+# map ?b list-buffers
 
 map +x chmod +x
 map +w chmod +w
@@ -105,6 +112,7 @@ map -w chmod -w
 map -r chmod -r
 
 map z1 :set nopreview; set ratios 1
+map z2 :set nopreview; set ratios 1:2
 map z3 :set ratios 1:2:3; set preview
 
 cmd cfg_reload source ~/.config/lf/lfrc
@@ -115,9 +123,9 @@ map gL follow_link
 map S $$SHELL
 
 cmd chmod ${{
-	[ $# -ne 1 ] && exit
-	eval "chmod u$1 '$f'"
-	lf -remote "send $id reload"
+        [ $# -ne 1 ] && exit
+        eval "chmod u$1 '$f'"
+        lf -remote "send $id reload"
 }}
 
 cmd quicklook &{{
@@ -143,7 +151,7 @@ cmd delete ${{
 }}
 
 cmd deleteImmediately ${{
-	rm -rf $fx
+        rm -rf $fx
 }}
 
 cmd on-quit ${{
@@ -198,18 +206,48 @@ cmd zip ${{
 }}
 
 cmd z %{{
-	result="$(zoxide query --exclude $PWD $@)"
-	lf -remote "send $id cd \"$result\""
+    d="${@/#\~/$HOME}" # tilde doesn't expand in quotes or vars
+    if [ -d $d ]; then
+        lf -remote "send $id cd '$d'"
+        zoxide add "$d"
+    else
+        result="$(zoxide query --exclude $PWD $@)"
+        lf -remote "send $id cd \"$result\""
+    fi
 }}
 
 cmd zi ${{
-	result="$(zoxide query -i)"
-	lf -remote "send $id cd \"$result\""
+    FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --min-height=100"
+    result="$(zoxide query -i)"
+    lf -remote "send $id cd \"$result\""
 }}
 
 cmd mkdir %{{
     IFS=" "
     mkdir -p -- "$*"
+    lf -remote "send $id select \"$*\""
+}}
+
+cmd touch %{{
+    IFS=" "
+    if [ -z "$*" ]; then echo "name required"; exit; fi
+    if [ -f "$*" ]; then echo "file exists"; exit; fi
+    if [ -d "$*" ]; then echo "there is a directory with the same name"; exit; fi
+    touch "$*"
+    lf -remote "send $id select \"$*\""
+}}
+
+cmd create %{{
+    IFS=" "
+    if [ -z "$*" ]; then echo "name required"; exit; fi
+    if [[ "$*" == */ ]] ; then
+        mkdir -p -- "$*"
+        lf -remote "send $id select \"$*\""
+        exit 0
+    fi
+    base=$(dirname -- "$*")
+    [ "$base" != . ] && mkdir -p -- "$base"
+    touch "$*"
     lf -remote "send $id select \"$*\""
 }}
 

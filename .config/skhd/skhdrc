@@ -219,7 +219,7 @@ cmd + ctrl - 7 : yabai -m space --focus 7
 cmd + ctrl - 8 : yabai -m space --focus 8
 cmd + ctrl - 9 : yabai -m space --focus 9
 
-# focus full screen
+# focus full screen alt-`
 alt - 0x32 : yabai -m space --focus \
     $(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == true).index)|.[0]') \
         || yabai -m space --focus recent
@@ -253,16 +253,16 @@ cmd + shift - 8 : yabai -m window --space 8
 cmd + shift - 9 : yabai -m window --space 9
 cmd + shift - 0 : yabai -m window --space 10
 
-cmd + ctrl + shift - 1 : yabai -m window --space 11
-cmd + ctrl + shift - 2 : yabai -m window --space 12
-cmd + ctrl + shift - 3 : yabai -m window --space 13
-cmd + ctrl + shift - 4 : yabai -m window --space 14
-cmd + ctrl + shift - 5 : yabai -m window --space 15
-cmd + ctrl + shift - 6 : yabai -m window --space 16
-cmd + ctrl + shift - 7 : yabai -m window --space 17
-cmd + ctrl + shift - 8 : yabai -m window --space 18
-cmd + ctrl + shift - 9 : yabai -m window --space 19
-cmd + ctrl + shift - 0 : yabai -m window --space 10
+# cmd + ctrl + shift - 1 : yabai -m window --space 11
+# cmd + ctrl + shift - 2 : yabai -m window --space 12
+# cmd + ctrl + shift - 3 : yabai -m window --space 13
+# cmd + ctrl + shift - 4 : yabai -m window --space 14
+# cmd + ctrl + shift - 5 : yabai -m window --space 15
+# cmd + ctrl + shift - 6 : yabai -m window --space 16
+# cmd + ctrl + shift - 7 : yabai -m window --space 17
+# cmd + ctrl + shift - 8 : yabai -m window --space 18
+# cmd + ctrl + shift - 9 : yabai -m window --space 19
+# cmd + ctrl + shift - 0 : yabai -m window --space 10
 
 ## resize
 cmd + ctrl + shift - k: yabai -m window --resize top:0:-10 || yabai -m window south --resize top:0:-10
@@ -319,29 +319,39 @@ cmd + shift - 0x1B : yabai -m space --balance x-axis
 # ctrl + number forward as cmd + number to applications {{{
 # _HACK_ to send ctrl + number as cmd + number to applications skipping existing mappings:
 # 1. define default & capture mode
-:: default
-:: tabmode
+# :: default
+# :: tabmode
 
 # 2. define an impossible key to switch to capture mode
-hyper - 0x80 ; tabmode
-tabmode < hyper - 0x80 ; default
+# hyper - 0x80 ; tabmode
+# tabmode < hyper - 0x80 ; default
 # cmd - x ; tabmode
 # tabmode < cmd - x ; default
 
 # 3. define ctrl + number to send mode switch key, send cmd + number, switch back
-ctrl - 1 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 1" ; skhd -k "hyper - 0x80"
-ctrl - 2 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 2" ; skhd -k "hyper - 0x80"
-ctrl - 3 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 3" ; skhd -k "hyper - 0x80"
-ctrl - 4 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 4" ; skhd -k "hyper - 0x80"
-ctrl - 5 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 5" ; skhd -k "hyper - 0x80"
-ctrl - 6 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 6" ; skhd -k "hyper - 0x80"
-ctrl - 7 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 7" ; skhd -k "hyper - 0x80"
-ctrl - 8 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 8" ; skhd -k "hyper - 0x80"
-ctrl - 9 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 9" ; skhd -k "hyper - 0x80"
+# ctrl - 1 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 1" ; skhd -k "hyper - 0x80"
+# ctrl - 2 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 2" ; skhd -k "hyper - 0x80"
+# ctrl - 3 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 3" ; skhd -k "hyper - 0x80"
+# ctrl - 4 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 4" ; skhd -k "hyper - 0x80"
+# ctrl - 5 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 5" ; skhd -k "hyper - 0x80"
+# ctrl - 6 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 6" ; skhd -k "hyper - 0x80"
+# ctrl - 7 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 7" ; skhd -k "hyper - 0x80"
+# ctrl - 8 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 8" ; skhd -k "hyper - 0x80"
+# ctrl - 9 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 9" ; skhd -k "hyper - 0x80"
+ctrl - 1 | cmd - 1
+ctrl - 2 | cmd - 2
+ctrl - 3 | cmd - 3
+ctrl - 4 | cmd - 4
+ctrl - 5 | cmd - 5
+ctrl - 6 | cmd - 6
+ctrl - 7 | cmd - 7
+ctrl - 8 | cmd - 8
+ctrl - 9 | cmd - 9
 # }}}
 
 # some common shortcuts conflicts with current mappings {{{
-ctrl + cmd - k : skhd -k "hyper - 0x80" ; skhd -k "cmd - k" ; skhd -k "hyper - 0x80"
+# ctrl + cmd - k : skhd -k "hyper - 0x80" ; skhd -k "cmd - k" ; skhd -k "hyper - 0x80"
+ctrl + cmd - k | cmd - k
 # }}}
 
 # launch common apps {{{
@@ -365,9 +375,6 @@ alt - m : open -a "Microsoft Outlook.app"
 # for this mac: need to be more like linux {{{
 cmd + shift - x : yabai -m window --close
 
-ctrl + shift - t [
-    "Google Chrome" : skhd -k "cmd + shift - t"
-]
 # uk keyboard § to `
 # 0x0A : skhd -t "`"
 # shift - 0x0A : skhd -t "~"
@@ -376,63 +383,97 @@ ctrl + shift - t [
 # editing remaps: more like linux {{{
 
 # delete word
-ctrl - backspace : skhd -k "alt - backspace"
+# ctrl - backspace : skhd -k "alt - backspace"
+# ctrl - delete : skhd -k "alt - delete"
+# # move word
+# ctrl - left : skhd -k "alt - left"
+# ctrl - right : skhd -k "alt - right"
+# # select word
+# ctrl + shift - left : skhd -k "alt + shift - left"
+# ctrl + shift - right : skhd -k "alt + shift - right"
+
+# delete word
+ctrl - backspace | alt - backspace
+ctrl - delete | alt - delete
 # move word
-ctrl - left : skhd -k "alt - left"
-ctrl - right : skhd -k "alt - right"
+ctrl - left | alt - left
+ctrl - right | alt - right
 # select word
-ctrl + shift - left : skhd -k "alt + shift - left"
-ctrl + shift - right : skhd -k "alt + shift - right"
+ctrl + shift - left | alt + shift - left
+ctrl + shift - right | alt + shift - right
 
 # Home & end hack
 home [
     "kitty" ~
-    "dota2" ~
     *       : skhd -k "cmd - left"
 ]
 end [
     "kitty" ~
-    "dota2" ~
     *       : skhd -k "cmd - right"
 ]
 shift - home [
     "kitty" ~
-    "dota2" ~
     *       : skhd -k "cmd + shift - left"
 ]
 shift - end [
     "kitty" ~
-    "dota2" ~
     *       : skhd -k "cmd + shift - right"
 ]
 # ctrl + home/end hack
 ctrl - home [
     "kitty" ~
-    "dota2" ~
     *       : skhd -k "cmd - up"
 ]
 ctrl - end [
     "kitty" ~
-    "dota2" ~
     *       : skhd -k "cmd - down"
 ]
 ctrl + shift - home [
     "kitty" ~
-    "dota2" ~
     *       : skhd -k "cmd + shift - up"
 ]
 ctrl + shift - end [
     "kitty" ~
-    "dota2" ~
     *       : skhd -k "cmd + shift - down"
 ]
 # }}}
+
+.blacklist [
+    "dota2"
+]
 
 # focus on floating
 # cmd + ctrl - a : yabai -m window --focus "$( yabai -m query --windows --space | jq -re "[sort_by(.id) | .[] | select(.floating == 1) | .id] | nth(1 + index($( yabai -m query --windows --window | jq '.id'))) // first")"
 
 # fn - space to toggle
-fn - space : fntoggle
+fn - space : ~/.local/bin/fntoggle
 
 # reload yabai
 ctrl + shift + cmd - r : launchctl kickstart -k "gui/${UID}/homebrew.mxcl.yabai"
+
+# mac built-in keyboard {{{
+fn - j | down
+fn - k | up
+fn - h | left
+fn - l | right
+
+fn + shift - j | shift - down
+fn + shift - k | shift - up
+fn + shift - h | shift - left
+fn + shift - l | shift - right
+
+fn + ctrl - j | ctrl - down
+fn + ctrl - k | ctrl - up
+fn + ctrl - h | ctrl - left
+fn + ctrl - l | ctrl - right
+
+fn + ctrl + shift - j | ctrl + shift - down
+fn + ctrl + shift - k | ctrl + shift - up
+fn + ctrl + shift - h | ctrl + shift - left
+fn + ctrl + shift - l | ctrl + shift - right
+
+fn - u | pagedown
+fn - i | pageup
+fn - y | home
+fn - o | end
+# }}}

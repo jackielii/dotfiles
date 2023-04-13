@@ -58,12 +58,13 @@ if OS.mac?
     cask "homebrew/cask-fonts/font-cascadia-code"
     cask "homebrew/cask-fonts/font-symbols-only-nerd-font"
     # cask "karabiner-elements"
-    cask "maccy"
+    cask "maccy" # clipboard manager
     cask "intellij-idea-ce"
     cask "xbar"
-    brew "cliclick"
+    brew "cliclick" # automate mouse clicks
     cask "gimp"
     cask "drawio"
+    cask "alt-tab"
 else
     # linux ones
 end

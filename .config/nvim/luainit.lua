@@ -1,7 +1,5 @@
 -- vim:set et sw=2 ts=4 fdm=marker:
 
-require('Comment').setup()
-
 require('indent_blankline').setup {
   char = '┊',
   show_trailing_blankline_indent = false,
@@ -70,7 +68,6 @@ require 'nvim-treesitter.configs'.setup {
   highlight = {
     -- `false` will disable the whole extension
     enable = true,
-
     -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
     -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
     -- the name of the parser)
@@ -132,6 +129,48 @@ vim.cmd [[highlight! link TelescopePromptPrefix Identifier]]
 require("nvim-autopairs").setup({
   map_cr = false,
   ignored_next_char = [=[[%w%%%'%[%{%(%"%.%`%$]]=],
-  fast_wrap = {},
+  fast_wrap = {
+    end_key = 'q',
+    pattern = [=[[%'%"%>%]%)%}%,%;]]=],
+    keys = 'wertyuiopzxcvbnmasdfghjkl',
+  },
+})
+-- }}}
+
+-- JoosepAlviste/nvim-ts-context-commentstring {{{
+require 'nvim-treesitter.configs'.setup {
+  context_commentstring = {
+    enable = true,
+    enable_autocmd = false,
+  }
+}
+
+require('Comment').setup {
+  pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+}
+--- }}}
+
+-- nvim-tree {{{
+
+local function nvim_tree_on_attach(bufnr)
+  local api = require("nvim-tree.api")
+  local function opts(desc)
+    return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+  end
+  api.config.mappings.default_on_attach(bufnr)
+
+  vim.keymap.del('n', '<C-E>', { buffer = bufnr })
+  vim.keymap.set('n', '?', api.tree.toggle_help, opts('Help'))
+  vim.keymap.set('n', 'h', api.node.navigate.parent_close, opts('Close Directory'))
+  vim.keymap.set('n', 'l', api.node.open.edit, opts('Edit'))
+end
+
+require("nvim-tree").setup({
+  on_attach = nvim_tree_on_attach,
+  actions = {
+    open_file = {
+      quit_on_open = true,
+    }
+  }
 })
 -- }}}

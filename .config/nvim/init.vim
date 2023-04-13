@@ -32,7 +32,7 @@ set nobackup " No tmp or swp files
 set nowritebackup
 set noswapfile
 set cursorline
-set colorcolumn=80
+set colorcolumn=120
 set noshowmode "  hide -- INSERT --
 set clipboard+=unnamedplus " System clipboard
 set hidden " allow unsaved buffers to be hidden
@@ -41,7 +41,7 @@ set cmdheight=2
 set laststatus=3
 set splitbelow
 set splitright
-set pastetoggle=<F6>
+set pastetoggle=<F2>
 " Smaller updatetime for CursorHold & CursorHoldI
 set updatetime=300
 " don't give |ins-completion-menu| messages.
@@ -54,8 +54,8 @@ set scrolloff=3 " keep more lines above and below cursor
 syntax sync fromstart " more reliable syntax highlight
 
 " map common mistakes
-cmap Q q!
-cmap Wq wq
+" cmap Q q!
+" cmap Wq wq
 imap jk <esc>
 " tmap jk <c-\><c-n>
 imap jj <esc>
@@ -94,6 +94,7 @@ nnoremap <leader><tab> <C-^>
 inoremap <C-^> <esc><C-^>
 nnoremap <S-Tab> <C-^>
 inoremap <S-Tab> <esc><C-^>
+cnoremap <S-Tab> <esc><C-^>
 nnoremap <A-Tab> <C-^>
 inoremap <A-Tab> <esc><C-^>
 
@@ -128,6 +129,10 @@ map <expr> <leader>= winnr('$') > 1 ? '6<C-W>+' : ''
 map <expr> <leader>- winnr('$') > 1 ? '6<C-W>-' : ''
 map <expr> <leader>. winnr('$') > 1 ? '6<C-W>>' : ''
 map <expr> <leader>, winnr('$') > 1 ? '6<C-W><' : ''
+map <M-,> <C-w>>
+map <M-.> <C-w><
+map <M--> <C-w>-
+map <M-=> <C-w>+
 
 " [c]lear [w]hitespace
 function! ClearWhitespace()
@@ -255,6 +260,21 @@ augroup end
 cnoremap <M-b> <S-Left>
 cnoremap <M-f> <S-Right>
 
+" automatic colorcolumn based on textwidth
+function! s:SetColorColumn()
+    if &textwidth == 0
+        setlocal colorcolumn=80
+    else
+        setlocal colorcolumn=+0
+    endif
+endfunction
+
+augroup colorcolumn
+    autocmd!
+    autocmd OptionSet textwidth call s:SetColorColumn()
+    autocmd BufEnter * call s:SetColorColumn()
+augroup end
+
 " let g:markTimer = 0
 " function s:markCursor(timer)
 "   if g:markTimer != 0
@@ -272,6 +292,7 @@ command! -nargs=* -complete=shellcmd R new | setlocal buftype=nofile bufhidden=h
 " plugins {{{
 call plug#begin('~/.config/nvim/plugged')
 " Make sure you use single quotes
+Plug 'tpope/vim-scriptease'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-repeat'
@@ -280,6 +301,7 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-abolish'
 " Plug 'tpope/vim-commentary'
 Plug 'numToStr/Comment.nvim'
+Plug 'JoosepAlviste/nvim-ts-context-commentstring' " for commentstring
 Plug 'tpope/vim-obsession'
 Plug 'tpope/vim-dotenv'
 
@@ -295,7 +317,7 @@ Plug 'will133/vim-dirdiff' " diff directories
 
 " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
 Plug 'junegunn/vim-easy-align' " gaip align paragraph
-" Plug 'junegunn/vim-peekaboo' " enhanced register & micro
+Plug 'junegunn/vim-peekaboo' " enhanced register & micro
 " Plug 'fatih/vim-go' ", { 'tag': 'v1.19' }   { 'tag': 'v1.20' }
 Plug 'jackielii/vim-gomod' " gomod only
 " Plug 'chriskempson/base16-vim' " use base16_??? to switch theme
@@ -345,7 +367,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lock
 Plug 'honza/vim-snippets'
 "Plug 'blueyed/vim-diminactive'
 Plug 'szw/vim-maximizer'
-Plug 'HerringtonDarkholme/yats.vim' " typescript language support
+" Plug 'HerringtonDarkholme/yats.vim' " typescript language support
 "Plug 'Shougo/denite.nvim', {'tag': '*'}
 "Plug 'Shougo/neomru.vim'
 "Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}}
@@ -380,6 +402,7 @@ Plug 'skywind3000/asynctasks.vim'
 Plug 'skywind3000/asyncrun.vim' " dependency for asynctasks
 
 " Plug 'kyazdani42/nvim-tree.lua'
+Plug 'nvim-tree/nvim-tree.lua'
 
 " treesitter related
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -416,8 +439,12 @@ Plug 'jjo/vim-cue' " cue syntax
 Plug 'ntpeters/vim-better-whitespace' " highlight trailing whitespace
 Plug 'windwp/nvim-autopairs'
 
+Plug 'ziglang/zig.vim'
+Plug 'TaDaa/vimade'
+
 Plug '~/personal/coc-java' " coc-java dev
 Plug '~/personal/coc-java-ext' " coc-java dev
+" Plug '~/personal/coc-zls' " coc-java dev
 " Plug 'jackielii/coc-lists', {'do': 'yarn'}
 " Plug '~/personal/coc-lists' " coc-java dev
 call plug#end()
@@ -425,14 +452,30 @@ call plug#end()
 
 " {{{ color scheme and highlight
 
-" transparent background
-" au ColorScheme * hi Normal ctermbg=none guibg=none
-" more recognisable matching brackets
-au ColorScheme * hi MatchParen gui=italic guibg=black guifg=NONE
-au ColorScheme * hi WinSeparator guibg=none
-au ColorScheme * hi Comment gui=italic
+" dim inactive windows
+let g:vimade = {}
+let g:vimade.fadelevel = 0.6
+" let g:vimade.enabletreesitter = 1
+let g:vimade.enablefocusfading = 1
 
-set pumblend=15 " transparency for popup
+" transparent background
+" autocmd ColorScheme * highlight! SignColumn guibg=NONE ctermbg=NONE
+" autocmd ColorScheme * highlight! LineNr     guibg=NONE
+augroup mycolors
+  au!
+  au ColorScheme * hi! Normal     guibg=NONE
+" more recognisable matching brackets
+  au ColorScheme * hi! MatchParen gui=italic
+  au ColorScheme * hi! WinSeparator guibg=none
+  au ColorScheme * hi! Comment gui=italic
+  " coc.nvim uses NormalFloat for neovim, but our base16 plugin only defines Pmenu related colors
+  au ColorScheme * hi! link CocFloating Pmenu
+  au ColorScheme * hi! link CocMenuSel PmenuSel
+  au ColorScheme * hi! link CocListLine PmenuSel
+  " au ColorScheme * hi! CocMenuSel ctermfg=NONE guifg=NONE
+augroup end
+
+" set pumblend=15 " transparency for popup
 
 function! SynStack ()
     for i1 in synstack(line("."), col("."))
@@ -457,6 +500,7 @@ nnoremap <F10> :TSHighlightCapturesUnderCursor<CR>
 autocmd ColorScheme * highlight! link TSNamespace Normal
 autocmd ColorScheme * highlight! link TSVariable Normal
 autocmd ColorScheme * highlight! link TSParameterReference Identifier
+autocmd ColorScheme * highlight! link TSParameterReference Identifier
 "}}}
 
 " ~/.vimrc_background will be updated by base16-shell profile helper:
@@ -478,6 +522,7 @@ function! Base16Sync()
   let $FZF_DEFAULT_OPTS = l:fzf
   exec 'colorscheme base16-' .. l:theme
 endfunction
+command -nargs=0 Base16Sync call Base16Sync()
 
 " }}}
 
@@ -826,7 +871,8 @@ let g:coc_explorer_cmd = 'CocCommand explorer'
 nmap <silent> <leader>F :execute g:coc_explorer_cmd.' '.g:project_path<CR>
 " nmap <silent> <leader>f :NvimTreeFindFile<CR>
 " nmap <silent> <leader>f :lua NvimTreeFindFileAnywhere()<CR>
-nmap <silent> <leader>f :execute g:coc_explorer_cmd<CR>
+" nmap <silent> <leader>l :execute g:coc_explorer_cmd<CR>
+nmap <silent> <leader>l :NvimTreeFindFileToggle<CR>
 
 " git deleted highlight override
 hi! link CocExplorerGitDeleted CocExplorerGitContentChange
@@ -834,11 +880,11 @@ hi! link CocExplorerGitDeleted CocExplorerGitContentChange
 
 " dap config{{{
 " F1 > cd g:project_path S-F1: cd buff_path
-" F2 > lazygit S-F2: floaterm
+" F2 > Paste mode
 " F3 > cd $(buffer path)
 " F4 > CloseNonProjectBuffers
 " F5 > AsyncTask run_last
-" F6 > Paste mode
+" F6 > lazygit S-F6: floaterm
 " F7 > Clear floats / dap.discontinue()
 " F8 > dap run configurations
 " F9 > dap run_last
@@ -846,11 +892,10 @@ hi! link CocExplorerGitDeleted CocExplorerGitContentChange
 " F11 > debug step into
 " F12 > debug step out
 nmap <F1> :execute 'lcd '.g:project_path <bar> echo g:project_path<CR>
-" on mac, <C-v>F1 produces <F13>, on Linux it produces <S-F1>
+" on mac, <C-v>Shift+F1 produces <F13>, on Linux it produces <S-F1>
 map <S-F1> <F13>
 map <S-F11> <F35> " step out
 nmap <F13> :execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h')<CR>
-nmap <F2> :Files<CR>
 nmap <F3> :execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h')<CR>
 nmap <F8> :Telescope dap configurations<CR>
 
@@ -861,8 +906,6 @@ nnoremap <leader>bp :lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log
 nnoremap <F9> :lua require'dap'.run_last()<CR>
 nnoremap <leader>dd :lua require'dapui'.toggle({ reset = true })<CR>
 " }}}
-
-"}}}
 
 " targets.vim{{{
 " to have argument object work in {} & []
@@ -890,11 +933,11 @@ let g:startify_session_autoload = 1
 " }}}
 
 " float terminal {{{
-nnoremap <silent>   <F14>    :FloatermToggle --width=0.9 --height=0.9<CR>
-tnoremap <silent>   <F14>    <C-\><C-n>:FloatermToggle<CR>
-inoremap <silent>   <F14>    <esc><C-\><C-n>:FloatermToggle<CR>
-nmap     <F2> :FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
-imap     <F2> <esc>:FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
+nnoremap <silent>   <F18>    :FloatermToggle --width=0.9 --height=0.9<CR>
+tnoremap <silent>   <F18>    <C-\><C-n>:FloatermToggle<CR>
+inoremap <silent>   <F18>    <esc><C-\><C-n>:FloatermToggle<CR>
+nmap     <F6> :FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
+imap     <F6> <esc>:FloatermNew --width=0.9 --height=0.9 --title=lazygit lazygit<CR>
 
 let g:floaterm_width=0.8
 let g:floaterm_height=0.9
@@ -1002,29 +1045,29 @@ let g:coc_global_extensions = [
 " always show signcolumns
 "set signcolumn=yes
 
-" Use tab for trigger completion with characters ahead and navigate.
-" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-" inoremap <silent><expr> <TAB>
-"       \ coc#pum#visible() ? coc#pum#next(1) :
-"       \ <SID>check_back_space() ? "\<TAB>" :
-"       \ coc#refresh()
-" inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
-
-" jsonc files
-" autocmd BufNewFile,BufRead .prettierrc.json setlocal filetype=jsonc
-autocmd BufNewFile,BufRead .eslintrc.json setlocal filetype=jsonc
-
 function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+" jsonc files
+" autocmd BufNewFile,BufRead .prettierrc.json setlocal filetype=jsonc
+autocmd BufNewFile,BufRead .eslintrc.json setlocal filetype=jsonc
+
 " Use <c-space> for trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
 " Use <cr> for confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
-" inoremap <silent><expr> <cr> coc#pum#visible() ? coc#_select_confirm() :
-inoremap <silent><expr> <cr> coc#pum#visible() ? coc#pum#confirm() :
+" inoremap <silent><expr> <cr> coc#pum#visible() ? coc#pum#confirm() :
+inoremap <silent><expr> <cr> coc#pum#visible() ? coc#_select_confirm() :
   \ "\<C-g>u\<c-r>=v:lua.require'nvim-autopairs'.autopairs_cr()\<CR>"
   " \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>" " use only coc
 
@@ -1176,7 +1219,7 @@ nnoremap <silent> ]g  :<C-u>CocNext<CR>
 " nnoremap <silent> <leader>gk  :<C-u>CocPrev<CR>
 nnoremap <silent> [g  :<C-u>CocPrev<CR>
 " Resume latest coc list
-nnoremap <silent> <leader>cr  :<C-u>CocListResume<CR>
+nnoremap <silent> <leader>cr  :CocRestart<CR>
 nnoremap <silent> <leader>p  :<C-u>CocListResume<CR>
 nnoremap <silent> <leader>ct  :<C-u>CocList tasks<cr>
 
@@ -1247,7 +1290,7 @@ vmap <leader>y :<C-u>CocList -A --normal yank<cr>
 " autocmd VimEnter,Tabnew *
 "     \ if empty(&buftype) | call CocActionAsync('showOutline', 1) | endif
 
-imap <expr><silent> <C-e> coc#pum#cancel()
+" imap <expr><silent> <C-e> coc#pum#cancel()
 let g:coc_snippet_next = '<Plug>coc-snippet-next'
 let g:coc_snippet_prev = '<Plug>coc-snippet-prev'
 imap <expr><silent> <C-j> coc#pum#visible() ? coc#pum#next(0) : coc#jumpable() ? '<Plug>coc-snippet-next' : coc#refresh()
@@ -1257,8 +1300,11 @@ smap <expr><silent> <C-k> '<Plug>coc-snippet-prev'
 cnoremap <C-j> <C-n>
 cnoremap <C-k> <C-p>
 
+nmap <leader>; :<C-u>Telescope<CR>
+
 " env dependent coc config
 call coc#config("python.formatting.blackPath", $HOMEBREW_PREFIX . "/bin/black")
+
 
 " }}}
 
@@ -1287,7 +1333,12 @@ nmap <C-M-k> <Plug>(coc-diagnostic-info)
 
 " lf {{{
 let g:lf_map_keys = 0
-map <leader>lf :<C-u>Lf<CR>
+map <leader>f :<C-u>Lf<CR>
+" }}}
+
+" peekaboo {{{
+" vertical topleft split
+let g:peekaboo_window='vert to 50new'
 " }}}
 
 map <leader>N :silent BufRenumber<CR>

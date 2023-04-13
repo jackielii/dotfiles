@@ -30,7 +30,7 @@ yabai -m config window_shadow                float
 
 yabai -m config active_window_opacity        1
 # yabai -m config normal_window_opacity        0.95
-yabai -m config split_ratio                  0.55
+yabai -m config split_ratio                  0.5
 yabai -m config auto_balance                 off
 
 # border
@@ -55,6 +55,7 @@ yabai -m config window_gap                   8
 # float system preferences
 yabai -m rule --add app='^System Information$' manage=off
 yabai -m rule --add app='^System Preferences$' manage=off
+yabai -m rule --add app='^System Settings$' manage=off
 yabai -m rule --add title='Preferences$' manage=off
 yabai -m rule --add app='^Finder$' manage=off
 

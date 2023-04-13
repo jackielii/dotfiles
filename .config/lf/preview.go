@@ -142,7 +142,8 @@ func previewImage(opts previewOpts) bool {
 			for {
 				try1(os.Stdin.Read(b))
 				switch b[0] {
-				case 'q', 'i', 3: // 3 is Ctrl-C
+				// https://viewsourcecode.org/snaptoken/kilo/02.enteringRawMode.html#display-keypresses
+				case 'q', 'i', 3, 10, 13, 27: // 3 is Ctrl-C, 27 is ESC, 10 is Enter, 13 is CR
 					break loop
 				}
 			}

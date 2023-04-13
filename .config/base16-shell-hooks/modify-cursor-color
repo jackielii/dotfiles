@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [[ "$BASE16_THEME" = *-light ]] ; then
+	kitty @ set-colors cursor=#000000
+else
+	kitty @ set-colors cursor=#ffffff
+fi
