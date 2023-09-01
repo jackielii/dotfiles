@@ -35,6 +35,8 @@ set cursorpreviewfmt "\033[7;2m"
 
 map R :reload; recol; cfg_reload
 
+map sr set reverse!
+
 map gh cd ~
 map gd cd ~/Downloads
 map gs cd ~/Documents
@@ -49,10 +51,11 @@ map xz zip
 map xt tar
 map xx extract
 
-map o $open $f
-map O $open -R $f
+map o $open $fx
+map O $open -R $fx
 map Q $lf -remote "send quit" # close all window
 map i $$lf_previewer "$f"
+map I %file "$f"
 
 map y
 map yy copy
@@ -65,7 +68,7 @@ map dd cut
 map dD delete
 map dF delete
 map DD trash
-map dT trash
+map dt trash
 map p
 map pp paste
 
@@ -101,8 +104,8 @@ map zd set dirfirst!
 
 map ?
 map ?? maps
-# map ?s list-selections
-# map ?b list-buffers
+map ?s $echo $fx | less
+map ?b $cat ~/.local/share/lf/files | less
 
 map +x chmod +x
 map +w chmod +w

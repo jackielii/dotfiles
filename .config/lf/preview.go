@@ -26,6 +26,7 @@ import (
 	"strconv"
 	"strings"
 
+	"golang.org/x/exp/slices"
 	"golang.org/x/term"
 )
 
@@ -189,9 +190,43 @@ func generatePreview(cache string, opts previewOpts) string {
 		runOutput(`%s -x "%s" -o "%s" --width "%d"`, drawio, opts.fp, cache+".png", cacheImageWidth)
 		os.Rename(cache+".png", cache)
 		return cache
+	case opts.mime == "application/msword",
+		opts.ext == ".xlsx",
+		opts.ext == ".ppt",
+		opts.ext == ".pptx",
+		opts.ext == ".mp4",
+		opts.ext == ".mov":
+		err := qlmanagePreview(opts.fp, cache)
+		if err != nil {
+			log.Printf("qlmanagePreview failed: %v\n", err)
+			return ""
+		}
+		return cache
 	default:
 		return ""
 	}
+}
+
+func qlmanagePreview(fp string, dest string) error {
+	d, err := os.MkdirTemp("", "lf-qlmanage")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(d)
+
+	run(`qlmanage -t -s 1024 -o "%s" "%s" &> /dev/null`, d, fp)
+
+	files, err := os.ReadDir(d)
+	if err != nil {
+		return err
+	}
+	if len(files) == 0 {
+		return fmt.Errorf("no preview generated")
+	}
+	if len(files) > 1 {
+		return fmt.Errorf("multiple previews generated")
+	}
+	return os.Rename(filepath.Join(d, files[0].Name()), dest)
 }
 
 func fileStatHash(opts previewOpts) string {
@@ -209,7 +244,7 @@ func launchKitty(opts previewOpts, imagePath string) {
 		opts.width--
 		opts.height--
 	}
-	place := fmt.Sprintf("--place=%dx%d@%dx%d", opts.width, opts.height, opts.x, opts.y)
+	place := fmt.Sprintf("--place=%dx%d@%dx%d --scale-up", opts.width, opts.height, opts.x, opts.y)
 	clearKitty() // there could be a previous image
 	run(`kitty +kitten icat --stdin=no --transfer-mode=memory %s "%s" </dev/null >/dev/tty`, place, imagePath)
 }
@@ -219,16 +254,41 @@ func previewText(opts previewOpts) {
 	// 1. text use bat
 	// 2. archives use ?
 	// 3. docs use pandoc markdown
-	s := fmt.Sprintf(`pistol -c ~/.config/pistol/pistol.conf "%s"`, opts.fp)
-	if opts.pagerRequired {
-		s += " | less -R"
+	// if strings.HasPrefix(opts.mime, "text/") || strings.HasPrefix(opts.mime, "application/json") {
+	// TODO: eliminate more pistol usage
+	switch {
+	case opts.ext == ".tar":
+		run(`tar -tf "%s" | less`, opts.fp)
+		return
+	case opts.ext == ".7z":
+		run(`7z l "%s" | less`, opts.fp)
+		return
 	}
-	run(s)
-	// cmd := exec.Command("sh", "-c", s)
-	// cmd.Stdin = os.Stdin
-	// cmd.Stdout = os.Stdout
-	// cmd.Stderr = os.Stderr
-	// cmd.Run()
+	pistolMimes := []string{
+		"application/zip",
+		"application/x-rar",
+		"application/x-7z-compressed",
+		"application/gzip"}
+	if slices.Contains(pistolMimes, opts.mime) {
+		s := fmt.Sprintf(`pistol -c ~/.config/lf/pistol.conf "%s"`, opts.fp)
+		if opts.pagerRequired {
+			s += " | less -R"
+		}
+		run(s)
+		return
+	}
+
+	paging := "--paging=never"
+	if opts.pagerRequired {
+		paging = "--paging=always"
+	}
+
+	switch {
+	case strings.HasSuffix(opts.mime, "wordprocessingml.document"):
+		run(`pandoc -s -t markdown "%s" | bat %s --color=always -l markdown --file-name "%s"`, opts.fp, paging, opts.fp)
+	default:
+		run(`bat %s --color=always "%s"`, paging, opts.fp)
+	}
 }
 
 // run executes command in sh -c with output set to stdout which is the tty
@@ -282,12 +342,17 @@ func try2[T any, V any](v T, v2 V, err error) (T, V) {
 // go.mod >>>
 // module preview
 // go 1.20
-// require golang.org/x/term v0.6.0
-// require golang.org/x/sys v0.6.0 // indirect
+// require (
+// 	golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53
+// 	golang.org/x/term v0.7.0
+// )
+// require golang.org/x/sys v0.7.0 // indirect
 // <<< go.mod
 // go.sum >>>
-// golang.org/x/sys v0.6.0 h1:MVltZSvRTcU2ljQOhs94SXPftV6DCNnZViHeQps87pQ=
-// golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-// golang.org/x/term v0.6.0 h1:clScbb1cHjoCkyRbWwBEUZ5H/tIFu5TAXIqaZD0Gcjw=
-// golang.org/x/term v0.6.0/go.mod h1:m6U89DPEgQRMq3DNkDClhWw02AUbt2daBVO4cn4Hv9U=
+// golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53 h1:5llv2sWeaMSnA3w2kS57ouQQ4pudlXrR0dCgw51QK9o=
+// golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53/go.mod h1:V1LtkGg67GoY2N1AnLN78QLrzxkLyJw7RJb1gzOOz9w=
+// golang.org/x/sys v0.7.0 h1:3jlCCIQZPdOYu1h8BkNvLz8Kgwtae2cagcG/VamtZRU=
+// golang.org/x/sys v0.7.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+// golang.org/x/term v0.7.0 h1:BEvjmm5fURWqcfbSKTdpkDXYBrUS1c0m8agp14W48vQ=
+// golang.org/x/term v0.7.0/go.mod h1:P32HKFT3hSsZrRxla30E9HqToFYAQPCMs/zFMBUFqPY=
 // <<< go.sum
