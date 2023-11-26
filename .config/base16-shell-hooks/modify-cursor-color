@@ -1,7 +1,39 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-if [[ "$BASE16_THEME" = *-light ]] ; then
-	kitty @ set-colors cursor=#000000
-else
-	kitty @ set-colors cursor=#ffffff
+color="#ffffff"
+
+theme=$(realpath ~/.base16_theme)
+theme=${theme##*/}
+theme=${theme%.*}
+
+if [[ $theme =~ -light$ || $theme == "tomorrow" ]]; then
+	color="#000000"
 fi
+
+kitty @ set-colors cursor="$color"
+
+# /// 2>/dev/null ; gorun "$0" "$@" ; exit $?
+# //go:build ignore
+#
+# package main
+#
+# import (
+# 	"os"
+# 	"os/exec"
+# 	"strings"
+# )
+#
+# func main() {
+# 	color := "#ffffff"
+# 	theme := os.Getenv("BASE16_THEME")
+# 	if strings.HasSuffix(theme, "-light") ||
+# 		theme == "tomorrow" {
+# 		color = "#000000"
+# 	}
+# 	exec.Command("kitty", "@", "set-colors", "cursor="+color).Run()
+# }
+#
+# // go.mod >>>
+# // module modify-cursor-color
+# // go 1.20
+# // <<< go.mod

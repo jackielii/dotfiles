@@ -1,88 +1,168 @@
 add_newline = false
+command_timeout = 60
+# scan_timeout = 10
 
 [character]
 # success_symbol = "[➜ ](bold green)"
 error_symbol = "[✗](bold red)"
 
-[gcloud]
-disabled=true
-
-[kotlin]
-disabled = true
-symbol = "🅺 "
-
-[kubernetes]
-disabled=true
-
 [aws]
-disabled=true
-symbol = " "
+disabled = true
+symbol = "  "
 
-[battery]
-full_symbol = ""
-charging_symbol = ""
-discharging_symbol = ""
+[gcloud]
+disabled = true
+
+[buf]
+symbol = " "
+
+[c]
+symbol = " "
 
 [conda]
 symbol = " "
 
+[dart]
+symbol = " "
+
+[directory]
+read_only = " 󰌾"
+
 [docker_context]
 symbol = " "
+
+[elixir]
+symbol = " "
+
+[elm]
+symbol = " "
+
+[fossil_branch]
+symbol = " "
+
+# [git_branch]
+# symbol = " "
 
 [golang]
 symbol = " "
 
+[guix_shell]
+symbol = " "
+
+[haskell]
+symbol = " "
+
+[haxe]
+symbol = " "
+
+[hg_branch]
+symbol = " "
+
+[hostname]
+ssh_symbol = " "
+
 [java]
 symbol = " "
 
+[julia]
+symbol = " "
+
+[lua]
+symbol = " "
+
 [memory_usage]
-symbol = " "
+symbol = "󰍛 "
+
+[meson]
+symbol = "󰔷 "
 
 [nim]
-symbol = " "
+symbol = "󰆥 "
 
 [nix_shell]
-symbol = " "
+symbol = " "
 
 [nodejs]
-symbol = " "
+symbol = " "
+
+[os.symbols]
+Alpaquita = " "
+Alpine = " "
+Amazon = " "
+Android = " "
+Arch = " "
+Artix = " "
+CentOS = " "
+Debian = " "
+DragonFly = " "
+Emscripten = " "
+EndeavourOS = " "
+Fedora = " "
+FreeBSD = " "
+Garuda = "󰛓 "
+Gentoo = " "
+HardenedBSD = "󰞌 "
+Illumos = "󰈸 "
+Linux = " "
+Mabox = " "
+Macos = " "
+Manjaro = " "
+Mariner = " "
+MidnightBSD = " "
+Mint = " "
+NetBSD = " "
+NixOS = " "
+OpenBSD = "󰈺 "
+openSUSE = " "
+OracleLinux = "󰌷 "
+Pop = " "
+Raspbian = " "
+Redhat = " "
+RedHatEnterprise = " "
+Redox = "󰀘 "
+Solus = "󰠳 "
+SUSE = " "
+Ubuntu = " "
+Unknown = " "
+Windows = "󰍲 "
 
 [package]
-symbol = " "
+symbol = "󰏗 "
 
-[php]
-symbol = " "
+[pijul_channel]
+symbol = " "
 
 [python]
-symbol = " "
+symbol = " "
+
+[rlang]
+symbol = "󰟔 "
 
 [ruby]
-symbol = " "
+symbol = " "
 
 [rust]
-symbol = " "
+symbol = " "
+
+[scala]
+symbol = " "
 
 [custom.direnv]
-symbol = " "
+symbol = " "
+shell = "dash"
 when = """ test -n "$DIRENV_DIR" """
+format = "env [$symbol($output)]($style) "
 
 [custom.work]
-# symbol = " "
-# symbol = " "
-command = " test $GITHUB_TOKEN = $TES_GITHUB_API_TOKEN && echo Tes || echo JL"
+command = """if [ "$GITHUB_TOKEN" = "$TES_GITHUB_API_TOKEN" ]; then echo Tes; else echo JL; fi"""
 when = """ test -n "$GITHUB_TOKEN" """
+shell = "dash"
 style = "blue"
 format = "[$symbol($output)]($style) "
 
-[git_status]
-## temporary workaround for: https://github.com/kovidgoyal/kitty/issues/5026
-# style = "red"
-# ahead = ""
-# behind = ""
-# diverged = ""
-
-[custom.ls_level]
+[custom.lf_level]
 command = "echo $LF_LEVEL"
 when = """ test -n "$LF_LEVEL" """
+shell = "dash"
 style = "fg:purple"
 format = "[(LF@$output)]($style)"

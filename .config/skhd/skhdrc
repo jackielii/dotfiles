@@ -175,11 +175,13 @@
 # "illumination_down" (NX_KEYTYPE_ILLUMINATION_DOWN)
 # }}}
 
+.SHELL "/bin/dash"
+
 # focus cmd - ? {{{
-cmd - h : yabai -m window --focus west || yabai -m display --focus west
-cmd - j : yabai -m window --focus stack.next || yabai -m window --focus south || $(yabai -m display --focus south) || yabai -m window --focus stack.first
-cmd - k : yabai -m window --focus stack.prev || yabai -m window --focus north || $(yabai -m display --focus north) || yabai -m window --focus stack.last
-cmd - l : yabai -m window --focus east || yabai -m display --focus east
+cmd - h : yabai -m window --focus west || yabai -m display --focus west || yabai -m display --focus recent
+cmd - j : yabai -m window --focus stack.next || yabai -m window --focus south || yabai -m display --focus south || yabai -m window --focus stack.first
+cmd - k : yabai -m window --focus stack.prev || yabai -m window --focus north || yabai -m display --focus north || yabai -m window --focus stack.last
+cmd - l : yabai -m window --focus east || yabai -m display --focus east || yabai -m display --focus mouse
 
 cmd + ctrl - h : yabai -m space --focus prev
 # cmd + ctrl - j : yabai -m window --insert south
@@ -208,7 +210,6 @@ cmd - 7 : yabai -m space --focus 7
 cmd - 8 : yabai -m space --focus 8
 cmd - 9 : yabai -m space --focus 9
 
-
 cmd + ctrl - 1 : yabai -m space --focus 1
 cmd + ctrl - 2 : yabai -m space --focus 2
 cmd + ctrl - 3 : yabai -m space --focus 3
@@ -230,17 +231,19 @@ cmd + ctrl - d : yabai -m space --toggle show-desktop
 cmd - f14 : yabai -m window --focus recent || yabai -m space --focus recent
 f15 : yabai -m space --focus recent
 # cycle through all windows in current space
-cmd + ctrl - tab : id=$(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id') && yabai -m window --focus $id
+cmd + ctrl - tab :  yabai -m window --focus (yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id')
 # reverse cycle through all windows in current space
-cmd + ctrl + shift - tab : id=$(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | .[map(."has-focus") | index(true)-1].id') && yabai -m window --focus $id
+cmd + ctrl + shift - tab :  yabai -m window --focus (yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | .[map(."has-focus") | index(true)-1].id')
 
+# ctrl - f13 : /Applications/flameshot.app/Contents/MacOS/flameshot gui
+# shift - f13 : open -a flameshot --args screen
 # }}}
 
 # move window cmd + shift - ? {{{
-cmd + shift - h : yabai -m window --swap west || $(yabai -m window --display west; yabai -m display --focus west)
-cmd + shift - j : yabai -m window --swap south || $(yabai -m window --display south; yabai -m display --focus south)
-cmd + shift - k : yabai -m window --swap north || $(yabai -m window --display north; yabai -m display --focus north)
-cmd + shift - l : yabai -m window --swap east || $(yabai -m window --display east; yabai -m display --focus east)
+cmd + shift - h : yabai -m window --swap west || begin; yabai -m window --display west ; yabai -m display --focus west; end
+cmd + shift - j : yabai -m window --swap south || begin; yabai -m window --display south ; yabai -m display --focus south; end
+cmd + shift - k : yabai -m window --swap north || begin; yabai -m window --display north ; yabai -m display --focus north; end
+cmd + shift - l : yabai -m window --swap east || begin; yabai -m window --display east ; yabai -m display --focus east; end
 
 cmd + shift - 1 : yabai -m window --space 1
 cmd + shift - 2 : yabai -m window --space 2
@@ -280,10 +283,10 @@ alt + cmd + shift - h : yabai -m window --warp west
 alt + cmd + shift - l : yabai -m window --warp east
 
 # stack similar to warp, add ctrl
-cmd + ctrl + shift - up: yabai -m window --stack north
-cmd + ctrl + shift - down: yabai -m window --stack south
-cmd + ctrl + shift - left: yabai -m window --stack west
-cmd + ctrl + shift - right: yabai -m window --stack east
+alt + ctrl + shift - k: yabai -m window --stack north
+alt + ctrl + shift - j: yabai -m window --stack south
+alt + ctrl + shift - h: yabai -m window --stack west
+alt + ctrl + shift - l: yabai -m window --stack east
 # }}}
 
 # layout {{{
@@ -297,18 +300,18 @@ cmd - f11 : yabai -m window --toggle native-fullscreen
 ctrl + cmd - f : yabai -m window --toggle native-fullscreen
 
 ## f15 is pause, f14 is screenlock
-f14 : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
+# lalt - tab : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
 ## 0x32 is `
 cmd + ctrl - 0x32 : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
 
 ## ctrl+pause to cycle through windows on the same spaces
-ctrl - f14 : id=$(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id') && yabai -m window --focus $id
+ctrl - f14 :  yabai -m window --focus (yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id')
 
-## flash window border for active window
-cmd + ctrl + shift - w : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
-## 0x2F is dot
-cmd + ctrl + shift - 0x2F : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
-## 0x4C is Enter
+# ## flash window border for active window
+# cmd + ctrl + shift - w : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
+# ## 0x2F is dot
+# cmd + ctrl + shift - 0x2F : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
+## 0x4C is numpad Enter
 0x4C : yabai -m window --focus mouse
 
 ## 0x18 is = ; 0x1B is -
@@ -357,18 +360,21 @@ ctrl + cmd - k | cmd - k
 # launch common apps {{{
 
 # switch to main first tmux listening to socket, if none, launch new one
-alt - t : ~/bin/kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
-    ~/bin/kitty --listen-on=unix:/tmp/mykitty -d ~ \
-        zsh -c "source ~/.base16_theme; tmux new-session -A -s main"
+ralt - t : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
+    fish -c "~/personal/kitty/kitty/launcher/kitty -1 -d ~"
+    # zsh -ci "kitty -1 -d ~"
+        # zsh -c "source ~/.base16_theme; tmux new-session -A -s main"
 # alt - f : kitty -d ~ --title 'MY-|-Filer' lf
-alt - f : ~/bin/kitty -d ~ --title 'MY-|-Filer' zsh -ci lf
+# -1 option makes it very fast but makes -o option not work
+ralt - f : fish -c "kitty -1 -d ~ -T 'MY-|-Filer' -o tab_bar_min_tabs=2 lf"
 
-cmd + shift - return : ~/bin/kitty -d ~
-cmd + ctrl - return : open "/Applications/Google Chrome.app"
+cmd + shift - return : kitty -1 -d ~
+# cmd + shift - return : zsh -ci "kitty -1 -d ~"
+cmd + ctrl - return : open -a "Google Chrome.app"
 cmd + ctrl + shift - return : open ~
-alt - w : open "/Applications/Google Chrome.app"
+ralt - w : open -a "Google Chrome.app"
 # alt - f : open ~
-alt - m : open -a "Microsoft Outlook.app"
+ralt - m : open -a "Microsoft Outlook.app"
 # cmd + ctrl + shift - return : kitty -1 -d ~ zsh -c "source ~/.base16_theme; ranger"
 # }}}
 
@@ -405,35 +411,51 @@ ctrl + shift - right | alt + shift - right
 # Home & end hack
 home [
     "kitty" ~
+    "wezterm" ~
+    "Google Chrome" ~
     *       : skhd -k "cmd - left"
 ]
 end [
     "kitty" ~
+    "wezterm" ~
+    "Google Chrome" ~
     *       : skhd -k "cmd - right"
 ]
 shift - home [
     "kitty" ~
+    "wezterm" ~
+    "Google Chrome" ~
     *       : skhd -k "cmd + shift - left"
 ]
 shift - end [
     "kitty" ~
+    "wezterm" ~
+    "Google Chrome" ~
     *       : skhd -k "cmd + shift - right"
 ]
 # ctrl + home/end hack
 ctrl - home [
     "kitty" ~
+    "wezterm" ~
+    "Google Chrome" ~
     *       : skhd -k "cmd - up"
 ]
 ctrl - end [
     "kitty" ~
+    "wezterm" ~
+    "Google Chrome" ~
     *       : skhd -k "cmd - down"
 ]
 ctrl + shift - home [
     "kitty" ~
+    "wezterm" ~
+    "Google Chrome" ~
     *       : skhd -k "cmd + shift - up"
 ]
 ctrl + shift - end [
     "kitty" ~
+    "wezterm" ~
+    "Google Chrome" ~
     *       : skhd -k "cmd + shift - down"
 ]
 # }}}

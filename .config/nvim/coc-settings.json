@@ -3,9 +3,11 @@
 
   // {{{ general
   "session.saveOnVimLeave": false, // https://github.com/tpope/vim-obsession/issues/72#issuecomment-1089202674
-  "python.pythonPath": "python3",
+  "python.pythonPath": "$HOME/.pyenv/shims/python3",
   "python.formatting.provider": "black",
-  "git.enableGlobalStatus": false,
+  "python.linting.enabled": false,
+  "pyright.disableDiagnostics": true,
+  // "git.enableGlobalStatus": false,
   "diagnostic.checkCurrentLine": true,
   "diagnostic.messageTarget": "float",
   "diagnostic.enableMessage": "jump",
@@ -22,7 +24,7 @@
   "coc.preferences.currentFunctionSymbolAutoUpdate": true, // this updates the cursor line
   "coc.preferences.enableMarkdown": true,
   "coc.preferences.formatOnSave": false,
-  "[go][javascript][typescript][typescriptreact]": {
+  "[go][javascript][typescript][typescriptreact][dart]": {
     "coc.preferences.formatOnSave": true
   },
   // "coc.preferences.formatOnSaveFiletypes": [
@@ -58,6 +60,11 @@
   // }}}
 
   // {{{ list
+  // "list.floatPreview": true,
+  "list.previewToplineStyle": "middle",
+  "list.previewToplineOffset": 0,
+  "list.previewHighlightGroup": "IncSearch",
+  // "list.previewSplitRight": true,
   "list.source.files.args": ["--hidden", "--files"],
   "list.source.files.excludePatterns": ["**/.git/*"],
   "list.source.grep.excludePatterns": ["**/.git/*"],
@@ -68,6 +75,7 @@
   "prettier.tabWidth": 2,
   "prettier.semi": false,
   "prettier.singleQuote": true,
+  "prettier.printWidth": 120,
   "prettier.ignorePath": "",
   // "prettier.eslintIntegration": true,
   // "prettier.tslintIntegration": true,
@@ -85,6 +93,7 @@
   // }}}
 
   // {{{ suggest
+  "suggest.virtualText": false,
   "suggest.noselect": false, // don't select first entry
   // "suggest.enablePreselect": false, // put recently used on top
   // "suggest.selection": "recentlyUsedByPrefix",
@@ -161,7 +170,7 @@
       "command": "bufls",
       "args": ["serve"],
       "filetypes": ["proto"]
-    },
+    }
     // "ccls": {
     //   "command": "ccls",
     //   "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"],
@@ -294,12 +303,14 @@
     // "verboseOutput": true,
     "vulncheck": "Imports",
     "gofumpt": false,
+    // "usePlaceholders": true,
     // "semanticTokens": true,
     // "experimentalWorkspaceModule": true,
     // "experimentalUseInvalidMetadata": false,
     // "hoverKind": "FullDocumentation",
     "staticcheck": true,
     "buildFlags": ["-tags=wireinject"],
+    "hoverKind": "FullDocumentation",
     "hints": {
       // "assignVariableTypes": true,
       // "compositeLiteralFields": true,
@@ -334,8 +345,11 @@
 
   // {{{ flutter
 
-  "flutter.sdk.flutter-lookup": "echo $HOME/snap/flutter/common/flutter/bin/flutter",
-  "flutter.sdk.dart-lookup": "echo $HOME/snap/flutter/common/flutter/bin/dart",
+  // "flutter.sdk.flutter-lookup": "echo $HOME/snap/flutter/common/flutter/bin/flutter",
+  // "flutter.sdk.dart-lookup": "echo $HOME/snap/flutter/common/flutter/bin/dart",
+  "flutter.provider.hot-reload": true,
+  "flutter.provider.enableSnippet": true,
+  "flutter.workspaceFolder.ignore": ["~/.pub-cache/", "~/.config/", "~/.dotfiles/"],
 
   // "flutter.sdk.dart-lookup": "echo /snap/flutter/current",
   // "flutter.sdk.flutter-lookup": "echo /snap/flutter/current",
@@ -358,12 +372,7 @@
     "<c-s>": "open:split",
     "<c-v>": "open:vsplit",
     "o": "cd",
-    "<cr>": [
-      "wait",
-      "expandable?",
-      ["expanded?", "collapse", "expand"],
-      "open"
-    ],
+    "<cr>": ["wait", "expandable?", ["expanded?", "collapse", "expand"], "open"],
     "l": ["wait", "expandable?", ["expanded?", "collapse", "expand"], "open"],
     "f": "search:recursive:noIgnore",
     "F": ["resolveRoot", "search:recursive:noIgnore"]
@@ -425,18 +434,25 @@
 
   //}}}
 
-  "zls.debugLog": true,
+  "zig.zls.debugLog": true,
   // emmet {{{
   // "emmet.includeLanguages": {},
   // "emmet.showExpandedAbbreviation": "never",
   // "emmet.showSuggestionsAsSnippets": true,
   // }}}
 
+  // {{{ coc-yaml
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": [".github/workflows/*.{yml,yaml}"]
+  },
+  // }}}
+
   "java-ext.debug": true,
   "sumneko-lua.enableNvimLuaDev": true,
+  "Lua.diagnostics.workspaceRate": 100,
   "Lua.hint.enable": false,
+  "Lua.diagnostics.enable": true,
   "sumneko-lua.checkUpdate": false,
-  "svelte.enable-ts-plugin": true,
   "snippets.ultisnips.pythonPrompt": false,
   "zig.zls.path": "/Users/jackieli/.config/coc/extensions/coc-zls-data/zls_install/zls"
 }

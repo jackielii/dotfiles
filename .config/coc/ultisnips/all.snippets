@@ -24,34 +24,10 @@
 #
 # Online reference: https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt
 
-snippet describe "describe test" b
-describe('${1}', () => {
-	${0:${VISUAL}}
-})
+snippet password "strong password" w
+`!p if not snip.c: import secrets, string; snip.rv = ''.join(secrets.choice(string.ascii_letters + string.digits + string.punctuation) for i in range(20))`
 endsnippet
 
-snippet test "test" b
-test('${1}', () => {
-	${0:${VISUAL}}
-})
-endsnippet
-
-snippet eslint-disable "eslint disable hooks exhaustive deps" b
-// eslint-disable-next-line react-hooks/exhaustive-deps
-endsnippet
-
-snippet impreact "import react" b
-import React from 'react';
-endsnippet
-
-snippet jsonstringify "JSON.stringify(tests, null, 2)" i
-JSON.stringify(${1:${VISUAL}}, null, 2)${0}
-endsnippet
-
-snippet vitest "vitest import" b
-import { test, expect } from 'vitest'
-
-test('${1}', async () => {
-	${0:${VISUAL}}
-})
+snippet shortPassword "short password" w
+`!p if not snip.c: import secrets, string; snip.rv = ''.join(secrets.choice(string.ascii_letters + string.digits) for i in range(10))`
 endsnippet

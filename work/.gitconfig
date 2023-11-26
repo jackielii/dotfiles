@@ -10,3 +10,5 @@
    gpgSign = true
 [push]
 	followTags = true
+[difftool]
+	prompt = false

@@ -83,7 +83,6 @@ snippet /fum\.(\w+)/ "fum method" r
 func (${5:`!p snip.rv=match.group(1)[0].lower()`} ${6:*}`!p snip.rv=match.group(1)`) ${1:method}(${2}) ${3:error} {
 	${4:${VISUAL:panic("not implemented")}}
 }
-$0
 endsnippet
 
 global !p
@@ -95,7 +94,6 @@ snippet /fum.(\w+)\.(\w+)/ "fum + method" r
 func (${5:`!p snip.rv=acronym(match.group(1))`} ${6:*}`!p snip.rv=match.group(1)`) ${7:`!p snip.rv=match.group(2)`}(${1}) ${2:error} {
 	${4:${VISUAL:panic("not implemented")}}
 }
-$0
 endsnippet
 
 snippet ve "var err error" b

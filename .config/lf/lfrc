@@ -4,6 +4,7 @@ $[ $lf_width -le 80 ] && lf -remote "send $id :set nopreview; set ratios 1" || e
 set shell sh
 set sortby time
 set reverse
+set nodirfirst
 set icons
 set incsearch
 set incfilter
@@ -71,6 +72,7 @@ map DD trash
 map dt trash
 map p
 map pp paste
+map P paste
 
 map F fzf_jump
 map f
@@ -84,6 +86,8 @@ map <c-p> fzf_jump
 
 map J :updir; set dironly true; down; set dironly false; open
 map K :updir; set dironly true; up; set dironly false; open
+map <c-j> down
+map <c-k> up
 
 map a push :create<space>
 map E push $$EDITOR<space>

@@ -1,6 +1,8 @@
+# vim:set noet sts=0 sw=2 ts=2 tw=120 fdm=marker:
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
-zmodload zsh/zprof # for profiling, use `zprof` to see the results
+# zmodload zsh/zprof # for profiling, use `zprof` to see the results
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -82,10 +84,10 @@ plugins=(
 	fzf
 )
 
-if [ -d ~/.ssh ] && [ -f ~/.ssh/id_rsa ]; then
-	plugins=(ssh-agent $plugins)
-	zstyle :omz:plugins:ssh-agent identities id_tes_ed25519 id_rsa
-fi
+# if [ -d ~/.ssh ] && [ -f ~/.ssh/id_rsa ]; then
+# 	plugins=(ssh-agent $plugins)
+# 	zstyle :omz:plugins:ssh-agent identities id_tes_ed25519 id_rsa
+# fi
 
 if [ "${OS}" = "Darwin" ]; then
 	# use gnu-utils on mac, it sets PATH correctly for ls, grep etc
@@ -103,7 +105,7 @@ if [ "${OS}" = "Darwin" ]; then
 fi
 
 if [ $TERM = "xterm-kitty" ]; then
-	# alias ssh="kitty +kitten ssh"
+	alias ssh="kitty +kitten ssh"
 fi
 
 # https://github.com/canonical/lightdm/blob/1.26.0/debian/lightdm-session#L38
@@ -115,10 +117,10 @@ fi
 [[ $_DOT_PROFILE_SOURCED != "yes" && -f ~/.zprofile ]] && source ~/.zprofile
 
 eval "$(direnv hook zsh)"
-export NODE_VERSIONS="$HOME/.nvm/versions/node"
+export NODE_VERSIONS="$HOME/.nvm/versions/node" # this enables `use node` in direnv
 export NODE_VERSION_PREFIX=
 
-# export MANPATH="/usr/local/man:$MANPATH"
+export MANPATH="/opt/homebrew/share/man:/usr/share/man:/usr/local/share/man:/Applications/kitty.app/Contents/Resources/man:$MANPATH"
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -172,8 +174,8 @@ function fzf-default-opts() {
 }
 fzf-default-opts
 
-# automatically update fzf colors when base16 theme changes
-function base16_fzf_sync() {
+# automatically update BASE16_THEME and fzf colors when base16 theme changes
+function base16_sync() {
 	SCRIPT=$(readlink -f ~/.base16_theme)
 	SCRIPT_NAME=${SCRIPT##*/}
 	THEME_NAME=${SCRIPT_NAME%.*}
@@ -185,8 +187,11 @@ function base16_fzf_sync() {
 		fzf-default-opts
 	# fi
 }
-add-zsh-hook preexec base16_fzf_sync # run command in existing prompt
-add-zsh-hook precmd base16_fzf_sync # new prompt line without command
+add-zsh-hook preexec base16_sync # run command in existing prompt
+add-zsh-hook precmd base16_sync # new prompt line without command
+
+# black or light theme cursor. Not needed any more after switching to kitty
+# $HOME/.config/base16-shell-hooks/modify-cursor-color
 # }}}
 
 export PATH=$HOME/bin:$PATH:$HOME/go/bin
@@ -230,7 +235,8 @@ fi
 # pyenv {{{
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+# eval "$(pyenv init -)"
+if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 # }}}
 
 # alias {{{
@@ -250,20 +256,32 @@ alias gci='git commit'
 
 # familiar bash keybindings {{{
 unsetopt AUTOCD
-# ctrl+u kill to beginning
-autoload -U select-word-style
-# select-word-style bash
-bindkey \^U backward-kill-line
+
+# Usage: select-word-style word-style
+# where word-style is one of the characters in parentheses:
+# (b)ash:       Word characters are alphanumerics only
+# (n)ormal:     Word characters are alphanumerics plus $WORDCHARS
+# (s)hell:      Words are command arguments using shell syntax
+# (w)hitespace: Words are whitespace-delimited
+# (d)efault:    Use default, no special handling (usually same as `n')
+# (q)uit:       Quit without setting a new style
 # export WORDCHARS='@*?_.[]~=&;!#$%^(){}<>'
-export WORDCHARS='@*?.[]~=&!#$%^(){}<>'
+export WORDCHARS='@*?[]~=&!#$%^(){}<>'
+autoload -U select-word-style
+select-word-style bash
+
+# ctrl+u kill to beginning
+bindkey \^U backward-kill-line
 
 # ctrl+w backward kill to space
+
 autoload -U backward-kill-word-match
 zle -N backward-kill-word-space backward-kill-word-match
-zstyle ':zle:backward-kill-word-space' word-style space
+zstyle ':zle:backward-kill-word-space' word-style shell
 bindkey '^W' backward-kill-word-space
+
 # alt+delete delete to eol, used cat to show the escape sequence
-bindkey "^[[3;3~" vi-kill-eol
+bindkey "^[[3;3~" kill-word
 bindkey "^[k" vi-kill-eol # alt+k, also ctrl+alt+k with skhd
 bindkey "^[[76;6u" clear-screen # ctrl+shift+l
 
@@ -288,6 +306,7 @@ lfcd () {
 }
 bindkey -s '^o' 'lfcd\n'  # zsh
 # }}}
+set DISABLE_MAGIC_FUNCTIONS=true
 
 [ -f ~/.secrets ] && source ~/.secrets
 
@@ -310,6 +329,9 @@ export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 ## deno
 export PATH="$HOME/.deno/bin:$PATH"
 
+## flutter
+export PATH=$PATH:$HOME/Applications/flutter/bin
+
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/jackieli/Applications/google-cloud-sdk/path.zsh.inc' ]; then
 	source '/Users/jackieli/Applications/google-cloud-sdk/path.zsh.inc';
@@ -320,4 +342,11 @@ if [ -f '/Users/jackieli/Applications/google-cloud-sdk/completion.zsh.inc' ]; th
 	source '/Users/jackieli/Applications/google-cloud-sdk/completion.zsh.inc';
 fi
 
-# vim:set noet sts=0 sw=2 ts=2 tw=79 fdm=marker:
+# bun completions
+[ -s "/Users/jackieli/.bun/_bun" ] && source "/Users/jackieli/.bun/_bun"
+
+## ruby gems
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+export GEM_HOME=$HOME/.gem
+export PATH=$GEM_HOME/bin:$PATH
+export PATH=$GEM_HOME/ruby/3.2.0/bin:$PATH

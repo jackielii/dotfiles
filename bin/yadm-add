@@ -5,7 +5,7 @@ yadm add $HOME/.oh-my-zsh/
 yadm add $HOME/.tmux.conf
 yadm add $HOME/.gitconfig
 yadm add $HOME/README.md
-yadm add $HOME/.config/kitty/kitty.conf
+yadm add $HOME/.config/kitty/*.conf
 yadm add $HOME/.config/yabai/yabairc
 yadm add $HOME/.config/skhd/skhdrc
 yadm add $HOME/.Brewfile
@@ -16,11 +16,12 @@ yadm add $HOME/.config/yadm/com.apple.symbolichotkeys.plist
 yadm add $HOME/.local/share/yadm/archive
 yadm add $HOME/.config/nvim/coc-settings.json
 yadm add $HOME/.config/nvim/tasks.ini
-yadm add $HOME/.config/nvim/init.vim
-yadm add $HOME/.config/nvim/lightline.vim
-yadm add $HOME/.config/nvim/plugin/*
-yadm add $HOME/.config/nvim/lua/*
-yadm add $HOME/.config/nvim/luainit.lua
+# yadm add $HOME/.config/nvim/init.vim
+yadm add $HOME/.config/nvim/init.lua
+# yadm add $HOME/.config/nvim/lightline.vim
+# yadm add $HOME/.config/nvim/plugin/*
+# yadm add $HOME/.config/nvim/lua/*
+# yadm add $HOME/.config/nvim/luainit.lua
 yadm add $HOME/.config/coc/ultisnips/*
 yadm add $HOME/.config/starship.toml
 yadm add $HOME/.config/base16-shell-hooks/

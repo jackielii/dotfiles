@@ -30,6 +30,7 @@ brew "tctl"
 brew "kubectx"
 brew "git-lfs"
 brew "libpq"
+brew "p7zip"
 
 brew "ccls" # C/C++/Objective-C language server
 # }}}
