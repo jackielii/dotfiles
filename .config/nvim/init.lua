@@ -54,9 +54,7 @@ map('i', 'jj', '<Esc>', { silent = true })
 map('i', 'kk', '<Esc>', { silent = true })
 
 map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
-map({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-map({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 
 map('i', 'II', '<Esc>I', { silent = true })
 map('i', 'Ii', '<Esc>i', { silent = true })
@@ -210,6 +208,14 @@ function! ClearWhitespace()
 endfunctio
 ]]
 map('n', '<leader>cw', '<cmd>call ClearWhitespace()<cr>', { silent = true })
+
+vim.api.nvim_create_autocmd('TextYankPost', {
+  group = initLuaGroup,
+  pattern = '*',
+  callback = function()
+    vim.highlight.on_yank()
+  end,
+})
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -381,12 +387,21 @@ require("lazy").setup({
   {
     "benlubas/molten-nvim",
     version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
-    -- cmd = { "MoltenInit" },
+    ft = { "python" },
+    init = function()
+      -- these are examples, not defaults. Please see the readme
+      vim.g.molten_image_provider = "image.nvim"
+      -- vim.g.molten_output_win_max_height = 20
+      vim.g.molten_auto_open_output = true
+      vim.g.molten_output_virt_lines = true
+      vim.g.molten_virt_text_output = true
+    end,
     keys = {
-      { "<leader>R",  ":MoltenEvaluateOperator<CR>",      desc = "run operator selection" },
-      { "<leader>rl", ":MoltenEvaluateLine<CR>",          desc = "evaluate line" },
-      { "<leader>rc", ":MoltenReevaluateCell<CR>",        desc = "re-evaluate cell" },
-      { "<leader>rr", ":<C-u>MoltenEvaluateVisual<CR>gv", desc = "evaluate visual selection" },
+      { "<leader>mm", ":MoltenInit<CR>",                  desc = "MoltenInit" },
+      { "<leader>M",  ":MoltenEvaluateOperator<CR>",      desc = "Molten run operator selection" },
+      { "<leader>ml", ":MoltenEvaluateLine<CR>",          desc = "Molten evaluate line" },
+      { "<leader>mc", ":MoltenReevaluateCell<CR>",        desc = "Molten re-evaluate cell" },
+      { "<leader>M",  ":<C-u>MoltenEvaluateVisual<CR>gv", desc = "Molten evaluate visual selection", mode = 'v' },
     },
     dependencies = {
       {
@@ -409,13 +424,6 @@ require("lazy").setup({
       },
     },
     build = ":UpdateRemotePlugins",
-    init = function()
-      -- these are examples, not defaults. Please see the readme
-      vim.g.molten_image_provider = "image.nvim"
-      -- vim.g.molten_output_win_max_height = 20
-      vim.g.molten_auto_open_output = true
-      vim.g.molten_output_virt_lines = true
-    end,
   },
 
 
@@ -461,8 +469,18 @@ require("lazy").setup({
 
   -- { 'echasnovski/mini.base16' },
 
+  -- {
+  --   -- Theme inspired by Atom
+  --   'navarasu/onedark.nvim',
+  --   priority = 1000,
+  --   config = function()
+  --     vim.cmd.colorscheme 'onedark'
+  --   end,
+  -- },
+
   {
     'RRethy/nvim-base16',
+    priority = 100,
     -- event = "VeryLazy",
     init = function()
       vim.api.nvim_create_autocmd('ColorScheme', {
@@ -484,16 +502,27 @@ require("lazy").setup({
             hi! link TSNamespace Normal
             hi! link TSVariable Normal
             hi! link TSParameterReference Identifier
-            hi! link TSParameterReference Identifier
           ]]
         end,
       })
     end,
     config = function()
-      if vim.fn.exists('$BASE16_THEME') and (not vim.g.colors_name or vim.g.colors_name ~= 'base16-$BASE16_THEME') then
-        vim.g.base16colorspace = 256
-        vim.cmd('colorscheme base16-$BASE16_THEME')
+      local base16_theme = "decaf"
+      if vim.env.BASE16_THEME ~= "" then
+        base16_theme = vim.env.BASE16_THEME
       end
+
+      if not vim.g.colors_name or vim.g.colors_name ~= 'base16-' .. base16_theme then
+        vim.cmd.colorscheme('base16-' .. base16_theme)
+      end
+
+      -- vim.cmd [[hi clear]]
+      -- vim.g.colors_name = 'base16-' .. base16_theme
+      -- base16.setup(base16_theme)
+
+      -- local colors = require("base16-colorscheme").colors
+      local colors = require("colors.tokyodark-terminal")
+      vim.api.nvim_set_hl(0, 'MyLuaLineSelected', { fg = colors.base01, bg = colors.base09 })
     end
   },
 
@@ -528,7 +557,12 @@ require("lazy").setup({
       }
       for i = 1, 8 do
         table.insert(keys,
-          { "<M-" .. i .. ">", "<cmd>lua require('bufferline').go_to(" .. i .. ", true)<cr>", desc = "Go to buffer " .. i, mode = { 'n', 'v', 'i' } })
+          {
+            "<M-" .. i .. ">",
+            "<cmd>lua require('bufferline').go_to(" .. i .. ", true)<cr>",
+            desc = "Go to buffer " .. i,
+            mode = { 'n', 'v', 'i' }
+          })
         table.insert(keys,
           { "<leader>" .. i, "<cmd>lua require('bufferline').go_to(" .. i .. ", true)<cr>", desc = "Go to buffer " .. i })
       end
@@ -538,24 +572,13 @@ require("lazy").setup({
       return keys
     end,
     opts = function()
-      -- local colors = require('base16-colorscheme').colors
       return {
         highlights = {
-          buffer_selected = {
-            link = 'Search',
-          },
-          numbers_selected = {
-            link = 'Search',
-          },
-          tab_selected = {
-            link = 'Search',
-          },
-          modified_selected = {
-            link = 'Search',
-          },
-          duplicate_selected = {
-            link = 'Search',
-          },
+          buffer_selected = { link = 'MyLuaLineSelected', },
+          numbers_selected = { link = 'MyLuaLineSelected', },
+          tab_selected = { link = 'MyLuaLineSelected', },
+          modified_selected = { link = 'MyLuaLineSelected', },
+          duplicate_selected = { link = 'MyLuaLineSelected', },
         },
         options = {
           numbers = 'ordinal',
@@ -576,7 +599,6 @@ require("lazy").setup({
       }
     end,
     config = function(_, opts)
-      -- local colors = require('base16-colorscheme').colors
       require("bufferline").setup(opts)
       -- Fix bufferline when restoring a session
       vim.api.nvim_create_autocmd("BufAdd", {
@@ -603,6 +625,7 @@ require("lazy").setup({
         -- hide the statusline on the starter page
         vim.o.laststatus = 0
       end
+      -- vim.highlight.create('LualineSelected',)
     end,
     opts = function()
       -- PERF: we don't need this lualine require madness 🤷
@@ -653,7 +676,7 @@ require("lazy").setup({
             },
             {
               function() return require('molten.status').kernels() end,
-              cond = function() return require('molten.status').initialized() ~= "" end,
+              cond = function() return package.loaded["molten"] and require('molten.status').initialized() ~= "" end,
             },
             {
               "diagnostics",
@@ -785,7 +808,8 @@ require("lazy").setup({
       vim.g.wiki_root = '~/personal/notes'
       vim.g.wiki_mappings_use_defaults = 'none'
       vim.g.wiki_filetypes = { 'md' }
-      vim.g.wiki_link_creation = { ['md'] = { ['url_transform'] = function(url) return string.lower(url):gsub(' ', '-') end } }
+      vim.g.wiki_link_creation = {
+        ['md'] = { ['url_transform'] = function(url) return string.lower(url):gsub(' ', '-') end } }
       vim.g.wiki_select_method = 'fzf'
       vim.g.wiki_mappings_local = {
         ['<plug>(wiki-link-prev)'] = '[w',
@@ -844,6 +868,22 @@ require("lazy").setup({
       --   keys = 'wertyuiopzxcvbnmasdfghjkl',
       -- },
     },
+    keys = {
+      {
+        "<leader>up",
+        function()
+          local npairs = require("nvim-autopairs")
+          if npairs.state.disabled then
+            npairs.enable()
+            print("autopairs enabled")
+          else
+            npairs.disable()
+            print("autopairs disabled")
+          end
+        end,
+        desc = "Autopairs toggle"
+      },
+    }
   },
 
   {
@@ -1223,7 +1263,7 @@ require("lazy").setup({
   {
     'bfredl/nvim-luadev',
     keys = {
-      { '<leader><leader>e', '<Plug>(Luadev-RunLine)', desc = "Luadev-RunLine", mode = { 'n', 'x', 'o' } },
+      { '<leader><leader>e', '<Plug>(Luadev-Run)', desc = "Luadev-RunLine", mode = { 'n', 'x', 'o' }, desc = "LuaDev run" },
     }
   },
 
@@ -1411,9 +1451,9 @@ require("lazy").setup({
       { '[n',         '<cmd>CocCommand document.jumpToPrevSymbol<cr>',                          desc = "CocPrev" },
 
       --
-      { '<M-C-k>',    '<Plug>(coc-diagnostic-info)',                                            mode = 'n' },
+      -- { '<M-C-k>',    '<Plug>(coc-diagnostic-info)',                                            mode = 'n' },
       { '<D-i>',      '<Plug>(coc-diagnostic-info)',                                            mode = 'n' },
-      { '<M-C-k>',    [[<C-\><C-o>:call CocAction('diagnosticPreview')<cr>]],                   mode = 'i' },
+      -- { '<M-C-k>',    [[<C-\><C-o>:call CocAction('diagnosticPreview')<cr>]],                   mode = 'i' },
       { '<D-i>',      [[<C-\><C-o>:call CocAction('diagnosticPreview')<cr>]],                   mode = 'i' },
       { '<leader>kk', [[<cmd>call CocAction('diagnosticPreview')<cr>]] },
       -- { '<M-i>',      [[<CMD>call CocActionAsync('showSignatureHelp')<cr>]],  mode = { 'i' } },
@@ -1454,6 +1494,15 @@ require("lazy").setup({
       { 'gr',          '<Plug>(coc-references)' },
 
       { '<leader>rn',  [[<Plug>(coc-rename)]] },
+
+      -- nmap <leader>rf <Plug>(coc-refactor)
+      -- " Remap keys for apply refactor code actions.
+      -- nmap <silent> <leader>re <Plug>(coc-codeaction-refactor)
+      -- xmap <silent> <leader>r  <Plug>(coc-codeaction-refactor-selected)
+      -- nmap <silent> <leader>r  <Plug>(coc-codeaction-refactor-selected)
+      { '<leader>rf',  [[<Plug>(coc-refactor)]] },
+      { '<leader>re',  [[<Plug>(coc-codeaction-refactor)]] },
+      { '<leader>r',   [[<Plug>(coc-codeaction-refactor-selected)]],              mode = { 'n', 'x' } },
 
       -- " Remap for format selected region
       { '<leader>gf',  [[<Plug>(coc-format-selected)]],                           mode = { 'n', 'x' } },

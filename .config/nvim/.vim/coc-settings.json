@@ -1,0 +1,4 @@
+{
+  "Lua.workspace.checkThirdParty": false,
+  "Lua.diagnostics.workspaceDelay": 30000
+}

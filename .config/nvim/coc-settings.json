@@ -161,6 +161,7 @@
   "coc.source.word.priority": 1,
   "coc.source.dictionary.priority": 80,
   "yank.priority": 80,
+  "yank.highlight.enable": false,
   "coc.source.buffer.priority": 2,
   // }}}
 
