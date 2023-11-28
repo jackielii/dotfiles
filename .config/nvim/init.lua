@@ -23,7 +23,7 @@ vim.o.writebackup = false
 vim.o.swapfile = false
 vim.o.hidden = true
 vim.o.cursorline = true
-vim.o.colorcolumn = 120
+vim.o.colorcolumn = '120'
 vim.o.showmode = false
 vim.o.more = false
 vim.o.cmdheight = 1
@@ -1112,8 +1112,9 @@ require("lazy").setup({
     "nvim-telescope/telescope.nvim",
     cmd = "Telescope",
     keys = {
-      { "<leader>;", "<cmd>Telescope<cr>",                    "Telescope" },
-      { "<F8>",      "<cmd>Telescope dap configurations<cr>", "Dap configurations" },
+      { "<leader>;", "<cmd>Telescope<cr>",                    desc = "Telescope" },
+      { "<leader>:", "<cmd>Telescope resume<cr>",             desc = "Telescope resume" },
+      { "<F8>",      "<cmd>Telescope dap configurations<cr>", desc = "Dap configurations" },
     },
     dependencies = {
       'nvim-telescope/telescope-dap.nvim',
