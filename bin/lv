@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+name=$(
+	LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 10
+	echo
+)
+
+docker run -it -v "$(pwd)":"$(pwd)" -w "$(pwd)" --name "$name" lazyvim "$@"
+docker commit "$name" lazyvim 1>/dev/null
+docker rm "$name" 1>/dev/null

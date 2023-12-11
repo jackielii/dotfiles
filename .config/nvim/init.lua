@@ -570,6 +570,10 @@ require('lazy').setup({
             hi! link TSNamespace Normal
             hi! link TSVariable Normal
             hi! link TSParameterReference Identifier
+
+            hi! Search guifg=#c8d3f5 guibg=#3e68d7
+            hi! IncSearch guifg=#1b1d2b guibg=#ff966c
+            hi! link CurSearch IncSearch
           ]]
         end,
       })
@@ -805,6 +809,7 @@ require('lazy').setup({
                 if path:find(vim.fn.expand("~"), 1, true) == 1 then
                   path = path:gsub(vim.fn.expand("~"), "~", 1)
                 end
+                path = path:gsub("%%", "%%%%")
                 local sep = package.config:sub(1, 1)
                 local parts = vim.split(path, "[\\/]")
                 if #parts > 3 then
@@ -813,7 +818,7 @@ require('lazy').setup({
                 if vim.bo.modified then
                   parts[#parts] = Util.lualine.format(self, parts[#parts], "Constant")
                 end
-                return table.concat(parts, sep):gsub("%%", "%%%%")
+                return table.concat(parts, sep)
               end
             },
             { function() return vim.b['coc_current_function'] or '' end, },
@@ -1322,8 +1327,13 @@ require('lazy').setup({
     keys = {
       {
         '<C-p>',
-        [[IsCocList() ? '\<C-p>' : ':Telescope find_files<cr>']],
-        expr = true,
+        -- [[IsCocList() ? '\<C-p>' : ':Telescope find_files<cr>']],
+        function()
+          if vim.fn.IsCocList() == 1 then
+            return vim.fn.feedkeys('<C-p>')
+          end
+          require("lazyvim.util.telescope")("files")() -- git files or cwd files
+        end,
         desc = 'Find Files'
       },
       { '<leader>zg',       [[<cmd>Telescope git_files<cr>]], desc = 'Telescope Git Files' },
