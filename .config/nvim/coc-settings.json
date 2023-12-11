@@ -6,7 +6,7 @@
   "python.pythonPath": "$HOME/.pyenv/shims/python3",
   "python.formatting.provider": "black",
   "python.linting.enabled": false,
-  "pyright.disableDiagnostics": true,
+  "pyright.disableDiagnostics": false,
   // "git.enableGlobalStatus": false,
   "diagnostic.checkCurrentLine": true,
   "diagnostic.messageTarget": "float",
@@ -435,7 +435,9 @@
 
   //}}}
 
-  "zig.zls.debugLog": true,
+  // "zig.zls.debugLog": true,
+  "zig.zls.path": "/Users/jackieli/personal/zls/zig-out/bin/zls",
+  "zig.zls.checkForUpdate": false,
   // emmet {{{
   // "emmet.includeLanguages": {},
   // "emmet.showExpandedAbbreviation": "never",
@@ -455,5 +457,4 @@
   "Lua.diagnostics.enable": true,
   "sumneko-lua.checkUpdate": false,
   "snippets.ultisnips.pythonPrompt": false,
-  "zig.zls.path": "/Users/jackieli/.config/coc/extensions/coc-zls-data/zls_install/zls"
 }

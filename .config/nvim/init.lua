@@ -89,6 +89,26 @@ map('n', 'y/', [[:let @/=expand("<cword>")<cr>]], { silent = true, noremap = tru
 
 map('v', '//', [["vy/\V<C-r>=escape(@v,'/\')<cr><cr>N]], { silent = true, noremap = true })
 map('v', '$', 'g_', { silent = true, noremap = true })
+map('n', 'yoq', function()
+  if vim.fn.getqflist({ winid = 0 }).winid ~= 0 then
+    vim.cmd.cclose()
+  else
+    vim.cmd.copen()
+  end
+end)
+--       vim.cmd [[
+-- function! ToggleQuickFix()
+--     if getqflist({'winid' : 0}).winid
+--         cclose
+--     else
+--         copen
+--     endif
+-- endfunction
+--
+-- command! -nargs=0 -bar ToggleQuickFix call ToggleQuickFix()
+--
+-- nnoremap yoq :ToggleQuickFix<CR>
+--       ]]
 
 vim.api.nvim_create_autocmd('BufReadPost', {
   group = initLuaGroup,
@@ -339,7 +359,7 @@ require('lazy').setup({
         ['ctrl-v'] = 'vsplit',
         ['ctrl-s'] = 'split'
       }
-      vim.g.fzf_vim = { ['preview_window'] = { 'hidden,right,50%' } }
+      vim.g.fzf_vim = { preview_window = { 'hidden,right,50%' } }
       vim.env.FZF_DEFAULT_OPTS = vim.env.FZF_DEFAULT_OPTS .. ' --layout=reverse'
     end,
     keys = {
@@ -956,12 +976,12 @@ require('lazy').setup({
       vim.g.startify_session_autoload = 1
       vim.g.startify_files_number = 5
       vim.g.startify_lists = {
-        { ['type'] = 'commands' },
-        { ['type'] = 'dir',     ['header'] = { '   This MRU ' .. vim.fn.getcwd() } },
-        { ['type'] = 'files',   ['header'] = { '   MRU' } },
+        { type = 'commands' },
+        { type = 'dir',     header = { '   This MRU ' .. vim.fn.getcwd() } },
+        { type = 'files',   header = { '   MRU' } },
       }
       vim.g.startify_commands = {
-        { ['a'] = { 'Load Session', [[lua require'persistence'.load()]] } },
+        { a = { 'Load Session', [[lua require'persistence'.load()]] } },
       }
     end,
   },
@@ -1364,6 +1384,7 @@ require('lazy').setup({
       --   hi! link TelescopePreviewTitle TelescopeTitle
       --   hi! link TelescopePromptPrefix Identifier
       -- ]]
+      local actions = require('telescope.actions')
       return {
         defaults = {
           layout_strategy = "horizontal",
@@ -1373,6 +1394,7 @@ require('lazy').setup({
             i = {
               ['<C-o>'] = { "<esc>", type = "command" },
               ['<C-s>'] = 'select_horizontal',
+              ['<C-x>'] = actions.smart_send_to_qflist + actions.open_qflist,
               ['<esc>'] = 'close',
               ['<C-j>'] = 'move_selection_next',
               ['<C-k>'] = 'move_selection_previous',
@@ -1721,14 +1743,19 @@ require('lazy').setup({
         expr = true,
         replace_keycodes = false,
       },
-      { '<C-j>',      '<Plug>(coc-snippet-next)',                                               mode = 's', },
-      { '<C-k>',      '<Plug>(coc-snippet-prev)',                                               mode = 's', },
+      { '<C-j>',      '<Plug>(coc-snippet-next)',                      mode = 's', },
+      { '<C-k>',      '<Plug>(coc-snippet-prev)',                      mode = 's', },
 
       --
       { '<leader>ki', '<cmd>CocCommand git.chunkInfo<cr>' },
       { '<leader>ku', '<cmd>CocCommand git.chunkUndo<cr>' },
-      { ']n',         '<cmd>CocCommand document.jumpToNextSymbol<cr>',                          desc = 'CocNext' },
-      { '[n',         '<cmd>CocCommand document.jumpToPrevSymbol<cr>',                          desc = 'CocPrev' },
+      { ']n',         '<cmd>CocCommand document.jumpToNextSymbol<cr>', desc = 'Coc Next Symbol' },
+      {
+        '[n',
+        '<cmd>CocCommand document.jumpToPrevSymbol<cr>',
+        desc =
+        'Coc Previous Symbol'
+      },
 
       --
       -- { '<M-C-k>',    '<Plug>(coc-diagnostic-info)',                                            mode = 'n' },

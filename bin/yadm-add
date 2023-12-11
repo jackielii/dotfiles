@@ -6,6 +6,7 @@ yadm add $HOME/.tmux.conf
 yadm add $HOME/.gitconfig
 yadm add $HOME/README.md
 yadm add $HOME/.config/kitty/*.conf
+yadm add $HOME/.config/kitty/*.py
 yadm add $HOME/.config/yabai/yabairc
 yadm add $HOME/.config/skhd/skhdrc
 yadm add $HOME/.Brewfile
@@ -18,6 +19,8 @@ yadm add $HOME/.config/nvim/coc-settings.json
 yadm add $HOME/.config/nvim/tasks.ini
 # yadm add $HOME/.config/nvim/init.vim
 yadm add $HOME/.config/nvim/init.lua
+yadm add $HOME/.config/nvim/lazy-lock.json
+yadm add $HOME/.config/nvim/ksb-init.lua
 # yadm add $HOME/.config/nvim/lightline.vim
 # yadm add $HOME/.config/nvim/plugin/*
 # yadm add $HOME/.config/nvim/lua/*

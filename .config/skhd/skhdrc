@@ -231,9 +231,17 @@ cmd + ctrl - d : yabai -m space --toggle show-desktop
 cmd - f14 : yabai -m window --focus recent || yabai -m space --focus recent
 f15 : yabai -m space --focus recent
 # cycle through all windows in current space
-cmd + ctrl - tab :  yabai -m window --focus (yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id')
+cmd + ctrl - tab :  yabai -m window --focus $(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id')
 # reverse cycle through all windows in current space
-cmd + ctrl + shift - tab :  yabai -m window --focus (yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | .[map(."has-focus") | index(true)-1].id')
+cmd + ctrl + shift - tab :  yabai -m window --focus $(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | .[map(."has-focus") | index(true)-1].id')
+
+## ctrl+pause to cycle through windows on the same spaces
+ctrl - f14 :  yabai -m window --focus $(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id')
+
+## f15 is pause, f14 is screenlock
+# lalt - tab : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
+## 0x32 is `
+cmd + ctrl - 0x32 : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
 
 # ctrl - f13 : /Applications/flameshot.app/Contents/MacOS/flameshot gui
 # shift - f13 : open -a flameshot --args screen
@@ -299,14 +307,6 @@ cmd + ctrl + shift - space : yabai -m window --toggle topmost
 cmd - f11 : yabai -m window --toggle native-fullscreen
 ctrl + cmd - f : yabai -m window --toggle native-fullscreen
 
-## f15 is pause, f14 is screenlock
-# lalt - tab : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
-## 0x32 is `
-cmd + ctrl - 0x32 : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
-
-## ctrl+pause to cycle through windows on the same spaces
-ctrl - f14 :  yabai -m window --focus (yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id')
-
 # ## flash window border for active window
 # cmd + ctrl + shift - w : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
 # ## 0x2F is dot
@@ -361,7 +361,8 @@ ctrl + cmd - k | cmd - k
 
 # switch to main first tmux listening to socket, if none, launch new one
 ralt - t : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
-    fish -c "~/personal/kitty/kitty/launcher/kitty -1 -d ~"
+    fish -c "kitty -1 -d ~"
+    # fish -c "~/personal/kitty/kitty/launcher/kitty -1 -d ~"
     # zsh -ci "kitty -1 -d ~"
         # zsh -c "source ~/.base16_theme; tmux new-session -A -s main"
 # alt - f : kitty -d ~ --title 'MY-|-Filer' lf
@@ -462,6 +463,7 @@ ctrl + shift - end [
 
 .blacklist [
     "dota2"
+    "Microsoft Remote Desktop"
 ]
 
 # focus on floating

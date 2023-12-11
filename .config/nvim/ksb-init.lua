@@ -1,6 +1,7 @@
 local map = vim.keymap.set
 local kitty_data;
 vim.o.clipboard = 'unnamedplus'
+vim.o.shada = ''
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 vim.opt.rtp:prepend(lazypath)
@@ -47,16 +48,47 @@ require("lazy").setup({
   {
     dir = '~/personal/kitty-scrollback.nvim',
     config = function()
-      local ksb_api = require('kitty-scrollback.api')
+      require('kitty-scrollback').setup({
+        global = function()
+          return {
+            keymaps_enabled = false,
+            paste_window = {
+              filetype = 'ksb_paste'
+            },
+            callbacks = {
+              after_setup = function(kd)
+                kitty_data = kd
+              end,
+            }
+          }
+        end
+      })
+
       require('kitty-scrollback.backport').setup()
 
-      vim.api.nvim_create_autocmd('filetype', {
+      local ksb_api = require('kitty-scrollback.api')
+      vim.api.nvim_create_autocmd('FileType', {
         pattern = 'ksb_paste',
         callback = function(args)
-          local opts = { buffer = args.buffer }
-          map({ 'n' }, 'p', '<Plug>(KsbPaste)', opts)
-          map({ 'n', 'i' }, '<c-cr>', ksb_api.execute_command, opts)
-          map({ 'n', 'i' }, '<s-cr>', ksb_api.paste_command, opts)
+          local ksb_kitty_cmds = require('kitty-scrollback.kitty_commands')
+          local bufid = args.buffer or true
+          vim.keymap.set({ 'n', 'i' }, '<C-CR>', function()
+            ksb_kitty_cmds.send_paste_buffer_text_to_kitty_and_quit(true)
+          end, { buffer = bufid })
+          vim.keymap.set({ 'n', 'i' }, '<S-CR>', function()
+            ksb_kitty_cmds.send_paste_buffer_text_to_kitty_and_quit(false)
+          end, { buffer = bufid })
+          vim.keymap.set({ 'n' }, 'g?', ksb_api.toggle_footer, { buffer = bufid })
+          -- set_default({ 'n' }, 'g?', '<Plug>(KsbToggleFooter)', {})
+          -- set_default({ 'n', 'i' }, '<c-cr>', '<Plug>(KsbExecuteCmd)', {})
+          -- set_default({ 'n', 'i' }, '<s-cr>', '<Plug>(KsbPasteCmd)', {})
+          -- require('kitty-scrollback.')
+          -- local opts = { buffer = true }
+          -- print('ksb_paste')
+          -- map({ 'n', 'i' }, '<C-CR>', ksb_api.execute_command)
+          -- map({ 'n', 'i' }, '<S-CR>', ksb_api.paste_command)
+          -- map({ 'n', 'i' }, '<C-CR>', '<Plug>(KsbExecuteCmd)', opts)
+          -- map({ 'n', 'i' }, '<S-CR>', '<Plug>(KsbPasteCmd)', opts)
         end
       })
 
@@ -82,18 +114,6 @@ require("lazy").setup({
           vim.cmd [[execute &keywordprg . " " . expand('<cword>')]]
         end
       end)
-
-      require('kitty-scrollback').setup({
-        keymaps_enabled = false,
-        paste_window = {
-          filetype = 'ksb_paste'
-        },
-        callbacks = {
-          after_setup = function(kd)
-            kitty_data = kd
-          end,
-        }
-      })
     end
   }
 
@@ -110,88 +130,3 @@ function _G.buf_vtext()
   -- vim.fn.setreg('a', a_orig)
   return text
 end
-
--- local Plug = vim.fn['plug#']
---
--- vim.call('plug#begin', '~/.config/nvim/plugged')
--- Plug 'craigmac/Navigator.nvim'
--- Plug 'RRethy/nvim-base16'
--- Plug 'folke/flash.nvim'
--- Plug 'tyru/open-browser.vim'
--- Plug '~/personal/kitty-scrollback.nvim'
--- vim.call('plug#end')
---
--- vim.cmd [[ colorscheme base16-decaf ]]
--- vim.o.clipboard = 'unnamedplus'
---
--- local map = vim.keymap.set
--- require("flash").setup {}
--- map({ "n", "x", "o" }, "s", function() require("flash").jump() end)
---
--- require('Navigator').setup {}
--- map({ 'n', 't' }, '<C-h>', function() require("Navigator").left() end)
--- map({ 'n', 't' }, '<C-j>', function() require("Navigator").down() end)
--- map({ 'n', 't' }, '<C-k>', function() require("Navigator").up() end)
--- map({ 'n', 't' }, '<C-l>', function() require("Navigator").right() end)
--- map({ 'n', 't' }, '<M-`>', function() require("Navigator").previous() end)
--- map({ 'n', 't' }, '<D-`>', function() require("Navigator").previous() end)
---
--- map('n', 'gx', '<Plug>(openbrowser-smart-search)')
--- map('v', 'gx', '<Plug>(openbrowser-smart-search)')
---
-
--- local map = vim.keymap.set
--- local kitty_data;
---
--- map({ 'n', 'v' }, ' ', 'v')
--- local ksb_api = require('kitty-scrollback.api')
---
--- vim.api.nvim_create_autocmd('filetype', {
---   pattern = 'ksb_paste',
---   callback = function(args)
---     local opts = { buffer = args.buffer }
---     map({ 'n' }, 'p', '<Plug>(KsbPaste)', opts)
---     map({ 'n', 'i' }, '<c-cr>', ksb_api.execute_command, opts)
---     map({ 'n', 'i' }, '<s-cr>', ksb_api.paste_command, opts)
---   end
--- })
---
--- map({ 'v' }, '<C-y>', function()
---   vim.cmd [[ normal! "+y ]]
---   ksb_api.quit_all()
--- end, {})
---
--- map({ 'v' }, 'Y', function()
---   vim.cmd [[ normal! "+y ]]
---   local util = require('kitty-scrollback.util')
---   local cmds = require('kitty-scrollback.kitty_commands')
---
---   local txt = vim.fn.getreg('+')
---   util.vim_system({
---     'kitty',
---     '@',
---     'send-text',
---     '--match=id:' .. kitty_data.window_id,
---     txt
---   })
---   cmds.signal_term_to_kitty_child_process(true)
--- end, {})
---
--- map({ 'n' }, 'q', ksb_api.quit_all, {})
--- map({ 'n', 't', 'i' }, '<Esc>', ksb_api.close_or_quit_all, {})
--- map({ 'n', 't', 'i' }, 'ZZ', ksb_api.quit_all, {})
---
--- require('kitty-scrollback').setup({
---   keymaps_enabled = false,
---   paste_window = {
---     filetype = 'ksb_paste'
---   },
---   callbacks = {
---     after_setup = function(kd)
---       kitty_data = kd
---     end,
---     -- after_ready = function(kd, opts, p)
---     --   map({ 'n' }, 'q', '<Plug>(KsbCloseOrQuitAll)', {})
---     -- end,
---   }
--- })

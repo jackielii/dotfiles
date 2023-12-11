@@ -1,5 +1,6 @@
 set nocompatible
-set runtimepath^=~/personal/coc.nvim
+set runtimepath^=~/.local/share/nvim/lazy/lualine.nvim
+lua require'lualine'.setup()
 filetype plugin indent on
 syntax on
 set hidden
