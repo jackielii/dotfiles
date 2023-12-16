@@ -52,7 +52,7 @@ map xz zip
 map xt tar
 map xx extract
 
-map o $open $fx
+map o open $f
 map O $open -R $fx
 map Q $lf -remote "send quit" # close all window
 map i $$lf_previewer "$f"
@@ -259,7 +259,8 @@ cmd create %{{
 }}
 
 cmd fzf_jump ${{
-    res="$(fd . -H -I -d 6 -E .git -E node_modules | fzf +m | sed 's/\\/\\\\/g;s/"/\\"/g')"
+    pwd=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+    res="$(fd . $pwd -H -I -d 6 -E .git -E node_modules | fzf +m | sed 's/\\/\\\\/g;s/"/\\"/g')"
     if [ -d "$res" ] ; then
         cmd="cd"
     elif [ -f "$res" ] ; then

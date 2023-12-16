@@ -400,11 +400,30 @@ cmd + shift - x : yabai -m window --close
 # ctrl + shift - right : skhd -k "alt + shift - right"
 
 # delete word
-ctrl - backspace | alt - backspace
-ctrl - delete | alt - delete
+ctrl - backspace [
+    "kitty" ~
+    "wezterm" ~
+    *       | alt - backspace
+]
+ctrl - delete [
+    "kitty" ~
+    "wezterm" ~
+    *       | alt - delete
+]
 # move word
-ctrl - left | alt - left
-ctrl - right | alt - right
+# ctrl - left | alt - left
+ctrl - left [
+    "kitty" ~
+    "wezterm" ~
+    *       | alt - left
+]
+# ctrl - right | alt - right
+ctrl - right [
+    "kitty" ~
+    "wezterm" ~
+    # "Google Chrome" ~
+    *       | alt - right
+]
 # select word
 ctrl + shift - left | alt + shift - left
 ctrl + shift - right | alt + shift - right
@@ -414,50 +433,50 @@ home [
     "kitty" ~
     "wezterm" ~
     "Google Chrome" ~
-    *       : skhd -k "cmd - left"
+    *       | cmd - left
 ]
 end [
     "kitty" ~
     "wezterm" ~
     "Google Chrome" ~
-    *       : skhd -k "cmd - right"
+    *       | cmd - right
 ]
 shift - home [
     "kitty" ~
     "wezterm" ~
     "Google Chrome" ~
-    *       : skhd -k "cmd + shift - left"
+    *       | cmd + shift - left
 ]
 shift - end [
     "kitty" ~
     "wezterm" ~
     "Google Chrome" ~
-    *       : skhd -k "cmd + shift - right"
+    *       | cmd + shift - right
 ]
 # ctrl + home/end hack
 ctrl - home [
     "kitty" ~
     "wezterm" ~
     "Google Chrome" ~
-    *       : skhd -k "cmd - up"
+    *       | cmd - up
 ]
 ctrl - end [
     "kitty" ~
     "wezterm" ~
     "Google Chrome" ~
-    *       : skhd -k "cmd - down"
+    *       | cmd - down
 ]
 ctrl + shift - home [
     "kitty" ~
     "wezterm" ~
     "Google Chrome" ~
-    *       : skhd -k "cmd + shift - up"
+    *       | cmd + shift - up
 ]
 ctrl + shift - end [
     "kitty" ~
     "wezterm" ~
     "Google Chrome" ~
-    *       : skhd -k "cmd + shift - down"
+    *       | cmd + shift - down
 ]
 # }}}
 

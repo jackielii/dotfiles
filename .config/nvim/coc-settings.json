@@ -455,6 +455,8 @@
   "Lua.diagnostics.workspaceRate": 100,
   "Lua.hint.enable": false,
   "Lua.diagnostics.enable": true,
+  "Lua.workspace.library": ["~/.local/share/nvim/lazy"],
+  "Lua.workspace.checkThirdParty": false,
   "sumneko-lua.checkUpdate": false,
-  "snippets.ultisnips.pythonPrompt": false,
+  "snippets.ultisnips.pythonPrompt": false
 }

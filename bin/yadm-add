@@ -30,6 +30,8 @@ yadm add $HOME/.config/starship.toml
 yadm add $HOME/.config/base16-shell-hooks/
 yadm add $HOME/.config/lf/
 yadm add $HOME/.config/lesskey
+yadm add $HOME/.config/fish/config.fish
+yadm add $HOME/.config/fish/fish_plugins
 yadm add $HOME/bin/yadm-add
 yadm add $HOME/.direnvrc
 yadm add $HOME/.gnupg/gpg-agent.conf
