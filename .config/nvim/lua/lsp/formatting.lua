@@ -1,6 +1,29 @@
 local Util = require("lazyvim.util")
+local map = vim.keymap.set
 
 local M = {}
+-- formatting
+map({ "n", "v" }, "<leader>kf", function()
+  Util.format({ force = true })
+end, { desc = "Format" })
+
+_G.__format_operator = function(type)
+  local range
+  if type == "v" then
+    range = {
+      start = vim.api.nvim_buf_get_mark(0, "<"),
+      ["end"] = vim.api.nvim_buf_get_mark(0, ">"),
+    }
+  else
+    range = {
+      start = vim.api.nvim_buf_get_mark(0, "["),
+      ["end"] = vim.api.nvim_buf_get_mark(0, "]"),
+    }
+  end
+  require("conform").format({ range = range })
+end
+map("v", "<leader>gf", "<cmd>lua __format_operator('v')<CR>", { desc = "Format Visual" })
+map("n", "<leader>gf", "<Esc><cmd>set operatorfunc=v:lua.__format_operator<CR>g@", { desc = "Format Operator" })
 
 ---@param opts ConformOpts
 function M.setup(_, opts)
@@ -8,7 +31,7 @@ function M.setup(_, opts)
     if type(formatter) == "table" then
       ---@diagnostic disable-next-line: undefined-field
       if formatter.extra_args then
-        ---@diagnostic disable-next-line: undefined-field
+        ---@diagnostic disable-next-line: undefined-field, inject-field
         formatter.prepend_args = formatter.extra_args
         Util.deprecate(("opts.formatters.%s.extra_args"):format(name), ("opts.formatters.%s.prepend_args"):format(name))
       end

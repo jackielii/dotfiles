@@ -68,7 +68,7 @@ return {
       },
       {
         "<C-e>",
-        [[coc#pum#visible() ? coc#pum#cancel() : copilot#Accept("\<C-e>")]],
+        [[coc#pum#visible() ? coc#pum#cancel() : "\<C-e>")]],
         mode = "i",
         expr = true,
         silent = true,

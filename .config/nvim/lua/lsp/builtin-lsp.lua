@@ -146,22 +146,25 @@ return {
           })
         end, "Quick Fix")
 
-        local go = function(handler, opts)
+        local provider = require("telescope.builtin")
+        -- local provider = require("fzf-lua")
+        local goto = function(handler, opts)
           opts = opts or { ignore_current_line = true, jump_to_single_result = true }
-          local provider = require("fzf-lua")
           return function()
             provider[handler](opts)
           end
         end
         k("gd", function()
-          require("fzf-lua").lsp_definitions({ ignore_current_line = true, jump_to_single_result = true })
+          provider.lsp_definitions({ ignore_current_line = true, jump_to_single_result = true })
         end, "[G]oto [D]efinition")
-        k("gr", go("lsp_references"), "[G]oto [R]eferences")
-        k("gI", go("lsp_implementations"), "[G]oto [I]mplementation")
-        k("gy", go("lsp_typedefs"), "Type [D]efinition")
-        k("<leader>ds", go("lsp_document_symbols", {}), "[D]ocument [S]ymbols")
-        k("<leader>da", go("lsp_document_diagnostics", {}), "Document Diagnostics")
-        k("<leader>dl", go("lsp_live_workspace_symbols", {}), "[W]orkspace [S]ymbols")
+        k("gr", goto("lsp_references"), "[G]oto [R]eferences")
+        k("gI", goto("lsp_implementations"), "[G]oto [I]mplementation")
+        -- k("gy", goto("lsp_typedefs"), "Type [D]efinition") -- fzf-lua
+        k("gy", goto("lsp_type_definitions"), "Type [D]efinition")
+        k("<leader>ds", goto("lsp_document_symbols", {}), "[D]ocument [S]ymbols")
+        k("<leader>da", goto("diagnostics", {}), "Workspace Diagnostics")
+        k("<leader>dl", goto("lsp_dynamic_workspace_symbols", {}), "[W]orkspace [S]ymbols")
+        -- k("<leader>dl", goto("lsp_live_workspace_symbols", {}), "[W]orkspace [S]ymbols")
 
         -- See `:help K` for why this keymap
         k("K", vim.lsp.buf.hover, "Hover Documentation")

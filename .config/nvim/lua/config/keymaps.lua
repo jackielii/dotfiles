@@ -11,6 +11,8 @@ map("i", "UU", "<Esc>u", { silent = true })
 map("i", "Pp", "<Esc>P", { silent = true })
 map("i", "PP", "<Esc>pa", { silent = true })
 map("i", "CC", "<Esc>cc", { silent = true })
+map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit all" })
+map("n", "<leader>QQ", "<cmd>qa!<cr>", { desc = "Quit all" })
 
 -- better indenting
 map("v", "<", "<gv")

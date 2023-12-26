@@ -1,11 +1,26 @@
 local Util = require("lazyvim.util")
 local map = vim.keymap.set
 local LazyFile = { "BufReadPost", "BufNewFile", "BufWritePre" }
+_G.lv = require("lazyvim.util")
 
--- formatting
-map({ "n", "v" }, "<leader>kf", function()
-  Util.format({ force = true })
-end, { desc = "Format" })
+-- setup filetypes that should autoformat on BufWritePre
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "go,lua",
+  command = "let b:autoformat = 1",
+})
+
+vim.api.nvim_create_autocmd("User", {
+  group = vim.api.nvim_create_augroup("LazyVim", { clear = true }),
+  pattern = "VeryLazy",
+  callback = function()
+    Util.format.setup() -- setup autoformat on BufWritePre
+    Util.news.setup() -- lazyvim news
+    Util.root.setup() -- setup root dir
+    -- vim.api.nvim_create_user_command("LazyExtras", function()
+    --   Util.extras.show()
+    -- end, { desc = "Manage LazyVim extras" })
+  end,
+})
 
 -- diagnostic
 local diagnostic_goto = function(next, severity)
@@ -37,10 +52,20 @@ return {
 
   { import = "lsp.extras.lang.go" },
 
+  {
+    "NvChad/nvim-colorizer.lua",
+    event = LazyFile,
+    opts = {},
+    main = "colorizer",
+    -- config = function(_, opts)
+    --   require("colorizer").setup(opts)
+    -- end,
+  },
+
   -- {
-  --   'j-hui/fidget.nvim',
+  --   "j-hui/fidget.nvim",
   --   opts = {},
-  --   event = LazyFile
+  --   event = LazyFile,
   -- },
   -- {
   --   "ray-x/lsp_signature.nvim",
@@ -50,6 +75,39 @@ return {
   --     toggle_key_flip_floatwin_setting = true,
   --   },
   -- },
+
+  {
+    "rcarriga/nvim-notify",
+    keys = {
+      {
+        "<leader>un",
+        function()
+          require("notify").dismiss({ silent = true, pending = true })
+        end,
+        desc = "Dismiss all Notifications",
+      },
+    },
+    opts = {
+      timeout = 3000,
+      max_height = function()
+        return math.floor(vim.o.lines * 0.75)
+      end,
+      max_width = function()
+        return math.floor(vim.o.columns * 0.75)
+      end,
+      on_open = function(win)
+        vim.api.nvim_win_set_config(win, { zindex = 100 })
+      end,
+    },
+    init = function()
+      -- when noice is not enabled, install notify on VeryLazy
+      if not Util.has("noice.nvim") then
+        Util.on_very_lazy(function()
+          vim.notify = require("notify")
+        end)
+      end
+    end,
+  },
 
   -- Highly experimental plugin that completely replaces the UI for messages, cmdline and the popupmenu.
   {
@@ -61,12 +119,26 @@ return {
       -- OPTIONAL:
       --   `nvim-notify` is only needed, if you want to use the notification view.
       --   If not available, we use `mini` as the fallback
-      -- "rcarriga/nvim-notify",
+      "rcarriga/nvim-notify",
     },
     init = function()
+      -- vim.o.incsearch = false -- this causes a flicker when searching maybe fixed when new version is release?
       vim.api.nvim_set_hl(0, "LspSignatureActiveParameter", { link = "@type.builtin", default = true })
     end,
     opts = {
+      views = {
+        hover = {
+          border = {
+            style = "rounded",
+            padding = { 0, 1 },
+          },
+          size = {
+            -- width = "50%",
+            max_width = 80,
+          },
+          position = { row = 2, col = 2 },
+        },
+      },
       lsp = {
         override = {
           ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
@@ -82,6 +154,7 @@ return {
               { find = "%d+L, %d+B" },
               { find = "; after #%d+" },
               { find = "; before #%d+" },
+              { find = "%d+ fewer lines" },
             },
           },
           view = "mini",
@@ -92,18 +165,33 @@ return {
         command_palette = false, -- position the cmdline and popupmenu together
         long_message_to_split = true, -- long messages will be sent to a split
         inc_rename = false, -- enables an input dialog for inc-rename.nvim
-        lsp_doc_border = false, -- add a border to hover docs and signature help
+        lsp_doc_border = true, -- add a border to hover docs and signature help
       },
-      -- cmdline = {
-      --   enabled = false,
-      -- },
+      cmdline = {
+        enabled = true,
+        view = "cmdline",
+      },
       messages = {
         enabled = true,
-        -- view = "mini",       -- default view for messages
-        -- view_error = "split", -- view for errors
-        -- view_warn = "split",  -- view for warnings
-        -- view_history = "popup", -- view for :messages
+        -- view = "notify",
+        -- view_error = "messages", -- view for errors
+        -- view_warn = "messages", -- view for warnings
+        -- view_history = "messages", -- view for :messages
         -- view_search = "virtualtext", -- view for search count messages. Set to `false` to disable
+      },
+      -- popupmenu = {
+      --   enabled = false,
+      -- },
+      -- notify = {
+      --   enabled = true,
+      -- },
+      --
+      commands = {
+        all = {
+          view = "split",
+          opts = { enter = true, format = "details" },
+          filter = {},
+        },
       },
     },
     -- stylua: ignore
@@ -114,16 +202,8 @@ return {
         mode = "c",
         desc = "Redirect Cmdline"
       },
-      {
-        "<leader>nn",
-        function() require("noice").cmd("last") end,
-        desc = "Noice Last Message"
-      },
-      {
-        "<leader>nl",
-        function() require("noice").cmd("history") end,
-        desc = "Noice History"
-      },
+      { "<leader>nn", function() require("noice").cmd("last") end,    desc = "Noice Last Message" },
+      { "<leader>nl", function() require("noice").cmd("history") end, desc = "Noice History" },
       { "<leader>na", function() require("noice").cmd("all") end,     desc = "Noice All" },
       { "<leader>nm", [[<cmd>messages<cr>]],                          desc = "messages" },
       { "<leader>nd", function() require("noice").cmd("dismiss") end, desc = "Dismiss All" },
@@ -277,9 +357,9 @@ return {
     cmd = "Neotree",
     keys = {
       {
-        "<leader>l",
+        "<leader>f",
         function()
-          require("neo-tree.command").execute({ toggle = true, dir = Util.root() })
+          require("neo-tree.command").execute({ focus = true, dir = Util.root() })
         end,
         desc = "Explorer NeoTree (root dir)",
       },
@@ -327,6 +407,9 @@ return {
       window = {
         mappings = {
           ["<space>"] = "none",
+          ["s"] = "none",
+          ["<C-s>"] = "open_split",
+          ["<C-v>"] = "open_vsplit",
         },
       },
       default_component_configs = {
@@ -367,19 +450,49 @@ return {
     build = (not jit.os:find("Windows"))
         and "echo 'NOTE: jsregexp is optional, so not a big deal if it fails to build'; make install_jsregexp"
       or nil,
+    cmd = { "LuaSnipEdit" },
     dependencies = {
       "rafamadriz/friendly-snippets",
       config = function()
         require("luasnip.loaders.from_vscode").lazy_load()
       end,
     },
-    opts = {
-      history = true,
-      delete_check_events = "TextChanged",
-    },
+    opts = function()
+      vim.api.nvim_create_user_command("LuaSnipEdit", function()
+        require("luasnip.loaders").edit_snippet_files({
+          extend = function(ft, paths)
+            if #paths == 0 then
+              return {
+                {
+                  "$CONFIG/" .. ft .. ".snippets",
+                  "$HOME/.config/nvim/snippets/" .. ft .. ".snippets",
+                },
+              }
+            end
+
+            return {}
+          end,
+        })
+      end, {})
+
+      return {
+        history = true,
+        delete_check_events = "TextChanged",
+        update_events = "TextChanged,TextChangedI",
+      }
+    end,
     -- stylua: ignore
     keys = {
-      { "<C-l>", function() require("luasnip").expand() end, mode = { "i", "v" } },
+      { "<C-l>", function()
+          local ls = require("luasnip")
+          if ls.choice_active() then
+            ls.change_choice(1)
+          elseif ls.expandable() then
+            ls.expand()
+          -- else
+          --   vim.fn.feedkeys("<C-l>", "n")
+          end
+        end, mode = { "i", "v" } },
       { "<C-j>", function() require("luasnip").jump(1) end,  mode = { "i", "s" } },
       { "<C-k>", function() require("luasnip").jump(-1) end, mode = { "i", "s" } },
     },
@@ -394,7 +507,9 @@ return {
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
       "saadparwaiz1/cmp_luasnip",
+      { "petertriho/cmp-git", opts = {} },
       "L3MON4D3/LuaSnip", -- must be loaded before cmp to have <C-j,k> working
+      "hrsh7th/cmp-nvim-lsp-signature-help",
     },
     opts = function()
       vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
@@ -404,6 +519,7 @@ return {
         completion = {
           completeopt = "menu,menuone,noinsert",
         },
+        preselect = cmp.PreselectMode.None,
         snippet = {
           expand = function(args)
             require("luasnip").lsp_expand(args.body)
@@ -427,9 +543,11 @@ return {
           end,
         }),
         sources = cmp.config.sources({
+          -- { name = "nvim_lsp_signature_help" },
           { name = "nvim_lsp" },
           { name = "luasnip" },
           { name = "path" },
+          { name = "git" },
         }, {
           { name = "buffer" },
         }),
