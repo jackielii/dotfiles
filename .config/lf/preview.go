@@ -310,6 +310,7 @@ func previewArchive(opts previewOpts) {
 	r, w := io.Pipe()
 	cmd.Stdin = r
 	go func() {
+		defer w.Close()
 		fsys := try1(archiver.FileSystem(ctx, opts.fp))
 		try0(fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
@@ -323,7 +324,6 @@ func previewArchive(opts previewOpts) {
 			fmt.Fprintf(w, "%s  %10s  %s\n", info.Mode(), size, path)
 			return nil
 		}))
-		w.Close()
 	}()
 	try0(cmd.Run())
 }

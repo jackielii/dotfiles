@@ -51,6 +51,7 @@ map gc cd ~/.config
 map xz zip
 map xt tar
 map xx extract
+map xn extract_to_dir
 
 map o open $f
 map O $open -R $fx
@@ -194,6 +195,23 @@ cmd extract ${{
         *.rar) unrar x $f;;
         *.7z) 7z x $f;;
     esac
+}}
+
+cmd extract_to_dir ${{
+    set -f
+    # extract to the directory of the current file removing the extension
+    dir=${f%.*}
+    mkdir -p $dir
+    case $f in
+        *.tar.bz|*.tar.bz2|*.tbz|*.tbz2) tar xjvf $f -C $dir;;
+        *.tar.gz|*.tgz) tar xzvf $f -C $dir;;
+        *.tar.xz|*.txz) tar xJvf $f -C $dir;;
+        *.zip) unzip $f -d $dir;;
+        *.rar) unrar x $f $dir;;
+        *.7z) 7z x $f -o$dir;;
+    esac
+    lf -remote "send $id reload"
+    lf -remote "send $id select \"$dir\""
 }}
 
 # compress current file or selected files with tar and gunzip
