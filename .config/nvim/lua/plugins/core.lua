@@ -1,4 +1,3 @@
-local Util = require("lazyvim.util")
 local function augroup(name)
   return vim.api.nvim_create_augroup("jl_" .. name, { clear = true })
 end
@@ -74,7 +73,9 @@ return {
 
   {
     "tpope/vim-fugitive",
+    dependencies = { { "tpope/vim-rhubarb" } },
     event = "VeryLazy",
+    cmd = { "GBrowse", "Gbrowse" },
     keys = {
       { "<leader>g<space>", [[:Git ]], desc = "Git" },
       { "<leader>g<cr>", [[<cmd>tab Git<cr>]], desc = "Git" },
@@ -171,32 +172,51 @@ return {
     },
   },
 
-  {
-    "benlubas/molten-nvim",
-    version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
-    ft = { "python" },
-    init = function()
-      -- these are examples, not defaults. Please see the readme
-      vim.g.molten_image_provider = "image.nvim"
-      -- vim.g.molten_output_win_max_height = 20
-      vim.g.molten_auto_open_output = true
-      vim.g.molten_output_virt_lines = true
-      vim.g.molten_virt_text_output = true
-    end,
-    keys = {
-      { "<leader>mm", ":MoltenInit<CR>", desc = "MoltenInit" },
-      { "<leader>M", ":MoltenEvaluateOperator<CR>", desc = "Molten run operator selection" },
-      { "<leader>ml", ":MoltenEvaluateLine<CR>", desc = "Molten evaluate line" },
-      { "<leader>mc", ":MoltenReevaluateCell<CR>", desc = "Molten re-evaluate cell" },
-      {
-        "<leader>M",
-        ":<C-u>MoltenEvaluateVisual<CR>gv",
-        desc = "Molten evaluate visual selection",
-        mode = "v",
-      },
-    },
-    build = ":UpdateRemotePlugins",
-  },
+  -- {
+  --   "benlubas/molten-nvim",
+  --   version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
+  --   ft = { "python" },
+  --   init = function()
+  --     vim.g.molten_image_provider = "image.nvim"
+  --     -- vim.g.molten_output_win_max_height = 20
+  --     vim.g.molten_auto_open_output = false
+  --     vim.g.molten_output_virt_lines = true
+  --     vim.g.molten_virt_text_output = true
+  --   end,
+  --   cmd = { "MoltenInit" },
+  --   keys = {
+  --     { "<leader>mm", ":MoltenInit<CR>",       desc = "MoltenInit" },
+  --     { "<leader>mo", ":MoltenShowOutput<cr>", desc = "MoltenShowOutput" },
+  --     {
+  --       "<leader>m",
+  --       ":set operatorfunc=MoltenOperatorfunc<CR>g@",
+  --       desc = "Molten run operator selection",
+  --       nowait = true,
+  --     },
+  --     { "<leader>ml", ":MoltenEvaluateLine<CR>",   desc = "Molten evaluate line" },
+  --     { "<leader>mc", ":MoltenReevaluateCell<CR>", desc = "Molten re-evaluate cell" },
+  --     {
+  --       "<leader>m",
+  --       ":<C-u>MoltenEvaluateVisual<CR>gv",
+  --       desc = "Molten evaluate visual selection",
+  --       mode = "v",
+  --     },
+  --     {
+  --       "<S-CR>",
+  --       ":<C-u>MoltenEvaluateVisual<CR>",
+  --       desc = "Molten evaluate visual selection",
+  --       mode = "v",
+  --     },
+  --   },
+  --   build = ":UpdateRemotePlugins",
+  --   config = function()
+  --     require("molten.status").initialized() -- for status
+  --
+  --     -- vim.keymap.set("n", "<leader>m", ":set operatorfunc=MoltenOperatorfunc<CR>g@")
+  --     -- "<Esc><cmd>set operatorfunc=v:lua.__telescope_grep_string_operator<CR>g@",
+  --     -- { "<leader>m", ":MoltenEvaluateOperator<CR>", desc = "Molten run operator selection", nowait = true },
+  --   end,
+  -- },
 
   {
     "JoosepAlviste/nvim-ts-context-commentstring",
@@ -285,8 +305,6 @@ return {
         { "<leader>dH",        "<cmd>BufferLineCloseLeft<cr>",                       desc = "Delete buffers to the left", },
         { "<M-[>",             "<cmd>BufferLineCyclePrev<cr>",                       desc = "Prev buffer", },
         { "<M-]>",             "<cmd>BufferLineCycleNext<cr>",                       desc = "Next buffer", },
-        { "<M-Tab>",           "<cmd>BufferLineCycleNext<cr>",                       desc = "Next buffer", },
-        { "<M-S-Tab>",         "<cmd>BufferLineCyclePrev<cr>",                       desc = "Prev buffer", },
         { "<M-S-]>",           "<cmd>BufferLineMoveNext<cr>",                        desc = "Move buffer to Next", },
         { "<M-S-[>",           "<cmd>BufferLineMovePrev<cr>",                        desc = "Move buffer to Previous", },
         { "<M-S-0>",           "<cmd>lua require'bufferline'.move_to(1)<cr>",        desc = "Move buffer to first", },
@@ -324,6 +342,7 @@ return {
           duplicate_selected = { link = "MyBufferSelected" },
         },
         options = {
+          dispatch_update_events = true,
           -- numbers = 'ordinal',
           numbers = function(opts)
             local state = require("bufferline.state")
@@ -425,7 +444,7 @@ return {
                 end
                 return "󱂵 " .. vim.fs.basename(p) .. " 󱉭 " .. vim.fs.basename(cwd)
               end,
-              color = Util.ui.fg("Special"),
+              color = LazyVim.ui.fg("Special"),
             },
             {
               "filetype",
@@ -462,7 +481,7 @@ return {
                   parts = { parts[1], "…", parts[#parts - 1], parts[#parts] }
                 end
                 if vim.bo.modified then
-                  parts[#parts] = Util.lualine.format(self, parts[#parts], "Constant")
+                  parts[#parts] = LazyVim.lualine.format(self, parts[#parts], "Constant")
                 end
                 return table.concat(parts, sep)
               end,
@@ -479,13 +498,13 @@ return {
             -- {
             --   function() return require("noice").api.status.command.get() end,
             --   cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
-            --   color = Util.ui.fg("Statement"),
+            --   color = LazyVim.ui.fg("Statement"),
             -- },
             -- stylua: ignore
             {
               function() return require("noice").api.status.mode.get() end,
               cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
-              color = Util.ui.fg("Constant"),
+              color = LazyVim.ui.fg("Constant"),
             },
             -- stylua: ignore
             {
@@ -494,16 +513,16 @@ return {
                 return package.loaded["dap"] and
                     require("dap").status() ~= ""
               end,
-              color = Util.ui.fg("Debug"),
+              color = LazyVim.ui.fg("Debug"),
             },
-            {
-              function()
-                return require("molten.status").kernels()
-              end,
-              cond = function()
-                return package.loaded["molten"] and require("molten.status").initialized() ~= ""
-              end,
-            },
+            -- {
+            --   function()
+            --     return require("molten.status").kernels()
+            --   end,
+            --   cond = function()
+            --     return package.loaded["molten.status"] and require("molten.status").initialized() ~= ""
+            --   end,
+            -- },
             {
               "diagnostics",
               symbols = {
@@ -521,7 +540,7 @@ return {
             {
               require("lazy.status").updates,
               cond = require("lazy.status").has_updates,
-              color = Util.ui.fg("Special"),
+              color = LazyVim.ui.fg("Special"),
             },
             {
               "diff",
@@ -563,6 +582,7 @@ return {
   {
     "b0o/incline.nvim",
     event = "BufReadPre",
+    -- enabled = false,
     opts = function()
       -- local colors = require("base16-colorscheme").colors
       return {
@@ -580,7 +600,7 @@ return {
           local git = vim.b.fugitive_type == "blob" and " " or ""
           local ro = vim.bo[props.buf].readonly and "[RO] " or ""
           local modified = vim.bo[props.buf].modified and "[+] " or ""
-          local icon = icons.get_icon_color(filename)
+          local icon = icons.get_icon_color(filename) or ""
           return { { git }, { ro }, { modified }, { icon .. " " }, { filename } }
         end,
       }
@@ -626,10 +646,9 @@ return {
         -- ["I BS"]               = '', -- disable backspace mapping
       }
       vim.g.VM_theme = "ocean"
-    end,
-    config = function()
+      vim.g.VM_set_statusline = 3
       vim.api.nvim_create_autocmd("User", {
-        group = augroup("my_visual_multi"),
+        group = augroup("my_visual_multi_start"),
         pattern = "visual_multi_start",
         callback = function()
           -- vim.b['minipairs_disable'] = true
@@ -638,7 +657,7 @@ return {
         end,
       })
       vim.api.nvim_create_autocmd("User", {
-        group = augroup("my_visual_multi"),
+        group = augroup("my_visual_multi_exit"),
         pattern = "visual_multi_exit",
         callback = function()
           -- vim.b['minipairs_disable'] = false
@@ -647,11 +666,25 @@ return {
           require("lualine").hide({ unhide = true })
         end,
       })
-      -- autocmd User visual_multi_mappings  imap <buffer><expr> <CR> pumvisible() ? "\<C-Y>" : "\<Plug>(VM-I-Return)"
+      -- -- autocmd User visual_multi_mappings  imap <buffer><expr> <CR> pumvisible() ? "\<C-Y>" : "\<Plug>(VM-I-Return)"
+      -- vim.api.nvim_create_autocmd("User", {
+      --   group = augroup("my_visual_multi"),
+      --   pattern = "visual_multi_mappings",
+      --   command = [[imap <buffer><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<Plug>(VM-I-Return)"]],
+      -- })
       vim.api.nvim_create_autocmd("User", {
-        group = augroup("my_visual_multi"),
+        group = augroup("my_visual_multi_mapping"),
         pattern = "visual_multi_mappings",
-        command = [[imap <buffer><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<Plug>(VM-I-Return)"]],
+        -- command = [[imap <buffer><expr> <CR> v:lua.require'cmp'.visible() ? v:lua.require'cmp'.confirm() : "\<Plug>(VM-I-Return)"]],
+        callback = function()
+          vim.keymap.set("i", "<CR>", function()
+            if require("cmp").visible() then
+              require("cmp").confirm({ select = true })
+              return "<NOP>"
+            end
+            return "<Plug>(VM-I-Return)"
+          end, { buffer = true, expr = true })
+        end,
       })
     end,
   },
@@ -688,22 +721,28 @@ return {
           header = logo,
           -- stylua: ignore
           center = {
-            { action = "ene | startinsert",             desc = " Empty file",      icon = " ", key = "e" },
-            { action = "FzfLua files",                  desc = " Find file",       icon = " ", key = "f" },
-            { action = "FzfLua oldfiles",               desc = " Old files",       icon = " ", key = "o" },
-            { action = "FzfLua oldfiles cwd_only=true", desc = " Old files (cwd)", icon = " ", key = "O" },
-            { action = "FzfLua live_grep",              desc = " Live grep",       icon = " ", key = "g" },
-            -- { action = "exe 'edit '.stdpath('config').'/init.lua'", desc = " Config",          icon = " ",  key = "c" },
-            -- { action = "FzfLua files cwd=~/.config/nvim",           desc = " Config",          icon = " ",  key = "c" },
+            { action = "ene", desc = " Empty file", icon = " ", key = "e" },
+            { action = "Telescope find_files", desc = " Find file", icon = " ", key = "f" },
+            { action = "Telescope oldfiles", desc = " Old files", icon = " ", key = "o" },
             {
-              action = "FzfLua files cwd=" .. vim.fn.stdpath('config'),
-              desc = " Config",
-              icon = " ",
-              key = "c"
+              action = [[lua require("telescope.builtin").oldfiles({ only_cwd = true })]],
+              desc = " Old files (cwd)",
+              icon = " ",
+              key = "O",
             },
-            { action = 'lua require("persistence").load()', desc = " Restore Session", icon = " ",  key = "a" },
-            { action = "Lazy",                              desc = " Lazy",            icon = "󰒲 ", key = "l" },
-            { action = "qa",                                desc = " Quit",            icon = " ",  key = "q" },
+            { action = "Telescope live_grep", desc = " Live grep", icon = " ", key = "g" },
+            -- { action = "exe 'edit '.stdpath('config').'/init.lua'", desc = " Config",          icon = " ",  key = "c" },
+            -- { action = "Telescope files cwd=~/.config/nvim",           desc = " Config",          icon = " ",  key = "c" },
+            { action = [[lua LazyVim.telescope.config_files()()]], desc = " Config", icon = " ", key = "c" },
+            -- {
+            --   action = "Telescope files cwd=" .. vim.fn.stdpath('config'),
+            --   desc = " Config",
+            --   icon = " ",
+            --   key = "c"
+            -- },
+            { action = 'lua require("persistence").load()', desc = " Restore Session", icon = " ", key = "a" },
+            { action = "Lazy", desc = " Lazy", icon = "󰒲 ", key = "l" },
+            { action = "qa", desc = " Quit", icon = " ", key = "q" },
           },
           footer = function()
             local stats = require("lazy").stats()
@@ -841,8 +880,18 @@ return {
 
   {
     "skywind3000/asynctasks.vim",
-    dependencies = { "skywind3000/asyncrun.vim" },
-    cmd = { "AsyncTask", "AsyncTaskEdit", "AsyncTaskRun", "AsyncTaskStop", "CocList" },
+    dependencies = { "skywind3000/asyncrun.vim", "GustavoKatel/telescope-asynctasks.nvim" },
+    cmd = { "AsyncTask", "AsyncTaskEdit", "AsyncTaskRun", "AsyncTaskStop" },
+    keys = {
+      { "<F5>", "<cmd>AsyncTaskLast<cr>", desc = "AsyncTaskLast" },
+      {
+        "<leader>ct",
+        function()
+          require("telescope").extensions.asynctasks.all()
+        end,
+        desc = "Async Task list",
+      },
+    },
     init = function()
       vim.g.asyncrun_open = 4
       vim.g.asynctasks_term_pos = "bottom"
@@ -880,9 +929,10 @@ return {
     config = function(spec, opts)
       opts = vim.tbl_extend("force", opts or {}, {
         -- we remap <cr> in coc.nvim but not in nvim-cmp
-        map_cr = not Util.has("coc.nvim"),
+        map_cr = not LazyVim.has("coc.nvim"),
       })
       require("nvim-autopairs").setup(opts)
+      require("nvim-autopairs").disable()
     end,
   },
 
@@ -898,10 +948,10 @@ return {
         function()
           local tsc = require("treesitter-context")
           tsc.toggle()
-          if Util.inject.get_upvalue(tsc.toggle, "enabled") then
-            Util.info("Enabled Treesitter Context", { title = "Option" })
+          if LazyVim.inject.get_upvalue(tsc.toggle, "enabled") then
+            LazyVim.info("Enabled Treesitter Context", { title = "Option" })
           else
-            Util.warn("Disabled Treesitter Context", { title = "Option" })
+            LazyVim.warn("Disabled Treesitter Context", { title = "Option" })
           end
         end,
         desc = "Toggle Treesitter Context",
@@ -913,7 +963,7 @@ return {
     "windwp/nvim-ts-autotag",
     event = "VeryLazy",
     opts = {
-      enable_close_on_slash = false,
+      -- enable_close_on_slash = false,
     },
   },
 
@@ -1037,19 +1087,32 @@ return {
     event = "InsertEnter",
     cmd = "Copilot",
     build = ":Copilot auth",
-    -- keys = {},
+    keys = {
+      {
+        "<C-h>",
+        function()
+          local copilot = require("copilot.suggestion")
+          if copilot.is_visible() then
+            copilot.dismiss()
+          end
+          ---@diagnostic disable-next-line: inject-field
+          vim.b.copilot_suggestion_auto_trigger = false
+        end,
+        mode = "i",
+      },
+    },
     opts = {
       suggestion = {
         enabled = true,
         auto_trigger = true,
         debounce = 75,
         keymap = {
-          accept = "<C-e>",
+          -- accept = "<tab>",
           accept_word = "<M-l>",
           accept_line = "<M-C-L>",
           next = "<M-j>",
           prev = "<M-k>",
-          dismiss = "<C-h>",
+          -- dismiss = "<C-h>",
         },
       },
       panel = { enabled = false },
@@ -1064,10 +1127,10 @@ return {
         optional = true,
         opts = function(_, opts)
           local colors = {
-            [""] = Util.ui.fg("Special"),
-            ["Normal"] = Util.ui.fg("Special"),
-            ["Warning"] = Util.ui.fg("DiagnosticError"),
-            ["InProgress"] = Util.ui.fg("DiagnosticWarn"),
+            [""] = LazyVim.ui.fg("Special"),
+            ["Normal"] = LazyVim.ui.fg("Special"),
+            ["Warning"] = LazyVim.ui.fg("DiagnosticError"),
+            ["InProgress"] = LazyVim.ui.fg("DiagnosticWarn"),
           }
           table.insert(opts.sections.lualine_x, 2, {
             function()
@@ -1079,8 +1142,11 @@ return {
               if not package.loaded["copilot"] then
                 return
               end
-              local ok, clients = pcall(require("lazyvim.util").lsp.get_clients, { name = "copilot", bufnr = 0 })
+              local ok, clients = pcall(LazyVim.lsp.get_clients, { name = "copilot", bufnr = 0 })
               if not ok then
+                return false
+              end
+              if not vim.b.copilot_suggestion_auto_trigger then
                 return false
               end
               return ok and #clients > 0
@@ -1235,7 +1301,7 @@ return {
       -- o is mapped to open file in lf, so here we want it to use system open
       {
         "<leader>l",
-        [[<cmd>FloatermNew --name=Lf --title=Lf lf -command 'map l open;map o ${{open $f}};set sortby name;set noreverse' %<cr>]],
+        [[<cmd>FloatermNew --name=Lf --title=Lf lf -command 'map l open;map o ${{open $f}};set sortby name;set noreverse' "%"<cr>]],
         desc = "Lf",
       },
     },
@@ -1306,7 +1372,7 @@ return {
     },
     -- stylua: ignore
     keys = {
-      { "s", mode = { "n" }, function() require("flash").jump() end, desc = "Flash" },
+      { "s", mode = { "n" }, function() require("flash").jump() end,   desc = "Flash" },
       { "r", mode = "o",     function() require("flash").remote() end, desc = "Remote Flash" },
       {
         "S",
@@ -1331,10 +1397,10 @@ return {
     config = true,
     -- stylua: ignore
     keys = {
-      { "]t", function() require("todo-comments").jump_next() end, desc = "Next todo comment" },
-      { "[t", function() require("todo-comments").jump_prev() end, desc = "Previous todo comment" },
-      { "<leader>xt", "<cmd>TodoTrouble<cr>", desc = "Todo (Trouble)" },
-      { "<leader>xT", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
+      { "]t",         function() require("todo-comments").jump_next() end, desc = "Next todo comment" },
+      { "[t",         function() require("todo-comments").jump_prev() end, desc = "Previous todo comment" },
+      { "<leader>xt", "<cmd>TodoTrouble<cr>",                              desc = "Todo (Trouble)" },
+      { "<leader>xT", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>",      desc = "Todo/Fix/Fixme (Trouble)" },
     },
   },
 
@@ -1397,8 +1463,8 @@ return {
   {
     "mfussenegger/nvim-dap",
     keys = {
-      -- { "<F8>", "<cmd>Telescope dap configurations<cr>", desc = "Dap configurations" },
-      { "<F8>", "<cmd>FzfLua dap_configurations<cr>", desc = "Dap configurations" },
+      { "<F8>", "<cmd>Telescope dap configurations<cr>", desc = "Dap configurations" },
+      -- { "<F8>", "<cmd>FzfLua dap_configurations<cr>", desc = "Dap configurations" },
       {
         "<leader>bB",
         function()
@@ -1415,9 +1481,6 @@ return {
       },
     },
     dependencies = {
-      "rcarriga/nvim-dap-ui",
-      -- { 'jackielii/nvim-dap-go', }
-      { dir = "~/personal/nvim-dap-go" },
       {
         "rcarriga/nvim-dap-ui",
         keys = {
@@ -1430,6 +1493,7 @@ return {
           },
         },
       },
+      "nvim-neotest/nvim-nio",
       -- "nvim-telescope/telescope-dap.nvim",
       -- virtual text for the debugger
       "theHamsta/nvim-dap-virtual-text",
@@ -1438,13 +1502,17 @@ return {
       require("dapui").setup(opts)
       -- require("telescope").load_extension("dap")
       -- require("nvim-dap-virtual-text").setup({})
-      require("dap-go").setup()
 
       local save_mappings = {}
 
       local function dapmap(key, command)
-        save_mappings[key] = vim.fn.maparg(key, "n")
-        vim.api.nvim_set_keymap("n", key, command, { noremap = true, silent = true })
+        local m = vim.fn.maparg(key, "n", 0, 1)
+        -- vim.print("save_mappings[" .. key .. "] = " .. vim.inspect(save_mappings[key]))
+        if next(m) ~= nil then
+          vim.keymap.del("n", key, { buffer = m.buffer == 1 })
+        end
+        vim.keymap.set("n", key, command, { silent = true })
+        save_mappings[key] = m
       end
 
       local function set_dap_mappings()
@@ -1454,7 +1522,7 @@ return {
         dapmap("<F9>", [[<Cmd>lua require'dap'.run_to_cursor()<cr>]])
         dapmap("<F10>", [[<Cmd>lua require'dap'.step_over()<cr>]])
         dapmap("<F11>", [[<Cmd>lua require'dap'.step_into()<cr>]])
-        dapmap("<F35>", [[<Cmd>lua require'dap'.step_out()<cr>]]) -- shift-f11
+        dapmap("<F23>", [[<Cmd>lua require'dap'.step_out()<cr>]]) -- shift-f11
         dapmap("<leader>kk", [[<Cmd>lua require("dapui").eval()<cr>]])
         dapmap("K", [[<Cmd>lua require("dapui").eval()<cr>]])
       end
@@ -1463,7 +1531,17 @@ return {
         -- print("clear_dap_mappings")
         -- print(vim.inspect(save_mappings))
         for key, value in pairs(save_mappings) do
-          vim.api.nvim_set_keymap("n", key, value, { noremap = true, silent = true })
+          if next(value) ~= nil then
+            -- vim.print("value: " .. vim.inspect(value))
+            local keyOpts = {
+              silent = value.silent == 1,
+              expr = value.expr == 1,
+              buffer = value.buffer == 1,
+              replace_keycodes = false, -- somehow this is needed
+            }
+            -- vim.keymap.del("n", key, keyOpts)
+            vim.keymap.set("n", key, value.rhs or value.callback, keyOpts)
+          end
         end
       end
 
@@ -1507,7 +1585,112 @@ return {
       })
     end,
   },
+
+  {
+    -- "folke/edgy.nvim",
+    dir = "~/personal/edgy.nvim",
+    -- enabled = false,
+    event = "VeryLazy",
+    -- stylua: ignore
+    keys = {
+      { "<leader>ue", function() require("edgy").toggle() end, desc = "Edgy Toggle" },
+      { "<leader>uE", function() require("edgy").select() end, desc = "Edgy Select Window" },
+    },
+    opts = {
+      -- stylua: ignore
+      keys = {
+        -- increase width
+        ["<M-L>"] = function(win) win:resize("width", 2) end,
+        -- decrease width
+        ["<M-H>"] = function(win) win:resize("width", -2) end,
+        -- increase height
+        ["<M-J>"] = function(win) win:resize("height", 2) end,
+        -- decrease height
+        ["<M-K>"] = function(win) win:resize("height", -2) end,
+      },
+      animate = { enabled = false },
+      left = {
+        {
+          title = "Neo-Tree",
+          ft = "neo-tree",
+          filter = function(buf)
+            return vim.b[buf].neo_tree_source == "filesystem"
+          end,
+          pinned = true,
+          open = function()
+            vim.api.nvim_input("<esc><space>f")
+          end,
+          size = { height = 0.5 },
+        },
+        { title = "Neotest Summary", ft = "neotest-summary" },
+        {
+          title = "Neo-Tree Git",
+          ft = "neo-tree",
+          filter = function(buf)
+            return vim.b[buf].neo_tree_source == "git_status"
+          end,
+          -- pinned = true,
+          open = "Neotree position=right git_status",
+        },
+        {
+          title = "Neo-Tree Buffers",
+          ft = "neo-tree",
+          filter = function(buf)
+            return vim.b[buf].neo_tree_source == "buffers"
+          end,
+          -- pinned = true,
+          open = "Neotree position=top buffers",
+        },
+        {
+          title = "Document Symbols",
+          ft = "neo-tree",
+          filter = function(buf)
+            return vim.b[buf].neo_tree_source == "document_symbols"
+          end,
+          -- pinned = true,
+          open = "Neotree position=top document_symbols",
+        },
+        {
+          title = "Pinned Buffers",
+          ft = "neo-tree",
+          filter = function(buf)
+            return vim.b[buf].neo_tree_source == "pinned-buffers"
+          end,
+          pinned = true,
+          open = "Neotree position=top pinned-buffers",
+          size = { height = 0.2 },
+        },
+        "neo-tree",
+      },
+    },
+  },
+
   { "lbrayner/vim-rzip", ft = { "zip" } },
   { "jjo/vim-cue", ft = { "cue" } },
-  { "ziglang/zig.vim", ft = { "zip" } },
+  -- {
+  --   "ziglang/zig.vim",
+  --   ft = { "zig" },
+  --   init = function()
+  --     vim.g.zig_fmt_autosave = 0;
+  --   end
+  -- },
+  {
+    "Bekaboo/dropbar.nvim",
+    enabled = false,
+    cond = function()
+      return vim.fn.has("nvim-0.10") == 1
+    end,
+  },
+  {
+    "HakonHarnes/img-clip.nvim",
+    event = "VeryLazy",
+    opts = {
+      -- add options here
+      -- or leave it empty to use the default settings
+    },
+    keys = {
+      -- suggested keymap
+      -- { "<leader>p", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },
+    },
+  },
 }

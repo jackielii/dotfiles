@@ -12,10 +12,10 @@ require("config.keymaps")
 require("config.autocmds")
 require("lazy").setup({
   spec = {
-    { "LazyVim/LazyVim", lazy = true }, -- just the import, run nothing
+    { "LazyVim/LazyVim", lazy = true },
     { import = "plugins" },
+    { import = vim.env.USE_COC and "lsp.coc" or "lsp.builtin" },
     -- { import = "lsp.coc" },
-    { import = vim.env.USE_COC and "lsp.coc" or "lsp.cmp" },
   },
   defaults = {
     -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.

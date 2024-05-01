@@ -1,4 +1,3 @@
-local Util = require("lazyvim.util")
 return {
   {
     "nvim-telescope/telescope.nvim",
@@ -9,7 +8,7 @@ return {
       {
         "<C-p>",
         function()
-          local root = Util.root() or vim.loop.cwd()
+          local root = LazyVim.root() or vim.loop.cwd()
           require("telescope.builtin").find_files({ cwd = vim.g.project_path or root })
         end,
         desc = "Find Files",
@@ -18,14 +17,14 @@ return {
       {
         "<leader>zf",
         function()
-          require("telescope.builtin").find_files({ cwd = vim.fn.expand("%:p:h") })
+          require("telescope.builtin").find_files({ cwd = LazyVim.root() or vim.fn.expand("%:p:h") })
         end,
         desc = "Telescope current folder",
       },
       {
         "<leader>zh",
         function()
-          require("telescope.builtin").find_files({ hidden = true, cwd = vim.fn.expand("%:p:h") })
+          require("telescope.builtin").find_files({ hidden = true, cwd = LazyVim.root() or vim.fn.expand("%:p:h") })
         end,
         desc = "Telescope current folder (with hidden)",
       },
@@ -34,15 +33,19 @@ return {
         function()
           require("telescope.builtin").find_files({
             hidden = true,
-            cwd = vim.fn.expand("%:p:h"),
+            cwd = LazyVim.root() or vim.fn.expand("%:p:h"),
             no_ignore = true,
             no_ignore_parent = true,
           })
         end,
         desc = "fzf current folder (all files)",
       },
+      { "<leader>cc", [[<cmd>Telescope commands<cr>]]},
+      { "<leader>cr", [[<cmd>LspRestart<cr>]]},
 
-      { "<leader>e", [[<cmd>Telescope buffers<cr>]], desc = "Telescope buffers" },
+      { "<leader>e", function()
+          require("telescope.builtin").buffers({ sort_lastused = true, sort_mru = true })
+        end, desc = "Telescope buffers" },
       { "<leader>;", [[<cmd>Telescope<cr>]], desc = "Telescope" },
       { "<leader>p", [[<cmd>Telescope resume<cr>]], desc = "Telescope resume" },
       { "<leader>km", [[<cmd>Telescope filetypes<cr>]], desc = "Telescope filetypes" },
@@ -121,7 +124,7 @@ return {
               ["<C-h>"] = "results_scrolling_left",
               ["<C-l>"] = "results_scrolling_right",
               ["<C-d>"] = "results_scrolling_down",
-              ["<C-u>"] = "results_scrolling_up",
+              ["<C-u>"] = false,
               ["<C-f>"] = "preview_scrolling_down",
               ["<C-b>"] = "preview_scrolling_up",
               ["<C-Up>"] = "preview_scrolling_up",
@@ -234,7 +237,7 @@ return {
         build = "make",
         enabled = vim.fn.executable("make") == 1,
         config = function()
-          Util.on_load("telescope.nvim", function()
+          LazyVim.on_load("telescope.nvim", function()
             require("telescope").load_extension("fzf")
           end)
         end,
@@ -243,7 +246,7 @@ return {
         "nvim-telescope/telescope-smart-history.nvim",
         dependencies = { "kkharji/sqlite.lua" },
         config = function()
-          Util.on_load("telescope.nvim", function()
+          LazyVim.on_load("telescope.nvim", function()
             require("telescope").load_extension("smart_history")
           end)
         end,

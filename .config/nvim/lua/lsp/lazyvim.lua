@@ -1,7 +1,6 @@
-local Util = require("lazyvim.util")
+_G.LazyVim = require("lazyvim.util")
 local map = vim.keymap.set
 local LazyFile = { "BufReadPost", "BufNewFile", "BufWritePre" }
-_G.lv = require("lazyvim.util")
 
 -- setup filetypes that should autoformat on BufWritePre
 vim.api.nvim_create_autocmd("FileType", {
@@ -13,11 +12,11 @@ vim.api.nvim_create_autocmd("User", {
   group = vim.api.nvim_create_augroup("LazyVim", { clear = true }),
   pattern = "VeryLazy",
   callback = function()
-    Util.format.setup() -- setup autoformat on BufWritePre
-    Util.news.setup() -- lazyvim news
-    Util.root.setup() -- setup root dir
+    LazyVim.format.setup() -- setup autoformat on BufWritePre
+    LazyVim.news.setup() -- lazyvim news
+    LazyVim.root.setup() -- setup root dir
     -- vim.api.nvim_create_user_command("LazyExtras", function()
-    --   Util.extras.show()
+    --   LazyVim.extras.show()
     -- end, { desc = "Manage LazyVim extras" })
   end,
 })
@@ -43,23 +42,15 @@ map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
 -- end, { desc = "Close all floating windows" })
 
 return {
-  { import = "lsp.builtin-lsp" },
-  { import = "lsp.formatting" },
-  { import = "lsp.linting" },
-
-  { import = "lazyvim.plugins.extras.linting.eslint" },
-  { import = "lazyvim.plugins.extras.formatting.prettier" },
-
-  { import = "lsp.extras.lang.go" },
-
   {
     "NvChad/nvim-colorizer.lua",
     event = LazyFile,
-    opts = {},
+    opts = {
+      -- user_default_options = {
+      --   tailwind = true,
+      -- },
+    },
     main = "colorizer",
-    -- config = function(_, opts)
-    --   require("colorizer").setup(opts)
-    -- end,
   },
 
   -- {
@@ -80,7 +71,7 @@ return {
     "rcarriga/nvim-notify",
     keys = {
       {
-        "<leader>un",
+        "<F7>",
         function()
           require("notify").dismiss({ silent = true, pending = true })
         end,
@@ -99,18 +90,19 @@ return {
         vim.api.nvim_win_set_config(win, { zindex = 100 })
       end,
     },
-    init = function()
-      -- when noice is not enabled, install notify on VeryLazy
-      if not Util.has("noice.nvim") then
-        Util.on_very_lazy(function()
-          vim.notify = require("notify")
-        end)
-      end
-    end,
+    -- init = function()
+    --   -- when noice is not enabled, install notify on VeryLazy
+    --   if not LazyVim.has("noice.nvim") then
+    --     LazyVim.on_very_lazy(function()
+    --       vim.notify = require("notify")
+    --     end)
+    --   end
+    -- end,
   },
 
   -- Highly experimental plugin that completely replaces the UI for messages, cmdline and the popupmenu.
   {
+    -- dir = "~/personal/noice.nvim",
     "folke/noice.nvim",
     event = "VeryLazy",
     dependencies = {
@@ -121,10 +113,6 @@ return {
       --   If not available, we use `mini` as the fallback
       "rcarriga/nvim-notify",
     },
-    init = function()
-      -- vim.o.incsearch = false -- this causes a flicker when searching maybe fixed when new version is release?
-      vim.api.nvim_set_hl(0, "LspSignatureActiveParameter", { link = "@type.builtin", default = true })
-    end,
     opts = {
       views = {
         hover = {
@@ -133,7 +121,6 @@ return {
             padding = { 0, 1 },
           },
           size = {
-            -- width = "50%",
             max_width = 80,
           },
           position = { row = 2, col = 2 },
@@ -145,8 +132,19 @@ return {
           ["vim.lsp.util.stylize_markdown"] = true,
           ["cmp.entry.get_documentation"] = true,
         },
+        hover = {
+          -- view = "split",
+        },
       },
       routes = {
+        {
+          filter = {
+            any = {
+              { find = "No information available" },
+            },
+          },
+          skip = true,
+        },
         {
           filter = {
             event = "msg_show",
@@ -173,6 +171,10 @@ return {
       },
       messages = {
         enabled = true,
+        view = "mini",
+        view_warn = "mini",
+        view_error = "mini",
+        -- view_history = "messages",
         -- view = "notify",
         -- view_error = "messages", -- view for errors
         -- view_warn = "messages", -- view for warnings
@@ -182,9 +184,10 @@ return {
       -- popupmenu = {
       --   enabled = false,
       -- },
-      -- notify = {
-      --   enabled = true,
-      -- },
+      notify = {
+        enabled = true,
+        view = "mini",
+      },
       --
       commands = {
         all = {
@@ -224,6 +227,11 @@ return {
         mode = { "i", "n", "s" }
       },
     },
+    config = function(_, opts)
+      require("noice").setup(opts)
+      vim.api.nvim_set_hl(0, "LspSignatureActiveParameter", { link = "@type.builtin", default = true })
+      vim.api.nvim_set_hl(0, "NoiceVirtualText", { fg = "#c8d3f5", bg = "#3e68d7", italic = true })
+    end,
   },
 
   -- better vim.ui
@@ -347,19 +355,21 @@ return {
   -- file explorer
   {
     "nvim-neo-tree/neo-tree.nvim",
-    branch = "v3.x",
+    -- dir = "~/personal/neo-tree.nvim",
+    -- branch = "v3.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
-      -- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
+      "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
+      { dir = "~/personal/neo-tree-bufferline.nvim" },
     },
     cmd = "Neotree",
     keys = {
       {
         "<leader>f",
         function()
-          require("neo-tree.command").execute({ focus = true, dir = Util.root() })
+          require("neo-tree.command").execute({ focus = true, dir = LazyVim.root() })
         end,
         desc = "Explorer NeoTree (root dir)",
       },
@@ -384,6 +394,16 @@ return {
         end,
         desc = "Buffer explorer",
       },
+      {
+        "<leader>bo",
+        "<cmd>Neotree pinned-buffers<cr>",
+        desc = "Buffer explorer",
+      },
+      {
+        "<leader>ko",
+        "<cmd>Neotree document_symbols<cr>",
+        desc = "Document symbols",
+      },
     },
     deactivate = function()
       vim.cmd([[Neotree close]])
@@ -397,12 +417,31 @@ return {
       end
     end,
     opts = {
-      sources = { "filesystem", "buffers", "git_status", "document_symbols" },
+      enable_git_status = true,
+      enable_diagnostics = false,
+      log_level = "warn", -- "trace", "debug", "info", "warn", "error", "fatal"
+      sources = { "filesystem", "buffers", "git_status", "document_symbols", "pinned-buffers" },
       open_files_do_not_replace_types = { "terminal", "Trouble", "trouble", "qf", "Outline" },
       filesystem = {
         bind_to_cwd = false,
         follow_current_file = { enabled = true },
         use_libuv_file_watcher = true,
+      },
+      commands = {
+        copy_path = function(state)
+          local node = state.tree:get_node()
+          local content = node.path
+          vim.fn.setreg('"', content)
+          vim.fn.setreg("+", content)
+          print("copy to clipboard: " .. content)
+        end,
+        copy_filename = function(state)
+          local node = state.tree:get_node()
+          local content = node.path:gsub("(.*/)(.*)", "%2")
+          vim.fn.setreg('"', content)
+          vim.fn.setreg("+", content)
+          print("copy to clipboard: " .. content)
+        end,
       },
       window = {
         mappings = {
@@ -410,6 +449,10 @@ return {
           ["s"] = "none",
           ["<C-s>"] = "open_split",
           ["<C-v>"] = "open_vsplit",
+          y = "none",
+          yy = "copy_to_clipboard",
+          yn = "copy_filename",
+          yp = "copy_path",
         },
       },
       default_component_configs = {
@@ -423,7 +466,7 @@ return {
     },
     config = function(_, opts)
       local function on_move(data)
-        Util.lsp.on_rename(data.source, data.destination)
+        LazyVim.lsp.on_rename(data.source, data.destination)
       end
 
       local events = require("neo-tree.events")
@@ -452,20 +495,24 @@ return {
       or nil,
     cmd = { "LuaSnipEdit" },
     dependencies = {
-      "rafamadriz/friendly-snippets",
-      config = function()
-        require("luasnip.loaders.from_vscode").lazy_load()
-      end,
+      -- "rafamadriz/friendly-snippets",
+      -- config = function()
+      --   require("luasnip.loaders.from_vscode").lazy_load()
+      -- end,
     },
     opts = function()
       vim.api.nvim_create_user_command("LuaSnipEdit", function()
         require("luasnip.loaders").edit_snippet_files({
           extend = function(ft, paths)
+            if ft == "" then
+              ft = "all"
+            end
             if #paths == 0 then
               return {
                 {
-                  "$CONFIG/" .. ft .. ".snippets",
-                  "$HOME/.config/nvim/snippets/" .. ft .. ".snippets",
+                  vim.fn.stdpath("config") .. "/snippets/" .. ft .. ".snippets",
+                  vim.fn.stdpath("config") .. "/snippets/" .. ft .. ".lua",
+                  -- "$CONFIG/" .. ft .. ".snippets",
                 },
               }
             end
@@ -481,26 +528,50 @@ return {
         update_events = "TextChanged,TextChangedI",
       }
     end,
-    -- stylua: ignore
-    keys = {
-      { "<C-l>", function()
-          local ls = require("luasnip")
-          if ls.choice_active() then
-            ls.change_choice(1)
-          elseif ls.expandable() then
-            ls.expand()
-          -- else
-          --   vim.fn.feedkeys("<C-l>", "n")
-          end
-        end, mode = { "i", "v" } },
-      { "<C-j>", function() require("luasnip").jump(1) end,  mode = { "i", "s" } },
-      { "<C-k>", function() require("luasnip").jump(-1) end, mode = { "i", "s" } },
-    },
+    config = function(_, opts)
+      require("luasnip").setup(opts)
+      local paths = { "./snippets" }
+      require("luasnip.loaders.from_snipmate").lazy_load({ paths = paths })
+      require("luasnip.loaders.from_lua").lazy_load({ paths = paths })
+      vim.api.nvim_create_user_command("LuaSnipClear", function()
+        require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()] = nil
+      end, {})
+    end,
+    keys = function()
+      return {
+        { "<C-l>", require("luasnip").select_keys, mode = "x" }, -- expand visual selection
+        { -- manually expand snippet
+          "<C-l>",
+          function()
+            local ls = require("luasnip")
+            local copilot = require("copilot.suggestion")
+            if ls.choice_active() then
+              ls.change_choice(1)
+            elseif ls.expandable() then
+              ls.expand()
+            elseif copilot.is_visible() then
+              copilot.accept_line()
+            else
+              -- force copilot request
+              ---@diagnostic disable-next-line: inject-field
+              vim.b.copilot_suggestion_auto_trigger = true
+              copilot.next()
+            end
+          end,
+          mode = "i",
+        },
+        -- stylua: ignore
+        { "<C-j>", function() require("luasnip").jump(1) end,  mode = { "i", "s" } },
+        -- stylua: ignore
+        { "<C-k>", function() require("luasnip").jump(-1) end, mode = { "i", "s" } },
+      }
+    end,
   },
 
   {
     "hrsh7th/nvim-cmp",
     version = false, -- last release is way too old
+    -- enabled = false,
     event = "InsertEnter",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
@@ -508,16 +579,20 @@ return {
       "hrsh7th/cmp-path",
       "saadparwaiz1/cmp_luasnip",
       { "petertriho/cmp-git", opts = {} },
-      "L3MON4D3/LuaSnip", -- must be loaded before cmp to have <C-j,k> working
-      "hrsh7th/cmp-nvim-lsp-signature-help",
+      "L3MON4D3/LuaSnip",
+      -- "zbirenbaum/copilot.lua",
+      -- "hrsh7th/cmp-nvim-lsp-signature-help",
     },
     opts = function()
       vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
       local cmp = require("cmp")
+      local ls = require("luasnip")
+      local copilot = require("copilot.suggestion")
       local defaults = require("cmp.config.default")()
       return {
         completion = {
           completeopt = "menu,menuone,noinsert",
+          autocomplete = false,
         },
         preselect = cmp.PreselectMode.None,
         snippet = {
@@ -526,18 +601,47 @@ return {
           end,
         },
         mapping = cmp.mapping.preset.insert({
-          ["<C-j>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
-          ["<C-k>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
+          ["<C-j>"] = function()
+            if cmp.visible() then
+              cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
+            elseif ls.jumpable(1) then
+              ls.jump(1)
+            elseif copilot.is_visible() then
+              copilot.prev()
+            else
+              -- vim.fn.feedkeys("<C-j>", "n")
+            end
+          end,
+          ["<C-k>"] = function()
+            if cmp.visible() then
+              cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
+            elseif ls.jumpable(-1) then
+              ls.jump(-1)
+            elseif copilot.is_visible() then
+              copilot.prev()
+            else
+              -- vim.fn.feedkeys("<C-k>", "n")
+            end
+          end,
           ["<C-b>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
           ["<C-Space>"] = cmp.mapping.complete(),
-          ["<C-e>"] = cmp.mapping.abort(),
+          -- ["<C-e>"] = cmp.mapping.abort(),
+          ["<C-e>"] = function(fallback)
+            if cmp.visible() then
+              cmp.abort()
+            elseif copilot.is_visible() then
+              copilot.accept()
+            else
+              -- vim.fn.feedkeys("<C-e>", "i")
+            end
+          end,
           ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-          ["<S-CR>"] = cmp.mapping.confirm({
+          ["<C-CR>"] = cmp.mapping.confirm({
             behavior = cmp.ConfirmBehavior.Replace,
             select = true,
           }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-          ["<C-CR>"] = function(fallback)
+          ["<S-CR>"] = function(fallback)
             cmp.abort()
             fallback()
           end,

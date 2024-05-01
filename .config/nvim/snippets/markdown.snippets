@@ -1,0 +1,34 @@
+snippet - "list item"
+	- [ ] ${0:${VISUAL}}
+
+snippet bb "\mathbb"
+	\mathbb{$1}
+
+snippet -> "\rightarrow"
+	\rightarrow${0}
+
+snippet $$ "math block"
+	$$
+	${0:${VISUAL}}
+	$$
+
+snippet $ "math inline"
+	$${0:${VISUAL}}$
+
+snippet sum "sum"
+	\sum_{${1}}^{${2}}{${3}}
+
+snippet frac "fraction"
+	\frac{${1}}{${2}}
+	
+snippet ( "parentheses"
+	\left(${1:${VISUAL}}\right)${0}
+
+snippet int "integral"
+	\int_{${1}}^{${2}}{${3}}
+
+snippet lim "lim"
+	\lim_{${1}}{${2}}
+
+snippet : "\colon"
+	\colon${0}

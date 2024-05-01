@@ -2,15 +2,10 @@
 # pyright: reportMissingImports=false
 # pylint: disable=E0401,C0116,C0103,W0603,R0913
 
-import json
-from os.path import expanduser
-
-from kitty.boss import get_boss
 from kitty.fast_data_types import (
     Screen,
-    current_focused_os_window_id,
-    current_os_window,
     get_boss,
+    get_os_window_title,
     get_options,
 )
 from kitty.tab_bar import (
@@ -25,23 +20,9 @@ from kitty.utils import color_as_int
 opts = get_options()
 
 
-# def get_current_session():
-# session_id = current_focused_os_window_id()
-# # debug(session_id)
-# try:
-#     with open(f"{expanduser('~')}/.kitty-sessions.json") as f:
-#         session_name = json.loads(f.read())[str(session_id)]
-# except:
-#     session_name = "Unnamed"
-#     for idx, window in enumerate(get_boss().list_os_windows()):
-#         if window["id"] == session_id:
-#             session_name = idx
-# return f" {session_name} "
-
-
-def draw_session_name(draw_data: DrawData, screen: Screen, index: int) -> int:
-
-    session_name: str = f" main "  # get_current_session()
+def draw_session_name(draw_data: DrawData, screen: Screen, tab_bar_data: TabBarData, index: int) -> int:
+    tab = get_boss().tab_for_id(tab_bar_data.tab_id)
+    session_name: str = ' '+get_os_window_title(tab.os_window_id)+' '
 
     fg, bg, bold, italic = (
         screen.cursor.fg,
@@ -97,7 +78,6 @@ def draw_left_status(
 
 
 def draw_right_status(screen: Screen, layout_name: str):
-
     fg, bg, bold, italic = (
         screen.cursor.fg,
         screen.cursor.bg,
@@ -136,7 +116,7 @@ def draw_tab(
     extra_data: ExtraData,
 ) -> int:
     if index == 1:
-        draw_session_name(draw_data, screen, index)
+        draw_session_name(draw_data, screen, tab, index)
 
     global active_layout_name
     if tab.is_active:

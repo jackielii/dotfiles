@@ -14,18 +14,20 @@ map("i", "CC", "<Esc>cc", { silent = true })
 map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit all" })
 map("n", "<leader>QQ", "<cmd>qa!<cr>", { desc = "Quit all" })
 
--- better indenting
-map("v", "<", "<gv")
-map("v", ">", ">gv")
+-- move lines up and down
+map("x", "<A-j>", ":m '>+1<cr>gv", { silent = true })
+map("x", "<A-k>", ":m '<-2<cr>gv", { silent = true })
+map("n", "<A-j>", ":m +1<cr>", { silent = true })
+map("n", "<A-k>", ":m -2<cr>", { silent = true })
 
 -- map('n', '<M-a>', 'ggVG', { silent = true })
 map("n", "<D-a>", "ggVG", { silent = true })
 map("i", "<D-a>", "<esc>ggVG", { silent = true })
 -- vmap P doesn't change the register :help v_P
-map("v", "p", "P", { silent = true })
+map("x", "p", "P", { silent = true })
 
 map({ "n", "i" }, "<Esc>", "<Esc><cmd>nohl<cr>", { silent = true, noremap = true })
-for _, key in ipairs({ "<C-s>", "<M-s>", "<D-s>", "<C-c>" }) do
+for _, key in ipairs({ "<C-s>", "<M-s>", "<D-s>" }) do
   map({ "n", "v", "i", "s" }, key, "<Esc><cmd>update<cr><cmd>nohl<cr>", { silent = true, noremap = true })
 end
 
@@ -34,14 +36,16 @@ for _, key in ipairs({ "n", "N", "*", "#", "g*", "g#" }) do
 end
 
 map("n", "<leader><tab>", "<C-^>", { silent = true })
+map("n", "<M-tab>", "<C-^>", { silent = true })
 map({ "n", "i" }, "<M-q>", "<Esc><C-^>", { silent = true })
+map({ "n", "i" }, "<M-tab>", "<Esc><C-^>", { silent = true })
 
 map("n", "c*", [[:let @/=expand("<cword>")<cr>cgn]], { silent = true, noremap = true })
 map("n", "c#", [[:let @/=expand("<cword>")<cr>cgN]], { silent = true, noremap = true })
 map("n", "y/", [[:let @/=expand("<cword>")<cr>]], { silent = true, noremap = true })
 
-map("v", "//", [["vy/\V<C-r>=escape(@v,'/\')<cr><cr>N]], { silent = true, noremap = true })
-map("v", "$", "g_", { silent = true, noremap = true })
+map("x", "//", [["vy/\V<C-r>=escape(@v,'/\')<cr><cr>N]], { silent = true, noremap = true })
+map("x", "$", "g_", { silent = true, noremap = true })
 map("n", "yoq", function()
   if vim.fn.getqflist({ winid = 0 }).winid ~= 0 then
     vim.cmd.cclose()
@@ -101,13 +105,13 @@ vim.cmd([[ function! ToggleMovement(firstOp, thenOp)
     execute "normal! " . c . a:thenOp
   endif
 endfunction ]])
-map({ "n", "v" }, "0", [[<cmd>call ToggleMovement("^", "0")<cr>]], { silent = true })
-map({ "n", "v" }, "^", [[<cmd>call ToggleMovement("^", "0")<cr>]], { silent = true })
+map({ "n" }, "0", [[<cmd>call ToggleMovement("^", "0")<cr>]], { silent = true })
+map({ "n" }, "^", [[<cmd>call ToggleMovement("^", "0")<cr>]], { silent = true })
 
-map("n", "[[", [[<cmd>eval search('{', 'b')<cr>w99[{]], { silent = true, noremap = true })
-map("n", "][", [[<cmd>eval search('}')<cr>b99]}]], { silent = true, noremap = true })
-map("n", "]]", [[j0[[%:silent! eval search('{')<cr>]], { silent = true, noremap = true })
-map("n", "[]", [[k$][%:silent! eval search('}', 'b')<cr>]], { silent = true, noremap = true })
+-- map("n", "[[", [[<cmd>eval search('{', 'b')<cr>w99[{]], { silent = true, noremap = true })
+-- map("n", "][", [[<cmd>eval search('}')<cr>b99]}]], { silent = true, noremap = true })
+-- map("n", "]]", [[j0[[%:silent! eval search('{')<cr>]], { silent = true, noremap = true })
+-- map("n", "[]", [[k$][%:silent! eval search('}', 'b')<cr>]], { silent = true, noremap = true })
 
 map("n", "<leader>bd", "<cmd>bd<cr>", { silent = true })
 map("n", "<leader>bD", "<cmd>bw!<cr>", { silent = true })
@@ -197,5 +201,3 @@ endfunction
 ]])
 -- nnoremap <F4> :CloseNonProjectBuffers<CR>
 map("n", "<F4>", "<cmd>CloseNonProjectBuffers<cr>")
-
-

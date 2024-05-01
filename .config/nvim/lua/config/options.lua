@@ -43,7 +43,7 @@ vim.o.listchars = "tab:-->,space:·,eol:↲,nbsp:␣,trail:•,extends:⟩,prece
 vim.o.modeline = false -- TODO: somehow this was broken if set to true
 vim.o.modelines = 5
 vim.o.shada = "!,'3000,f1,<50,s1000,h"
-vim.g.python3_host_prog = vim.fn.expand("~") .. "/.pyenv/shims/python"
+vim.g.python3_host_prog = vim.fn.expand("~") .. "/.pyenv/versions/neovim/bin/python"
 vim.opt.fillchars = {
   foldopen = "",
   foldclose = "",
@@ -53,6 +53,7 @@ vim.opt.fillchars = {
   diff = "╱",
   eob = " ",
 }
+vim.o.keywordprg = ":help"
 
 if vim.fn.has("nvim-0.10") == 1 then
   vim.o.smoothscroll = true
@@ -60,7 +61,7 @@ end
 
 -- Folding
 vim.opt.foldlevel = 99
-vim.opt.foldtext = "v:lua.require'lazyvim.util'.ui.foldtext()"
+-- vim.opt.foldtext = "v:lua.require'lazyvim.util'.ui.foldtext()"
 
 if vim.fn.has("nvim-0.9.0") == 1 then
   vim.opt.statuscolumn = [[%!v:lua.require'lazyvim.util'.ui.statuscolumn()]]

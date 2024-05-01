@@ -1,4 +1,3 @@
-local Util = require("lazyvim.util")
 return {
   {
     -- dir = "~/personal/fzf-lua",
@@ -10,7 +9,7 @@ return {
       {
         "<C-p>",
         function()
-          local root = Util.root() or vim.loop.cwd()
+          local root = LazyVim.root() or vim.loop.cwd()
           require("fzf-lua").files({ cwd = vim.g.project_path or root })
         end,
         desc = "Find Files",

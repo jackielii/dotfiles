@@ -362,7 +362,7 @@ ctrl + cmd - k | cmd - k
 # switch to main first tmux listening to socket, if none, launch new one
 ralt - t : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
     fish -c "kitty -1 -d ~"
-    # fish -c "~/personal/kitty/kitty/launcher/kitty -1 -d ~"
+    # fish -c "~/personal/kitty/kitty/launcher/kitty.app/Contents/MacOS/kitty -1 -d ~"
     # zsh -ci "kitty -1 -d ~"
         # zsh -c "source ~/.base16_theme; tmux new-session -A -s main"
 # alt - f : kitty -d ~ --title 'MY-|-Filer' lf

@@ -1,6 +1,38 @@
-local Util = require("lazyvim.util")
-
 return {
+  {
+    "olexsmir/gopher.nvim",
+    dependencies = { -- optional packages
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    keys = {
+      -- { "<M-/>", "<cmd>GoIfErr<cr>2j", mode = "n" },
+      { "<M-i>", "<cmd>GoIfErr<cr><cmd>norm! 3jO<cr>", mode = { "i", "n" } },
+      { "<M-i>", "dk<cmd>GoIfErr<cr><cmd>norm! 3jO<cr>a", mode = { "x" } },
+    },
+    opts = {},
+    config = function(_, opts)
+      require("gopher").setup(opts)
+      -- require("go").setup({
+      --   -- luasnip = true,
+      --   trouble = true,
+      --   lsp_inlay_hints = {
+      --     only_current_line = true,
+      --   },
+      --   dap_debug_keymap = false,
+      -- })
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "go",
+        callback = function()
+          vim.bo.tabstop = 4
+          vim.bo.shiftwidth = 4
+        end,
+      })
+    end,
+    -- event = { "CmdlineEnter" },
+    ft = { "go", "gomod" },
+    -- build = ':lua require("go.install").update_all_sync()', -- if you need to install/update all binaries
+  },
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
@@ -17,10 +49,6 @@ return {
     opts = {
       servers = {
         gopls = {
-          keys = {
-            -- Workaround for the lack of a DAP strategy in neotest-go: https://github.com/nvim-neotest/neotest-go/issues/12
-            { "<leader>td", "<cmd>lua require('dap-go').debug_test()<CR>", desc = "Debug Nearest (Go)" },
-          },
           settings = {
             gopls = {
               gofumpt = true,
@@ -44,13 +72,13 @@ return {
                 rangeVariableTypes = true,
               },
               analyses = {
-                fieldalignment = true,
+                fieldalignment = false,
                 nilness = true,
                 unusedparams = true,
                 unusedwrite = true,
                 useany = true,
               },
-              usePlaceholders = true,
+              usePlaceholders = false,
               completeUnimported = true,
               staticcheck = true,
               directoryFilters = { "-.git", "-.vscode", "-.idea", "-.vscode-test", "-node_modules" },
@@ -116,7 +144,7 @@ return {
     "williamboman/mason.nvim",
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, { "goimports", "gofumpt" })
+      vim.list_extend(opts.ensure_installed, { "goimports", "gofumpt", "templ" })
     end,
   },
   -- {
@@ -146,7 +174,7 @@ return {
     optional = true,
     opts = {
       formatters_by_ft = {
-        go = { "goimports", "gofumpt" },
+        -- go = { "goimports", "gofumpt" },
       },
     },
   },
@@ -162,8 +190,18 @@ return {
         end,
       },
       {
-        "jackielii/nvim-dap-go",
+        -- "jackielii/nvim-dap-go",
+        dir = "~/personal/nvim-dap-go",
         config = true,
+        keys = {
+          -- Workaround for the lack of a DAP strategy in neotest-go: https://github.com/nvim-neotest/neotest-go/issues/12
+          {
+            "<leader>kgt",
+            "<cmd>lua require('dap-go').debug_tests_in_file()<CR>",
+            desc = "Debug go tests in file (picker)",
+          },
+          { "<leader>td", "<cmd>lua require('dap-go').debug_test()<CR>", desc = "Debug Nearest (Go)" },
+        },
       },
     },
   },

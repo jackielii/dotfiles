@@ -1,5 +1,3 @@
-local Util = require("lazyvim.util")
-
 return {
   -- lspconfig
   {
@@ -79,13 +77,13 @@ return {
     },
     ---@param opts PluginLspOpts
     config = function(_, opts)
-      if Util.has("neoconf.nvim") then
+      if LazyVim.has("neoconf.nvim") then
         local plugin = require("lazy.core.config").spec.plugins["neoconf.nvim"]
         require("neoconf").setup(require("lazy.core.plugin").values(plugin, "opts", false))
       end
 
       -- setup autoformat
-      Util.format.register(Util.lsp.formatter())
+      LazyVim.format.register(LazyVim.lsp.formatter())
 
       local function lsp_keymaps(buffer)
         local k = function(keys, func, desc, mode)
@@ -130,17 +128,9 @@ return {
         end, "Organize Imports")
 
         k("<leader>qf", function()
-          -- vim.lsp.buf.code_action({
-          --   apply = true,
-          --   context = {
-          --     only = { "quickfix" },
-          --     diagnostics = {},
-          --   },
-          -- })
           vim.lsp.buf.code_action({
             filter = function(a)
-              P(a)
-              return a.kind == 'quickfix'
+              return a.kind == "quickfix"
             end,
             apply = true,
           })
@@ -148,7 +138,7 @@ return {
 
         local provider = require("telescope.builtin")
         -- local provider = require("fzf-lua")
-        local goto = function(handler, opts)
+        local go = function(handler, opts)
           opts = opts or { ignore_current_line = true, jump_to_single_result = true }
           return function()
             provider[handler](opts)
@@ -157,13 +147,13 @@ return {
         k("gd", function()
           provider.lsp_definitions({ ignore_current_line = true, jump_to_single_result = true })
         end, "[G]oto [D]efinition")
-        k("gr", goto("lsp_references"), "[G]oto [R]eferences")
-        k("gI", goto("lsp_implementations"), "[G]oto [I]mplementation")
+        k("gr", go("lsp_references"), "[G]oto [R]eferences")
+        k("gI", go("lsp_implementations"), "[G]oto [I]mplementation")
         -- k("gy", goto("lsp_typedefs"), "Type [D]efinition") -- fzf-lua
-        k("gy", goto("lsp_type_definitions"), "Type [D]efinition")
-        k("<leader>ds", goto("lsp_document_symbols", {}), "[D]ocument [S]ymbols")
-        k("<leader>da", goto("diagnostics", {}), "Workspace Diagnostics")
-        k("<leader>dl", goto("lsp_dynamic_workspace_symbols", {}), "[W]orkspace [S]ymbols")
+        k("gy", go("lsp_type_definitions"), "Type [D]efinition")
+        k("<leader>ds", go("lsp_document_symbols", { symbol_width = 70 }), "[D]ocument [S]ymbols")
+        k("<leader>da", go("diagnostics", {}), "Workspace Diagnostics")
+        k("<leader>dl", go("lsp_dynamic_workspace_symbols", {}), "[W]orkspace [S]ymbols")
         -- k("<leader>dl", goto("lsp_live_workspace_symbols", {}), "[W]orkspace [S]ymbols")
 
         -- See `:help K` for why this keymap
@@ -203,7 +193,7 @@ return {
       end
 
       -- setup keymaps
-      Util.lsp.on_attach(function(client, buffer)
+      LazyVim.lsp.on_attach(function(client, buffer)
         lsp_keymaps(buffer)
       end)
 
@@ -222,21 +212,20 @@ return {
 
       -- diagnostics
       for name, icon in pairs(require("lazyvim.config").icons.diagnostics) do
-        -- P(name)
         name = "DiagnosticSign" .. name
         vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
       end
 
       if opts.inlay_hints.enabled then
-        Util.lsp.on_attach(function(client, buffer)
+        LazyVim.lsp.on_attach(function(client, buffer)
           if client.supports_method("textDocument/inlayHint") then
-            Util.toggle.inlay_hints(buffer, true)
+            LazyVim.toggle.inlay_hints(buffer, true)
           end
         end)
       end
 
       if not opts.semantic_tokens then
-        Util.lsp.on_attach(function(client, buffer)
+        LazyVim.lsp.on_attach(function(client, buffer)
           client.server_capabilities.semanticTokensProvider = nil
         end)
       end
@@ -306,10 +295,10 @@ return {
         mlsp.setup({ ensure_installed = ensure_installed, handlers = { setup } })
       end
 
-      if Util.lsp.get_config("denols") and Util.lsp.get_config("tsserver") then
+      if LazyVim.lsp.get_config("denols") and LazyVim.lsp.get_config("tsserver") then
         local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
-        Util.lsp.disable("tsserver", is_deno)
-        Util.lsp.disable("denols", function(root_dir)
+        LazyVim.lsp.disable("tsserver", is_deno)
+        LazyVim.lsp.disable("denols", function(root_dir)
           return not is_deno(root_dir)
         end)
       end

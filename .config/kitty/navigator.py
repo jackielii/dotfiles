@@ -3,8 +3,8 @@ def main():
 
 
 def handle_result(args, result, target_window_id, boss):
-    from kittens.tui.loop import debug
-    debug(args)
+    # from kittens.tui.loop import debug
+    # debug(args)
     if args[1] == "p":
         boss.active_tab.nth_window(-1)
     else:

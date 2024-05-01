@@ -31,71 +31,82 @@ set -Ux NODE_VERSIONS ~/.nvm/versions/node
 # kitty would load the theme by including $KITTY_CONFIG/base16-kitty/colors/base16-${BASE16_THEME}-256.conf
 # neovim would check $BASE16_THEME and load colorscheme base16-${BASE16_THEME}
 if [ -z "$BASE16_THEME" ] && [ -e ~/.base16_theme ]
-  set -l SCRIPT_NAME (basename (realpath ~/.base16_theme) .sh)
-	set -gx BASE16_THEME (string match 'base16-*' $SCRIPT_NAME  | string sub -s (string length 'base16-*'))
+    set -l SCRIPT_NAME (basename (realpath ~/.base16_theme) .sh)
+    set -gx BASE16_THEME (string match 'base16-*' $SCRIPT_NAME  | string sub -s (string length 'base16-*'))
 end
 
 if status is-interactive
-  set -g fish_greeting
+    set -g fish_greeting
 
-	abbr vi nvim
-	abbr v nvim
-	abbr rm grm -I
-	abbr dc docker-compose
-	abbr ns kubens
-	abbr ctx kubectx
-	abbr gs gst
-	abbr lg lazygit
-	abbr l lf
-	abbr gci git commit
-	abbr k kubectl
-	abbr d kitten diff
-	abbr gd git difftool --no-symlinks --dir-diff
-	abbr gds git difftool --no-symlinks --dir-diff --staged
-	abbr gsh git difftool --no-symlinks --dir-diff HEAD~1 HEAD
-	abbr gr8 git rev-parse --short=8 HEAD
-	abbr gcm git checkout (__git.default_branch) 
-	abbr gcim git commit -m
-	abbr glola git log --oneline --decorate --color --graph --all
-	abbr - cd -
-	abbr dcps docker-compose ps
-	abbr dcupd docker-compose up -d
-	abbr dcup docker-compose up
-	abbr dcdn docker-compose down
+    abbr vi nvim
+    abbr v nvim
+    abbr rm grm -I
+    abbr dc docker-compose
+    abbr ns kubens
+    abbr ctx kubectx
+    abbr gs gst
+    abbr lg lazygit
+    abbr l lf
+    abbr gci git commit
+    abbr k kubectl
+    abbr d kitten diff
+    abbr gd git difftool --no-symlinks --dir-diff
+    abbr gds git difftool --no-symlinks --dir-diff --staged
+    abbr gsh git difftool --no-symlinks --dir-diff HEAD~1 HEAD
+    abbr gr8 git rev-parse --short=8 HEAD
+    abbr gcm git checkout (__git.default_branch)
+    abbr gcim git commit -m
+    abbr glola git log --oneline --decorate --color --graph --all
+    abbr - cd -
+    abbr dcps docker-compose ps
+    abbr dcupd docker-compose up -d
+    abbr dcup docker-compose up
+    abbr dcdn docker-compose down
+    abbr ll ls -lhtr
 
-  starship init fish | source
-  zoxide init fish | source
-  direnv hook fish | source
+    starship init fish | source
+    zoxide init fish | source
+    direnv hook fish | source
 
-	bind \cx\ce edit_command_buffer # ctrl+x ctrl+e to edit command buffer
-	bind \cH backward-kill-path-component # ctrl+backspace to delete path component
-	bind \cw backward-kill-bigword # ctrl+w to delete big word
-	bind \e\[3\;5~ kill-word # ctrl+delete to delete forward word
+    bind \cx\ce edit_command_buffer # ctrl+x ctrl+e to edit command buffer
+    bind \cH backward-kill-path-component # ctrl+backspace to delete path component
+    bind \cw backward-kill-bigword # ctrl+w to delete big word
+    bind \e\[3\;5~ kill-word # ctrl+delete to delete forward word
 
-	fish_add_path ~/.fzf/bin
-	set -Ux FZF_DEFAULT_COMMAND 'fd --type f --hidden --follow --exclude .git'
-	set -Ux FZF_DEFAULT_OPTS "--history=$HOME/.fzf_history --bind='ctrl-e:preview-down,ctrl-y:preview-up,ctrl-o:toggle-preview'"
-	# if [ -n "$BASE16_THEME" ] && [ -f ~/.config/base16-fzf/fish/base16-$BASE16_THEME.fish ] && not string match -qe -- --color $FZF_DEFAULT_OPTS
-	# 	source ~/.config/base16-fzf/fish/base16-$BASE16_THEME.fish
-	# end
+    fish_add_path ~/.fzf/bin
+    set -Ux FZF_DEFAULT_COMMAND 'fd --type f --hidden --follow --exclude .git'
+    set -Ux FZF_DEFAULT_OPTS "--history=$HOME/.fzf_history --bind='ctrl-e:preview-down,ctrl-y:preview-up,ctrl-o:toggle-preview'"
+    # if [ -n "$BASE16_THEME" ] && [ -f ~/.config/base16-fzf/fish/base16-$BASE16_THEME.fish ] && not string match -qe -- --color $FZF_DEFAULT_OPTS
+    # 	source ~/.config/base16-fzf/fish/base16-$BASE16_THEME.fish
+    # end
 
-	# brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep
-  set OS (uname -s)
-	if [ "$OS" = "Darwin" ]
-		# alias ls "ls -G"
-		alias sed gsed
-		alias df gdf
-		alias cp gcp
-	end
+    # brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep
+    set OS (uname -s)
+    if [ "$OS" = Darwin ]
+        # alias ls "ls -G"
+        alias sed gsed
+        alias df gdf
+        alias cp gcp
+    end
 
-	function base16-helper
-		set BASE16_SHELL "$HOME/.config/base16-shell/"
-		source "$BASE16_SHELL/profile_helper.fish"
-	end
+    function base16-helper
+        set BASE16_SHELL "$HOME/.config/base16-shell/"
+        source "$BASE16_SHELL/profile_helper.fish"
+    end
 
-	abbr lv "NVIM_APPNAME=lazyvim nvim"
-	abbr nvim_old "NVIM_APPNAME=nvim_old nvim"
+    function mkcd
+        mkdir -pv $argv
+        cd $argv
+    end
 
+    abbr lv "NVIM_APPNAME=lazyvim nvim"
+    abbr nvim_old "NVIM_APPNAME=nvim_old nvim"
+
+    if [ -n "$KITTY_PID" ]
+        abbr ks "kitten ssh"
+    end
+
+    fish_add_path /Library/TeX/texbin
 end
 
-# vim:set noet sts=-1 sw=2 ts=2:
+# vim:set et sts=4 sw=4 ts=4:

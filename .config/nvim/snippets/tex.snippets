@@ -1,0 +1,74 @@
+snippet bb "\mathbb"
+	\mathbb{$1}
+
+snippet -> "\rightarrow"
+	\rightarrow${0}
+
+snippet $$ "math block"
+	\[
+	${0:${VISUAL}}
+	\]
+
+snippet $ "math inline"
+	$${0:${VISUAL}}$
+
+snippet sum "sum"
+	\sum_{${1}}^{${2}}{${3}}
+
+snippet frac "fraction"
+	\frac{${1}}{${2}}
+	
+snippet \( "\parentheses"
+	\left(${1:${VISUAL}}\right)${0}
+
+snippet ( "parentheses"
+	\left(${1:${VISUAL}}\right)${0}
+
+snippet inta "integral"
+	\int_{${1}}^{${2}}{${3}}
+
+snippet int "integral"
+	\int{${1}}
+
+snippet lim "lim"
+	\lim_{${1}}{${2}}
+
+snippet : "\colon"
+	\colon${0}
+
+snippet align "align block"
+	\begin{align*}
+		${0:${VISUAL}}
+	\end{align*}
+
+snippet enum "enumerate"
+	\begin{enumerate}
+		\item ${0}
+	\end{enumerate}
+
+snippet matrix "matrix"
+	\begin{pmatrix} ${0} \end{pmatrix}
+
+snippet doc "document template"
+	\documentclass{article}
+	\usepackage{amsmath}
+	\usepackage{amssymb}
+	\usepackage[shortlabels]{enumitem}
+	\title{${1}}
+	\author{${2}}
+	\date{${3}}
+	\begin{document}
+	\maketitle
+		${0:${VISUAL}}
+	\end{document}
+
+snippet block "block"
+	\begin{block}{${1}}
+		${0:${VISUAL}}
+	\end{block}
+
+snippet tcolorbox "tcolorbox"
+	\begin{tcolorbox}[${1}]
+		${0:${VISUAL}}
+	\end{tcolorbox}
+
