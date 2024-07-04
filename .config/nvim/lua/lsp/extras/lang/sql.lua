@@ -1,4 +1,28 @@
+local util = require("conform.util")
+
 return {
+  {
+    "mfussenegger/nvim-lint",
+    optional = true,
+    opts = function(_, opts)
+      local sqlfluff = require("lint").linters.sqlfluff
+      sqlfluff.args = {
+        "lint",
+        "--format=json",
+        function()
+          if vim.b["sql_dialect"] then
+            return "--dialect=" .. vim.b["sql_dialect"]
+          end
+          return "-n" -- means --no-color. We need to return something to make it run
+        end,
+      }
+      return vim.tbl_deep_extend("force", opts, {
+        linters_by_ft = {
+          sql = { "sqlfluff" },
+        },
+      })
+    end,
+  },
   {
     "stevearc/conform.nvim",
     optional = true,
@@ -29,13 +53,24 @@ return {
         },
         formatters = {
           sqlfluff = function()
-            local dialect = vim.b["sql_dialect"] or "ansi"
-            -- vim.print({ "fix", "--force", "--dialect=" .. dialect, "-" })
+            local args = { "fix" }
+            if vim.b["sql_dialect"] then
+              table.insert(args, "--dialect=" .. vim.b["sql_dialect"])
+            end
+            table.insert(args, "-")
             return {
               command = "sqlfluff",
-              args = { "fix", "--force", "--dialect=" .. dialect, "-" },
+              args = args,
               stdin = true,
-              exit_codes = { 0, 1 }, -- it seems to report any misformatted SQL as exit code 1
+              -- exit_codes = { 0, 1 }, -- it seems to report any misformatted SQL as exit code 1
+              cwd = util.root_file({
+                ".sqlfluff",
+                "pep8.ini",
+                "pyproject.toml",
+                "setup.cfg",
+                "tox.ini",
+              }),
+              require_cwd = false,
             }
           end,
         },

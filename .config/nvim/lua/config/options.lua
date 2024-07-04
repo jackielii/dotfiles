@@ -61,21 +61,23 @@ end
 
 -- Folding
 vim.opt.foldlevel = 99
--- vim.opt.foldtext = "v:lua.require'lazyvim.util'.ui.foldtext()"
-
-if vim.fn.has("nvim-0.9.0") == 1 then
-  vim.opt.statuscolumn = [[%!v:lua.require'lazyvim.util'.ui.statuscolumn()]]
-end
 if vim.fn.has("nvim-0.10") == 1 then
-  vim.opt.foldmethod = "expr"
+  vim.opt.smoothscroll = true
   vim.opt.foldexpr = "v:lua.require'lazyvim.util'.ui.foldexpr()"
+  vim.opt.foldmethod = "expr"
+  vim.opt.foldtext = ""
 else
   vim.opt.foldmethod = "indent"
+  vim.opt.foldtext = "v:lua.require'lazyvim.util'.ui.foldtext()"
 end
 
-vim.o.formatexpr = "v:lua.require'lazyvim.util'.format.formatexpr()"
+vim.opt.statuscolumn = [[%!v:lua.require'lazyvim.util'.ui.statuscolumn()]]
+
+vim.opt.formatexpr = "v:lua.require'lazyvim.util'.format.formatexpr()"
 
 -- Fix markdown indentation settings
 vim.g.markdown_recommended_style = 0
 
 vim.g.autoformat = false
+
+vim.lsp.set_log_level("off")

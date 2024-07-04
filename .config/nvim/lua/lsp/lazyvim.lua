@@ -13,7 +13,7 @@ vim.api.nvim_create_autocmd("User", {
   pattern = "VeryLazy",
   callback = function()
     LazyVim.format.setup() -- setup autoformat on BufWritePre
-    LazyVim.news.setup() -- lazyvim news
+    -- LazyVim.news.setup() -- lazyvim news
     LazyVim.root.setup() -- setup root dir
     -- vim.api.nvim_create_user_command("LazyExtras", function()
     --   LazyVim.extras.show()
@@ -313,7 +313,7 @@ return {
         "[q",
         function()
           if require("trouble").is_open() then
-            require("trouble").previous({ skip_groups = true, jump = true })
+            require("trouble").prev({ skip_groups = true, jump = true })
           else
             local ok, err = pcall(vim.cmd.cprev)
             if not ok then
@@ -321,7 +321,7 @@ return {
             end
           end
         end,
-        desc = "Previous trouble/quickfix item",
+        desc = "Previous Trouble/Quickfix Item",
       },
       {
         "]q",
@@ -335,7 +335,7 @@ return {
             end
           end
         end,
-        desc = "Next trouble/quickfix item",
+        desc = "Next Trouble/Quickfix Item",
       },
     },
   },
@@ -362,7 +362,7 @@ return {
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
       "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
-      { dir = "~/personal/neo-tree-bufferline.nvim" },
+      { dir = "~/personal/neo-tree-harpoon.nvim" },
     },
     cmd = "Neotree",
     keys = {
@@ -396,8 +396,8 @@ return {
       },
       {
         "<leader>bo",
-        "<cmd>Neotree pinned-buffers<cr>",
-        desc = "Buffer explorer",
+        "<cmd>Neotree harpoon-buffers<cr>",
+        desc = "Harpoon buffers",
       },
       {
         "<leader>ko",
@@ -420,7 +420,7 @@ return {
       enable_git_status = true,
       enable_diagnostics = false,
       log_level = "warn", -- "trace", "debug", "info", "warn", "error", "fatal"
-      sources = { "filesystem", "buffers", "git_status", "document_symbols", "pinned-buffers" },
+      sources = { "filesystem", "buffers", "git_status", "document_symbols", "harpoon-buffers" },
       open_files_do_not_replace_types = { "terminal", "Trouble", "trouble", "qf", "Outline" },
       filesystem = {
         bind_to_cwd = false,
@@ -582,6 +582,30 @@ return {
       "L3MON4D3/LuaSnip",
       -- "zbirenbaum/copilot.lua",
       -- "hrsh7th/cmp-nvim-lsp-signature-help",
+    },
+    keys = {
+      {
+        "<leader>uc",
+        function()
+          local cmp = require("cmp")
+          if cmp.get_config().completion.autocomplete then
+            cmp.setup.buffer({
+              completion = {
+                autocomplete = false,
+              },
+            })
+            print("Autocomplete disabled")
+          else
+            cmp.setup.buffer({
+              completion = {
+                autocomplete = { cmp.TriggerEvent.TextChanged, cmp.TriggerEvent.InsertEnter },
+              },
+            })
+            print("Autocomplete enabled")
+          end
+        end,
+        desc = "toggle autocomplete",
+      },
     },
     opts = function()
       vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })

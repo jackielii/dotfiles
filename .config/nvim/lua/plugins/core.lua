@@ -155,11 +155,14 @@ return {
   },
 
   {
+    "vhyrro/luarocks.nvim",
+    priority = 1001, -- this plugin needs to run before anything else
+    opts = {
+      rocks = { "magick" },
+    },
+  },
+  {
     "3rd/image.nvim",
-    init = function()
-      package.path = package.path .. ";" .. vim.fn.expand("~") .. "/.luarocks/share/lua/5.1/?/init.lua"
-      package.path = package.path .. ";" .. vim.fn.expand("~") .. "/.luarocks/share/lua/5.1/?.lua"
-    end,
     ft = { "markdown" },
     opts = {
       -- backend = 'kitty', -- whatever backend you would like to use
@@ -169,6 +172,17 @@ return {
       -- max_width_window_percentage = math.huge,
       -- window_overlap_clear_enabled = true, -- toggles images when windows are overlapped
       -- window_overlap_clear_ft_ignore = { 'cmp_menu', 'cmp_docs', '' },
+      --
+      --
+      integrations = {
+        markdown = {
+          enabled = false,
+          -- clear_in_insert_mode = false,
+          -- download_remote_images = true,
+          -- only_render_image_at_cursor = true,
+          -- filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
+        },
+      },
     },
   },
 
@@ -287,6 +301,7 @@ return {
   { "echasnovski/mini.bufremove", lazy = true },
   {
     "akinsho/bufferline.nvim",
+    enabled = false,
     -- dir = "~/personal/bufferline.nvim",
     event = "VimEnter",
     keys = function()
@@ -1263,20 +1278,6 @@ return {
 
   { "nvim-lua/plenary.nvim", lazy = true },
 
-  -- {
-  --   'stevearc/oil.nvim',
-  --   opts = {},
-  --   -- Optional dependencies
-  --   dependencies = { "nvim-tree/nvim-web-devicons" },
-  --   keys = {
-  --     {
-  --       "<leader>f",
-  --       [[<cmd>Oil --float<cr>]],
-  --       desc = "Lf",
-  --     },
-  --   }
-  -- },
-
   {
     "jackielii/vim-floaterm",
     keys = {
@@ -1424,6 +1425,7 @@ return {
 
   {
     "echasnovski/mini.ai",
+    -- enabled = false,
     -- keys = {
     --   { "a", mode = { "x", "o" } },
     --   { "i", mode = { "x", "o" } },
@@ -1587,8 +1589,8 @@ return {
   },
 
   {
-    -- "folke/edgy.nvim",
-    dir = "~/personal/edgy.nvim",
+    "folke/edgy.nvim",
+    -- dir = "~/personal/edgy.nvim",
     -- enabled = false,
     event = "VeryLazy",
     -- stylua: ignore
@@ -1620,7 +1622,7 @@ return {
           open = function()
             vim.api.nvim_input("<esc><space>f")
           end,
-          size = { height = 0.5 },
+          size = { height = 0.8 },
         },
         { title = "Neotest Summary", ft = "neotest-summary" },
         {
@@ -1650,14 +1652,27 @@ return {
           -- pinned = true,
           open = "Neotree position=top document_symbols",
         },
+        -- {
+        --   title = "Pinned Buffers",
+        --   ft = "neo-tree",
+        --   filter = function(buf)
+        --     return vim.b[buf].neo_tree_source == "pinned-buffers"
+        --   end,
+        --   pinned = true,
+        --   open = "Neotree position=top pinned-buffers",
+        --   size = { height = 0.2 },
+        -- },
         {
-          title = "Pinned Buffers",
+          title = "Harpoon",
           ft = "neo-tree",
           filter = function(buf)
-            return vim.b[buf].neo_tree_source == "pinned-buffers"
+            return vim.b[buf].neo_tree_source == "harpoon-buffers"
           end,
           pinned = true,
-          open = "Neotree position=top pinned-buffers",
+          open = "Neotree position=top harpoon-buffers",
+          -- open = function()
+          --   vim.api.nvim_input("<esc><space>f")
+          -- end,
           size = { height = 0.2 },
         },
         "neo-tree",
@@ -1692,5 +1707,156 @@ return {
       -- suggested keymap
       -- { "<leader>p", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },
     },
+  },
+  {
+    "ThePrimeagen/harpoon",
+    branch = "harpoon2",
+    opts = {
+      menu = {
+        width = vim.api.nvim_win_get_width(0) - 4,
+      },
+      settings = {
+        save_on_toggle = true,
+      },
+    },
+    keys = function()
+      local keys = {
+        {
+          "<leader>H",
+          function()
+            require("harpoon"):list():add()
+          end,
+          desc = "Harpoon File",
+        },
+        {
+          "<leader>bp",
+          function()
+            local function get_rel_path()
+              local Path = require("plenary.path")
+              local path = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
+              return Path:new(path):make_relative(vim.loop.cwd())
+            end
+            local list = require("harpoon"):list()
+            if list:get_by_value(get_rel_path()) then
+              list:remove()
+            else
+              list:add()
+            end
+          end,
+          desc = "Harpoon File",
+        },
+        {
+          "<leader>h",
+          function()
+            local harpoon = require("harpoon")
+            harpoon.ui:toggle_quick_menu(harpoon:list())
+          end,
+          desc = "Harpoon Quick Menu",
+        },
+      }
+
+      for i = 1, 9 do
+        table.insert(keys, {
+          "<leader>" .. i,
+          function()
+            require("harpoon"):list():select(i)
+          end,
+          desc = "Harpoon to File " .. i,
+        })
+        table.insert(keys, {
+          "<M-" .. i .. ">",
+          function()
+            require("harpoon"):list():select(i)
+          end,
+          desc = "Harpoon to File " .. i,
+        })
+      end
+      return keys
+    end,
+  },
+
+  {
+    "stevearc/oil.nvim",
+    keys = {
+      -- {
+      --   "<C-.>",
+      --   function()
+      --     require("oil").toggle_float()
+      --   end,
+      --   desc = "Oil",
+      -- },
+    },
+    opts = {
+      -- Configuration for the floating window in oil.open_float
+      float = {
+        -- Padding around the floating window
+        padding = 2,
+        max_width = 80,
+        max_height = 30,
+        border = "rounded",
+        win_options = {
+          winblend = 0,
+        },
+        -- This is the config that will be passed to nvim_open_win.
+        -- Change values here to customize the layout
+        override = function(conf)
+          return conf
+        end,
+      },
+      keymaps = {
+        ["<C-v>"] = "actions.select_vsplit",
+        ["<C-s>"] = "actions.select_split",
+        ["q"] = "actions.close",
+      },
+    },
+    -- Optional dependencies
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+  },
+
+  {
+    {
+      "CopilotC-Nvim/CopilotChat.nvim",
+      branch = "canary",
+      cmd = { "CopilotChat" },
+      keys = {
+        { "<C-.>", "<cmd>CopilotChatToggle<cr>", desc = "Copilot Chat", mode = { "n", "v" } },
+        -- { "<D-i>", "<cmd>CopilotChatToggle<cr>", desc = "Copilot Chat", mode = { "n", "v" } },
+      },
+      dependencies = {
+        { "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
+        { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
+      },
+      opts = {
+        debug = false, -- Enable debugging
+        -- See Configuration section for rest
+      },
+      -- See Commands section for default commands if you want to lazy load on them
+    },
+  },
+
+  {
+    "folke/lazydev.nvim",
+    ft = "lua", -- only load on lua files
+    opts = {
+      library = {
+        -- Library items can be absolute paths
+        -- "~/projects/my-awesome-lib",
+        -- Or relative, which means they will be resolved as a plugin
+        -- "LazyVim",
+        -- When relative, you can also provide a path to the library in the plugin dir
+        "luvit-meta/library", -- see below
+      },
+    },
+  },
+  { "Bilal2453/luvit-meta", lazy = true }, -- optional `vim.uv` typings
+  { -- optional completion source for require statements and module annotations
+    "hrsh7th/nvim-cmp",
+    opts = function(_, opts)
+      opts.sources = opts.sources or {}
+      table.insert(opts.sources, {
+        name = "lazydev",
+        group_index = 0, -- set group index to 0 to skip loading LuaLS completions
+      })
+    end,
   },
 }

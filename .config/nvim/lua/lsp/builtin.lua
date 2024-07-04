@@ -6,7 +6,6 @@ return {
 
   { import = "lazyvim.plugins.extras.linting.eslint" },
   { import = "lazyvim.plugins.extras.formatting.prettier" },
-  { import = "lazyvim.plugins.extras.lang.clangd" },
   { import = "lazyvim.plugins.extras.lang.json" },
 
   { import = "lsp.extras.lang.python" },
@@ -16,4 +15,6 @@ return {
   { import = "lsp.extras.lang.htmx_html_templ" },
   { import = "lsp.extras.lang.tex" },
   { import = "lsp.extras.lang.tailwind" },
+  { import = "lsp.extras.lang.clangd" },
+  { import = "lsp.extras.lang.proto" },
 }

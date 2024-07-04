@@ -20,10 +20,12 @@ return {
         html = {
           filetypes = { "html", "htm", "htmx", "templ" },
         },
-        templ = {},
-        emmet_ls = {
-          filetypes = { "html", "htm", "htmx", "templ" },
+        templ = {
+          cmd = { "templ", "lsp" },
         },
+        -- emmet_ls = {
+        --   filetypes = { "html", "htm", "htmx", "templ" },
+        -- },
       },
     },
   },
@@ -33,6 +35,7 @@ return {
     optional = true,
     opts = {
       formatters_by_ft = {
+        -- templ = { "/Users/jackieli/go/bin/templ" },
         templ = { "templ" },
       },
     },
