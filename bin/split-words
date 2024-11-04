@@ -1,0 +1,109 @@
+// / 2>/dev/null ; gorun "$0" "$@" ; exit $?
+
+//go:build ignore
+
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"strings"
+	"unicode/utf8"
+)
+
+func main() {
+	if len(os.Args) < 2 {
+		log.Fatal("missing filename")
+	}
+
+	sep := " "
+	if len(os.Args) > 2 {
+		sep = os.Args[2]
+	}
+
+	isDelim := func(r rune) bool {
+		if r <= '\u00FF' {
+			if strings.ContainsRune(sep, r) {
+				return true
+			}
+			// Obvious ASCII ones: \t through \r plus space. Plus two Latin-1 oddballs.
+			switch r {
+			case '\t', '\n', '\v', '\f', '\r':
+				return true
+			case '\u0085', '\u00A0':
+				return true
+			}
+			return false
+		}
+		// High-valued ones.
+		if '\u2000' <= r && r <= '\u200a' {
+			return true
+		}
+		switch r {
+		case '\u1680', '\u2028', '\u2029', '\u202f', '\u205f', '\u3000':
+			return true
+		}
+		return false
+	}
+
+	seen := make(map[string]struct{})
+
+	f := try1(os.Open(os.Args[1]))
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	scanner.Split(func(data []byte, atEOF bool) (advance int, token []byte, err error) {
+		// Skip leading spaces.
+		start := 0
+		for width := 0; start < len(data); start += width {
+			var r rune
+			r, width = utf8.DecodeRune(data[start:])
+			if !isDelim(r) {
+				break
+			}
+		}
+		// Scan until space, marking end of word.
+		for width, i := 0, start; i < len(data); i += width {
+			var r rune
+			r, width = utf8.DecodeRune(data[i:])
+			if isDelim(r) {
+				return i + width, data[start:i], nil
+			}
+		}
+		// If we're at EOF, we have a final, non-empty, non-terminated word. Return it.
+		if atEOF && len(data) > start {
+			return len(data), data[start:], nil
+		}
+		// Request more data.
+		return start, nil, nil
+	})
+
+	for scanner.Scan() {
+		word := scanner.Text()
+		if _, ok := seen[word]; ok {
+			continue
+		}
+		seen[word] = struct{}{}
+		fmt.Printf("%s\n", word)
+	}
+	try0(scanner.Err())
+}
+
+func try0(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func try1[T any](v T, err error) T {
+	if err != nil {
+		log.Fatal(err)
+	}
+	return v
+}
+
+// go.mod >>>
+// module split-words
+// go 1.23.2
+// <<< go.mod

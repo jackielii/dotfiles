@@ -37,6 +37,7 @@ set cursorpreviewfmt "\033[7;2m"
 map R :reload; recol; cfg_reload
 
 map sr set reverse!
+map sd set dirfirst!
 
 map gh cd ~
 map gd cd ~/Downloads
@@ -53,7 +54,7 @@ map xt tar
 map xx extract
 map xn extract_to_dir
 
-map o open $f
+map o $open $f ; lf -remote "send ${id} quit"
 map O $open -R $fx
 map Q $lf -remote "send quit" # close all window
 map i $$lf_previewer "$f"

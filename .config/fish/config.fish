@@ -65,6 +65,7 @@ if status is-interactive
     abbr ll ls -lhtr
 
     starship init fish | source
+    # oh-my-posh init fish | source
     zoxide init fish | source
     direnv hook fish | source
 
@@ -81,7 +82,7 @@ if status is-interactive
     # end
 
     # brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep
-    set OS (uname -s)
+    set -l OS (uname -s)
     if [ "$OS" = Darwin ]
         # alias ls "ls -G"
         alias sed gsed

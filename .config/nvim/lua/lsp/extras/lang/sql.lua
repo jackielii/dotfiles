@@ -1,6 +1,11 @@
-local util = require("conform.util")
-
 return {
+  {
+    "williamboman/mason.nvim",
+    optional = true,
+    opts = function(_, opts)
+      table.insert(opts.ensure_installed, "sqlfluff")
+    end,
+  },
   {
     "mfussenegger/nvim-lint",
     optional = true,
@@ -58,6 +63,7 @@ return {
               table.insert(args, "--dialect=" .. vim.b["sql_dialect"])
             end
             table.insert(args, "-")
+            local util = require("conform.util")
             return {
               command = "sqlfluff",
               args = args,

@@ -10,6 +10,15 @@ return {
   },
 
   {
+    "neovim/nvim-lspconfig",
+    opts = {
+      servers = {
+        protols = {},
+      },
+    },
+  },
+
+  {
     "mfussenegger/nvim-lint",
     optional = true,
     opts = {

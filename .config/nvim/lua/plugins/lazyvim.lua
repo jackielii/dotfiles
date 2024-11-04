@@ -1,25 +1,4 @@
-_G.LazyVim = require("lazyvim.util")
 local map = vim.keymap.set
-local LazyFile = { "BufReadPost", "BufNewFile", "BufWritePre" }
-
--- setup filetypes that should autoformat on BufWritePre
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "go,lua",
-  command = "let b:autoformat = 1",
-})
-
-vim.api.nvim_create_autocmd("User", {
-  group = vim.api.nvim_create_augroup("LazyVim", { clear = true }),
-  pattern = "VeryLazy",
-  callback = function()
-    LazyVim.format.setup() -- setup autoformat on BufWritePre
-    -- LazyVim.news.setup() -- lazyvim news
-    LazyVim.root.setup() -- setup root dir
-    -- vim.api.nvim_create_user_command("LazyExtras", function()
-    --   LazyVim.extras.show()
-    -- end, { desc = "Manage LazyVim extras" })
-  end,
-})
 
 -- diagnostic
 local diagnostic_goto = function(next, severity)
@@ -44,7 +23,8 @@ map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
 return {
   {
     "NvChad/nvim-colorizer.lua",
-    event = LazyFile,
+    -- event = "LazyFile",
+    cmd = { "ColorizerToggle" },
     opts = {
       -- user_default_options = {
       --   tailwind = true,
@@ -69,15 +49,7 @@ return {
 
   {
     "rcarriga/nvim-notify",
-    keys = {
-      {
-        "<F7>",
-        function()
-          require("notify").dismiss({ silent = true, pending = true })
-        end,
-        desc = "Dismiss all Notifications",
-      },
-    },
+    keys = {},
     opts = {
       timeout = 3000,
       max_height = function()
@@ -199,6 +171,7 @@ return {
     },
     -- stylua: ignore
     keys = {
+      { "<F7>", [[<cmd>NoiceDismiss<cr>]], desc = "Dismiss all Notifications", },
       {
         "<S-Enter>",
         function() require("noice").redirect(vim.fn.getcmdline()) end,
@@ -257,7 +230,7 @@ return {
   -- hunks in a commit.
   {
     "lewis6991/gitsigns.nvim",
-    event = LazyFile,
+    event = "LazyFile",
     opts = {
       signs = {
         add = { text = "▎" },
@@ -284,7 +257,7 @@ return {
         map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
         map("n", "<leader>ghp", gs.preview_hunk, "Preview Hunk")
         map("n", "<leader>ki", gs.preview_hunk, "Preview Hunk")
-        map("n", "<leader>ku", gs.reset_hunk, "Preview Hunk")
+        map("n", "<leader>ku", gs.reset_hunk, "Reset Hunk")
         map("n", "<leader>ghb", function() gs.blame_line({ full = true }) end, "Blame Line")
         map("n", "<leader>ghd", gs.diffthis, "Diff This")
         map("n", "<leader>ghD", function() gs.diffthis("~") end, "Diff This ~")
@@ -309,6 +282,15 @@ return {
       { "<leader>xa", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics (Trouble)" },
       { "<leader>xl", "<cmd>TroubleToggle loclist<cr>", desc = "Location List (Trouble)" },
       { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List (Trouble)" },
+      { "<C-.>", "]q", desc = "Next Trouble/Quickfix Item", remap = true },
+      { "<C-,>", "[q", desc = "Previous Trouble/Quickfix Item", remap = true },
+      {
+        "<M-x>",
+        "<cmd>Trouble diagnostics toggle filter.severity=vim.diagnostic.severity.ERROR<cr>",
+        desc = "Diagnostics (Trouble)",
+      },
+      { "<M-.>", "]q", desc = "Next Trouble/Quickfix Item", remap = true },
+      { "<M-,>", "[q", desc = "Previous Trouble/Quickfix Item", remap = true },
       {
         "[q",
         function()
@@ -340,17 +322,17 @@ return {
     },
   },
 
-  -- search/replace in multiple files
-  {
-    "nvim-pack/nvim-spectre",
-    build = false,
-    cmd = "Spectre",
-    opts = { open_cmd = "noswapfile vnew" },
-    -- stylua: ignore
-    keys = {
-      { "<leader>cs", function() require("spectre").open() end, desc = "Replace in files (Spectre)" },
-    },
-  },
+  -- -- search/replace in multiple files
+  -- {
+  --   "nvim-pack/nvim-spectre",
+  --   build = false,
+  --   cmd = "Spectre",
+  --   opts = { open_cmd = "noswapfile vnew" },
+  --   -- stylua: ignore
+  --   keys = {
+  --     { "<leader>cs", function() require("spectre").open() end, desc = "Replace in files (Spectre)" },
+  --   },
+  -- },
 
   -- file explorer
   {
@@ -366,8 +348,9 @@ return {
     },
     cmd = "Neotree",
     keys = {
+      { "<leader>e", false },
       {
-        "<leader>f",
+        "<leader>fe",
         function()
           require("neo-tree.command").execute({ focus = true, dir = LazyVim.root() })
         end,
@@ -417,7 +400,7 @@ return {
       end
     end,
     opts = {
-      enable_git_status = true,
+      enable_git_status = false,
       enable_diagnostics = false,
       log_level = "warn", -- "trace", "debug", "info", "warn", "error", "fatal"
       sources = { "filesystem", "buffers", "git_status", "document_symbols", "harpoon-buffers" },
@@ -607,101 +590,200 @@ return {
         desc = "toggle autocomplete",
       },
     },
-    opts = function()
-      vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
+    opts = function(_, opts)
       local cmp = require("cmp")
       local ls = require("luasnip")
       local copilot = require("copilot.suggestion")
-      local defaults = require("cmp.config.default")()
-      return {
-        completion = {
-          completeopt = "menu,menuone,noinsert",
-          autocomplete = false,
-        },
-        preselect = cmp.PreselectMode.None,
-        snippet = {
-          expand = function(args)
-            require("luasnip").lsp_expand(args.body)
-          end,
-        },
-        mapping = cmp.mapping.preset.insert({
-          ["<C-j>"] = function()
-            if cmp.visible() then
-              cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-            elseif ls.jumpable(1) then
-              ls.jump(1)
-            elseif copilot.is_visible() then
-              copilot.prev()
-            else
-              -- vim.fn.feedkeys("<C-j>", "n")
-            end
-          end,
-          ["<C-k>"] = function()
-            if cmp.visible() then
-              cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
-            elseif ls.jumpable(-1) then
-              ls.jump(-1)
-            elseif copilot.is_visible() then
-              copilot.prev()
-            else
-              -- vim.fn.feedkeys("<C-k>", "n")
-            end
-          end,
-          ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-          ["<C-f>"] = cmp.mapping.scroll_docs(4),
-          ["<C-Space>"] = cmp.mapping.complete(),
-          -- ["<C-e>"] = cmp.mapping.abort(),
-          ["<C-e>"] = function(fallback)
-            if cmp.visible() then
-              cmp.abort()
-            elseif copilot.is_visible() then
-              copilot.accept()
-            else
-              -- vim.fn.feedkeys("<C-e>", "i")
-            end
-          end,
-          ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-          ["<C-CR>"] = cmp.mapping.confirm({
-            behavior = cmp.ConfirmBehavior.Replace,
-            select = true,
-          }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-          ["<S-CR>"] = function(fallback)
+      -- local defaults = require("cmp.config.default")()
+      opts.experimental = {}
+
+      -- opts.completion.autocomplete = true
+      opts.mapping = cmp.mapping.preset.insert({
+        ["<C-j>"] = function()
+          if cmp.visible() then
+            cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
+          elseif ls.jumpable(1) then
+            ls.jump(1)
+          elseif copilot.is_visible() then
+            copilot.prev()
+          else
+            -- vim.fn.feedkeys("<C-j>", "n")
+          end
+        end,
+        ["<C-k>"] = function()
+          if cmp.visible() then
+            cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
+          elseif ls.jumpable(-1) then
+            ls.jump(-1)
+          elseif copilot.is_visible() then
+            copilot.prev()
+          else
+            -- vim.fn.feedkeys("<C-k>", "n")
+          end
+        end,
+        ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+        ["<C-f>"] = cmp.mapping.scroll_docs(4),
+        ["<C-Space>"] = cmp.mapping.complete(),
+        -- ["<C-e>"] = cmp.mapping.abort(),
+        ["<C-e>"] = function(fallback)
+          if cmp.visible() then
             cmp.abort()
-            fallback()
-          end,
-        }),
-        sources = cmp.config.sources({
-          -- { name = "nvim_lsp_signature_help" },
-          { name = "nvim_lsp" },
-          { name = "luasnip" },
-          { name = "path" },
-          { name = "git" },
-        }, {
-          { name = "buffer" },
-        }),
-        formatting = {
-          format = function(_, item)
-            local icons = require("lazyvim.config").icons.kinds
-            if icons[item.kind] then
-              item.kind = icons[item.kind] .. item.kind
+          elseif copilot.is_visible() then
+            copilot.accept()
+          else
+            -- vim.fn.feedkeys("<C-e>", "i")
+          end
+        end,
+        ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+        ["<C-CR>"] = cmp.mapping.confirm({
+          behavior = cmp.ConfirmBehavior.Replace,
+          select = true,
+        }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+        ["<S-CR>"] = function(fallback)
+          cmp.abort()
+          fallback()
+        end,
+      })
+
+      opts.sources = cmp.config.sources({
+        -- { name = "nvim_lsp_signature_help" },
+        { name = "nvim_lsp" },
+        { name = "luasnip" },
+        { name = "path" },
+        { name = "git" },
+      }, {
+        { name = "buffer" },
+      })
+
+      local compare = require("cmp.config.compare")
+      opts.sorting = {
+        priority_weight = 10,
+        comparators = {
+          compare.offset,
+          compare.exact,
+          compare.score,
+          -- compare.recently_used,
+          function(entry1, entry2)
+            local _, entry1_under = entry1.completion_item.label:find("^_+")
+            local _, entry2_under = entry2.completion_item.label:find("^_+")
+            entry1_under = entry1_under or 0
+            entry2_under = entry2_under or 0
+            if entry1_under > entry2_under then
+              return false
+            elseif entry1_under < entry2_under then
+              return true
             end
-            return item
           end,
+          compare.order,
+          compare.kind,
+          compare.sort_text,
+          compare.length,
+          compare.order,
         },
-        -- experimental = {
-        --   ghost_text = {
-        --     hl_group = "CmpGhostText",
-        --   },
-        -- },
-        sorting = defaults.sorting,
       }
+
+      -- return {
+      --   completion = {
+      --     completeopt = "menu,menuone,noinsert",
+      --     autocomplete = false,
+      --   },
+      --   preselect = cmp.PreselectMode.None,
+      --   snippet = {
+      --     expand = function(args)
+      --       require("luasnip").lsp_expand(args.body)
+      --     end,
+      --   },
+      --   mapping = cmp.mapping.preset.insert({
+      --     ["<C-j>"] = function()
+      --       if cmp.visible() then
+      --         cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
+      --       elseif ls.jumpable(1) then
+      --         ls.jump(1)
+      --       elseif copilot.is_visible() then
+      --         copilot.prev()
+      --       else
+      --         -- vim.fn.feedkeys("<C-j>", "n")
+      --       end
+      --     end,
+      --     ["<C-k>"] = function()
+      --       if cmp.visible() then
+      --         cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
+      --       elseif ls.jumpable(-1) then
+      --         ls.jump(-1)
+      --       elseif copilot.is_visible() then
+      --         copilot.prev()
+      --       else
+      --         -- vim.fn.feedkeys("<C-k>", "n")
+      --       end
+      --     end,
+      --     ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+      --     ["<C-f>"] = cmp.mapping.scroll_docs(4),
+      --     ["<C-Space>"] = cmp.mapping.complete(),
+      --     -- ["<C-e>"] = cmp.mapping.abort(),
+      --     ["<C-e>"] = function(fallback)
+      --       if cmp.visible() then
+      --         cmp.abort()
+      --       elseif copilot.is_visible() then
+      --         copilot.accept()
+      --       else
+      --         -- vim.fn.feedkeys("<C-e>", "i")
+      --       end
+      --     end,
+      --     ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+      --     ["<C-CR>"] = cmp.mapping.confirm({
+      --       behavior = cmp.ConfirmBehavior.Replace,
+      --       select = true,
+      --     }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+      --     ["<S-CR>"] = function(fallback)
+      --       cmp.abort()
+      --       fallback()
+      --     end,
+      --   }),
+      --   sources = cmp.config.sources({
+      --     -- { name = "nvim_lsp_signature_help" },
+      --     { name = "nvim_lsp" },
+      --     { name = "luasnip" },
+      --     { name = "path" },
+      --     { name = "git" },
+      --   }, {
+      --     { name = "buffer" },
+      --   }),
+      --   formatting = {
+      --     format = function(entry, item)
+      --       local icons = LazyVim.config.icons.kinds
+      --       if icons[item.kind] then
+      --         item.kind = icons[item.kind] .. item.kind
+      --       end
+      --
+      --       local widths = {
+      --         abbr = vim.g.cmp_widths and vim.g.cmp_widths.abbr or 40,
+      --         menu = vim.g.cmp_widths and vim.g.cmp_widths.menu or 30,
+      --       }
+      --
+      --       for key, width in pairs(widths) do
+      --         if item[key] and vim.fn.strdisplaywidth(item[key]) > width then
+      --           item[key] = vim.fn.strcharpart(item[key], 0, width - 1) .. "…"
+      --         end
+      --       end
+      --
+      --       return item
+      --     end,
+      --   },
+      --   -- experimental = {
+      --   --   ghost_text = {
+      --   --     hl_group = "CmpGhostText",
+      --   --   },
+      --   -- },
+      --   sorting = defaults.sorting,
+      -- }
     end,
-    ---@param opts cmp.ConfigSchema
-    config = function(_, opts)
-      for _, source in ipairs(opts.sources) do
-        source.group_index = source.group_index or 1
-      end
-      require("cmp").setup(opts)
-    end,
+    -- ---@param opts cmp.ConfigSchema
+    -- config = function(_, opts)
+    --   for _, source in ipairs(opts.sources) do
+    --     source.group_index = source.group_index or 1
+    --   end
+    --   require("cmp").setup(opts)
+    -- end,
+    main = "lazyvim.util.cmp",
   },
 }

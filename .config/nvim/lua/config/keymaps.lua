@@ -1,4 +1,7 @@
 local map = vim.keymap.set
+local del = vim.keymap.del
+
+del("n", "<leader><space>")
 
 map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
@@ -45,6 +48,8 @@ map("n", "c#", [[:let @/=expand("<cword>")<cr>cgN]], { silent = true, noremap = 
 map("n", "y/", [[:let @/=expand("<cword>")<cr>]], { silent = true, noremap = true })
 
 map("x", "//", [["vy/\V<C-r>=escape(@v,'/\')<cr><cr>N]], { silent = true, noremap = true })
+map("x", "<M-/>", "<Esc>/\\%V", { silent = true, noremap = true })
+map("x", "<D-/>", "<Esc>/\\%V", { silent = true, noremap = true })
 map("x", "$", "g_", { silent = true, noremap = true })
 map("n", "yoq", function()
   if vim.fn.getqflist({ winid = 0 }).winid ~= 0 then
@@ -133,25 +138,6 @@ vim.api.nvim_create_user_command("R", "new | setlocal buftype=nofile bufhidden=h
   complete = "shellcmd",
 })
 
-vim.g.project_root = vim.fn.getcwd()
-vim.g.project_path = vim.g.project_root
-map(
-  "n",
-  "<F1>",
-  [[<cmd>let g:project_path=g:project_root <bar> execute 'lcd '.g:project_path <bar> echo g:project_path<cr>]]
-)
-map("n", "<F2>", [[<cmd>Glcd <bar> let g:project_path=getcwd() <bar> echo g:project_path<cr>]])
-map(
-  "n",
-  "<F3>",
-  [[:execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h') <bar> let g:project_path = expand('%:p:h')<CR>]]
-)
-map(
-  "n",
-  "<F13>",
-  [[:execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h') <bar> let g:project_path = expand('%:p:h')<CR>]]
-)
-
 vim.cmd([[
 function! ClearWhitespace()
   let winview = winsaveview()
@@ -199,5 +185,94 @@ function! CloseNonProjectBuffers(dir, bang)
   endwhile
 endfunction
 ]])
--- nnoremap <F4> :CloseNonProjectBuffers<CR>
+
+-- stylua: ignore start
+
+vim.g.project_root = vim.fn.getcwd()
+vim.g.project_path = vim.g.project_root
+map("n", "<F1>", [[<cmd>let g:project_path=g:project_root <bar> execute 'lcd '.g:project_path <bar> echo g:project_path<cr>]])
+-- map("n", "<F2>", [[<cmd>Glcd <bar> let g:project_path=getcwd() <bar> echo g:project_path<cr>]])
+-- map("n", "<F3>", [[:execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h') <bar> let g:project_path = expand('%:p:h')<CR>]])
+map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" } )
+map("n", "<F13>", [[:execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h') <bar> let g:project_path = expand('%:p:h')<CR>]])
+
 map("n", "<F4>", "<cmd>CloseNonProjectBuffers<cr>")
+map("n", "<F2>", function()
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+  local win_id = vim.api.nvim_get_current_win()
+  require("edgy").toggle()
+  -- workaround for edgy.nvim moves the cursor to a different window
+  vim.schedule(function()
+    vim.api.nvim_set_current_win(win_id)
+    vim.api.nvim_win_set_cursor(win_id, cursor_pos)
+  end)
+end)
+
+-- local lazyterm = function()
+--   LazyVim.terminal(nil, { cwd = LazyVim.root() })
+-- end
+-- map("n", "<c-/>", lazyterm, { desc = "Terminal (Root Dir)" })
+
+-- Terminal Mappings
+-- map("t", "<esc><esc>", "<c-\\><c-n>", { desc = "Enter Normal Mode" })
+-- map("t", "<C-h>", "<cmd>wincmd h<cr>", { desc = "Go to Left Window" })
+-- map("t", "<C-j>", "<cmd>wincmd j<cr>", { desc = "Go to Lower Window" })
+-- map("t", "<C-k>", "<cmd>wincmd k<cr>", { desc = "Go to Upper Window" })
+-- map("t", "<C-l>", "<cmd>wincmd l<cr>", { desc = "Go to Right Window" })
+map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
+map("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
+
+-- toggle options
+LazyVim.toggle.map("<leader>uf", LazyVim.toggle.format())
+LazyVim.toggle.map("<leader>uF", LazyVim.toggle.format(true))
+LazyVim.toggle.map("<leader>us", LazyVim.toggle("spell", { name = "Spelling" }))
+LazyVim.toggle.map("<leader>uw", LazyVim.toggle("wrap", { name = "Wrap" }))
+LazyVim.toggle.map("<leader>uL", LazyVim.toggle("relativenumber", { name = "Relative Number" }))
+LazyVim.toggle.map("<leader>ud", LazyVim.toggle.diagnostics)
+LazyVim.toggle.map("<leader>ul", LazyVim.toggle.number)
+LazyVim.toggle.map(
+  "<leader>uc",
+  LazyVim.toggle("conceallevel", { values = { 0, vim.o.conceallevel > 0 and vim.o.conceallevel or 2 } })
+)
+LazyVim.toggle.map("<leader>uT", LazyVim.toggle.treesitter)
+LazyVim.toggle.map("<leader>ub", LazyVim.toggle("background", { values = { "light", "dark" }, name = "Background" }))
+if vim.lsp.inlay_hint then
+  LazyVim.toggle.map("<leader>uh", LazyVim.toggle.inlay_hints)
+end
+
+-- stylua: ignore start
+-- lazygit
+map("n", "<F6>", function() LazyVim.lazygit({ cwd = LazyVim.root.git() }) end,                          { desc = "Lazygit (Root Dir)" })
+map("n", "<leader>glG", function() LazyVim.lazygit() end,                                               { desc = "Lazygit (cwd)" })
+map("n", "<leader>glg", function() LazyVim.lazygit({ cwd = LazyVim.root.git() }) end,                   { desc = "Lazygit (Root Dir)" })
+map("n", "<leader>glb", LazyVim.lazygit.blame_line,                                                     { desc = "Git Blame Line" })
+map("n", "<leader>glB", LazyVim.lazygit.browse,                                                         { desc = "Git Browse" })
+map("n", "<leader>gll", function() LazyVim.lazygit({ args = { "log" }, cwd = LazyVim.root.git() }) end, { desc = "Lazygit Log" })
+map("n", "<leader>glL", function() LazyVim.lazygit({ args = { "log" } }) end,                           { desc = "Lazygit Log (cwd)" })
+map("n", "<leader>glf", function()
+  local git_path = vim.api.nvim_buf_get_name(0)
+  LazyVim.lazygit({ args = { "-f", vim.trim(git_path) } })
+end, { desc = "Lazygit Current File History" })
+
+-- formatting
+map({ "n", "v" }, "<leader>kf", function()
+  LazyVim.format({ force = true })
+end, { desc = "Format" })
+
+_G.__format_operator = function(type)
+  local range
+  if type == "v" then
+    range = {
+      start = vim.api.nvim_buf_get_mark(0, "<"),
+      ["end"] = vim.api.nvim_buf_get_mark(0, ">"),
+    }
+  else
+    range = {
+      start = vim.api.nvim_buf_get_mark(0, "["),
+      ["end"] = vim.api.nvim_buf_get_mark(0, "]"),
+    }
+  end
+  LazyVim.format({ range = range })
+end
+map("v", "<leader>gf", "<cmd>lua __format_operator('v')<CR>", { desc = "Format Visual" })
+map("n", "<leader>gf", "<Esc><cmd>set operatorfunc=v:lua.__format_operator<CR>g@", { desc = "Format Operator" })

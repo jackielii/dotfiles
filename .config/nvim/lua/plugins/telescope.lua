@@ -1,15 +1,112 @@
+if lazyvim_docs then
+  -- In case you don't want to use `:LazyExtras`,
+  -- then you need to set the option below.
+  vim.g.lazyvim_picker = "telescope"
+end
+
+---@type LazyPicker
+local picker = {
+  name = "telescope",
+  commands = {
+    files = "find_files",
+  },
+  -- this will return a function that calls telescope.
+  -- cwd will default to lazyvim.util.get_root
+  -- for `files`, git_files or find_files will be chosen depending on .git
+  ---@param builtin string
+  ---@param opts? lazyvim.util.pick.Opts
+  open = function(builtin, opts)
+    opts = opts or {}
+    opts.follow = opts.follow ~= false
+    if opts.cwd and opts.cwd ~= vim.uv.cwd() then
+      local function open_cwd_dir()
+        local action_state = require("telescope.actions.state")
+        local line = action_state.get_current_line()
+        LazyVim.pick.open(
+          builtin,
+          vim.tbl_deep_extend("force", {}, opts or {}, {
+            root = false,
+            default_text = line,
+          })
+        )
+      end
+      ---@diagnostic disable-next-line: inject-field
+      opts.attach_mappings = function(_, map)
+        -- opts.desc is overridden by telescope, until it's changed there is this fix
+        map("i", "<a-c>", open_cwd_dir, { desc = "Open cwd Directory" })
+        return true
+      end
+    end
+
+    require("telescope.builtin")[builtin](opts)
+  end,
+}
+if not LazyVim.pick.register(picker) then
+  return {}
+end
+
 return {
   {
     "nvim-telescope/telescope.nvim",
     event = "VeryLazy",
     cmd = "Telescope",
-    -- stylua: ignore
     keys = {
+      {
+        "<leader>ds",
+        function()
+          require("telescope.builtin").lsp_document_symbols({
+            symbols = LazyVim.config.get_kind_filter(),
+            symbol_width = 50,
+          })
+        end,
+        desc = "[D]ocument [S]ymbols",
+      },
+      {
+        "<leader>dS",
+        function()
+          require("telescope.builtin").lsp_dynamic_workspace_symbols({
+            symbols = LazyVim.config.get_kind_filter(),
+            symbol_width = 50,
+          })
+        end,
+        desc = "[W]orkspace [S]ymbols",
+      },
+      {
+        "<leader>dl",
+        function()
+          require("telescope.builtin").lsp_dynamic_workspace_symbols({
+            symbols = LazyVim.config.get_kind_filter(),
+            symbol_width = 50,
+          })
+        end,
+        desc = "[W]orkspace [S]ymbols",
+      },
+      {
+        "<leader>da",
+        function()
+          require("telescope.builtin").diagnostics({
+            sort_by = "severity",
+          })
+        end,
+        desc = "Workspace Diagnostics",
+      },
       {
         "<C-p>",
         function()
-          local root = LazyVim.root() or vim.loop.cwd()
-          require("telescope.builtin").find_files({ cwd = vim.g.project_path or root })
+          require("telescope").extensions.smart_open.smart_open({
+            -- cwd_only = true,
+            -- filename_first = false,
+            -- mappings = {
+            --   i = {
+            --     ["<C-w>"] = "echo",
+            --     -- ["<C-w>"] = function()
+            --     --   vim.api.nvim_input("<c-s-w>")
+            --     -- end,
+            --   },
+            -- },
+          })
+          -- local root = LazyVim.root() or vim.loop.cwd()
+          -- require("telescope.builtin").find_files({ cwd = vim.g.project_path or root })
         end,
         desc = "Find Files",
       },
@@ -40,12 +137,15 @@ return {
         end,
         desc = "fzf current folder (all files)",
       },
-      { "<leader>cc", [[<cmd>Telescope commands<cr>]]},
-      { "<leader>cr", [[<cmd>LspRestart<cr>]]},
+      { "<leader>cc", [[<cmd>Telescope commands<cr>]] },
 
-      { "<leader>e", function()
+      {
+        "<leader>e",
+        function()
           require("telescope.builtin").buffers({ sort_lastused = true, sort_mru = true })
-        end, desc = "Telescope buffers" },
+        end,
+        desc = "Telescope buffers",
+      },
       { "<leader>;", [[<cmd>Telescope<cr>]], desc = "Telescope" },
       { "<leader>p", [[<cmd>Telescope resume<cr>]], desc = "Telescope resume" },
       { "<leader>km", [[<cmd>Telescope filetypes<cr>]], desc = "Telescope filetypes" },
@@ -63,8 +163,20 @@ return {
       { "<leader>k:", [[<cmd>Telescope command_history<cr>]], desc = "Telescope history" },
       { "<leader>k/", [[<cmd>Telescope search_history<cr>]], desc = "Telescope history search" },
       { "<leader>ci", [[<cmd>Telescope live_grep<cr>]], desc = "Telescope live grep" },
-      { "<leader>/", function() __telescope_search_string() end, desc = "Telescope search string" },
-      { "<leader>?", function() __telescope_search_string({ cwd = vim.fn.expand("%:p:h") }) end, desc = "Telescope" },
+      {
+        "<leader>/",
+        function()
+          __telescope_search_string()
+        end,
+        desc = "Telescope search string",
+      },
+      {
+        "<leader>?",
+        function()
+          __telescope_search_string({ cwd = vim.fn.expand("%:p:h") })
+        end,
+        desc = "Telescope",
+      },
       {
         "<leader>dgg",
         function()
@@ -115,6 +227,9 @@ return {
           -- vertical = { width = 0.8 },
           mappings = {
             i = {
+              ["<C-w>"] = function()
+                vim.api.nvim_input("<c-s-w>")
+              end,
               ["<C-o>"] = { "<esc>", type = "command" },
               ["<C-s>"] = "select_horizontal",
               ["<C-x>"] = actions.smart_send_to_qflist + actions.open_qflist,
@@ -141,6 +256,25 @@ return {
           history = {
             path = vim.fn.stdpath("state") .. "/telescope_history.sqlite3",
             limit = 1000,
+          },
+
+          path_display = {
+            -- tail = true,
+            truncate = true,
+            -- shorten = true,
+          },
+        },
+        extensions = {
+          smart_open = {
+            mappings = {
+              i = {
+                ["<C-w>"] = function()
+                  vim.api.nvim_input("<c-s-w>")
+                end,
+              },
+            },
+            -- match_algorithm = "fzf",
+            -- disable_devicons = false,
           },
         },
       }
@@ -239,6 +373,15 @@ return {
         config = function()
           LazyVim.on_load("telescope.nvim", function()
             require("telescope").load_extension("fzf")
+          end)
+        end,
+      },
+      {
+        "danielfalk/smart-open.nvim",
+        branch = "0.3.x",
+        config = function()
+          LazyVim.on_load("telescope.nvim", function()
+            require("telescope").load_extension("smart_open")
           end)
         end,
       },

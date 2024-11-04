@@ -23,9 +23,23 @@ return {
   {
     "folke/persistence.nvim", -- replace Obsession
     event = "BufReadPre",
-    opts = {
-      options = { "buffers", "curdir", "tabpages", "winsize", "folds", "globals", "skiprtp" },
-    },
+    init = function()
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "PersistenceLoadPost",
+        callback = function()
+          local cursor_pos = vim.api.nvim_win_get_cursor(0)
+          local win_id = vim.api.nvim_get_current_win()
+          require("edgy").open()
+
+          -- workaround for edgy.nvim moves the cursor to a different window
+          vim.schedule(function()
+            vim.api.nvim_set_current_win(win_id)
+            vim.api.nvim_win_set_cursor(win_id, cursor_pos)
+          end)
+        end,
+      })
+    end,
+    opts = {},
     -- stylua: ignore
     keys = {
       {
@@ -88,19 +102,16 @@ return {
       { "<leader>gdd", [[<cmd>tab Git diff %<cr>]], desc = "Git diff current" },
       { "<leader>gp", [[<cmd>Git pull<cr>]], desc = "Git pull" },
       { "<leader>gP", [[<cmd>Git push<cr>]], desc = "Git push" },
-      { "<leader>gl", desc = "+Git log" },
-      { "<leader>gll", [[:tabnew % <bar> 0Gclog<cr>]], desc = "Git log" },
-      { "<leader>gla", [[:tabnew % <bar> Git log<cr>]], desc = "Git log" },
+      { "<leader>gl0", [[:tabnew % <bar> 0Gclog<cr>]], desc = "Fugitive Git log file" },
+      { "<leader>gla", [[:tabnew % <bar> Git log<cr>]], desc = "Fugitive Git history" },
       { "<leader>ga", [[<cmd>Git add --all<cr>]], desc = "Git add" },
     },
   },
 
   {
     "tpope/vim-abolish",
-    -- TODO: we're using flash.nvim, need to add a no mapping for this
-    enabled = false,
     init = function()
-      vim.g.abolish_no_mappings = 1
+      -- vim.g.abolish_no_mappings = 1
     end,
   },
 
@@ -125,12 +136,34 @@ return {
       vim.o.timeout = true
       vim.o.timeoutlen = 300
     end,
+
+    keys = {
+      { "<leader>?", false },
+    },
     opts = {
-      triggers_blacklist = {
-        -- list of mode / prefixes that should never be hooked by WhichKey
-        -- this is mostly relevant for keymaps that start with a native binding
-        i = { "j", "k", "U", "I", "A", "P", "C", "O" },
-        v = { "j", "k" },
+      preset = "modern",
+      filter = function(mapping)
+        -- triggers_blacklist = {
+        --   -- list of mode / prefixes that should never be hooked by WhichKey
+        --   -- this is mostly relevant for keymaps that start with a native binding
+        --   i = { "j", "k", "U", "I", "A", "P", "C", "O" },
+        --   v = { "j", "k" },
+        -- },
+        if mapping.mode == "i" then
+          return not vim.tbl_contains({ "j", "k", "U", "I", "A", "P", "C", "O" }, mapping.keys)
+        elseif mapping.mode == "v" then
+          return not vim.tbl_contains({ "j", "k" }, mapping.keys)
+          -- elseif ctx.mode == "o" then
+          --   return vim.tbl_contains({ "-" }, ctx.keys)
+        elseif mapping.mode == "o" then
+          return not vim.tbl_contains({ "-" }, mapping.keys)
+        end
+        return true
+      end,
+      disable = {
+        -- disable WhichKey for certain buf types and file types.
+        ft = {},
+        bt = {},
       },
     },
   },
@@ -154,16 +187,19 @@ return {
     },
   },
 
-  {
-    "vhyrro/luarocks.nvim",
-    priority = 1001, -- this plugin needs to run before anything else
-    opts = {
-      rocks = { "magick" },
-    },
-  },
+  -- {
+  --   "vhyrro/luarocks.nvim",
+  --   priority = 1001, -- this plugin needs to run before anything else
+  --   opts = {
+  --     rocks = { "magick" },
+  --   },
+  -- },
   {
     "3rd/image.nvim",
     ft = { "markdown" },
+    dependencies = {
+      "leafo/magick",
+    },
     opts = {
       -- backend = 'kitty', -- whatever backend you would like to use
       -- max_width = 100,
@@ -286,7 +322,7 @@ return {
     end,
     config = function()
       -- this works on nvim 0.9.4 but not on 0.10
-      require("base16-colorscheme").setup()
+      -- require("base16-colorscheme").setup()
       --
       local base16_theme = "decaf"
       if vim.env.BASE16_THEME and vim.env.BASE16_THEME ~= "" then
@@ -412,8 +448,6 @@ return {
       })
     end,
   },
-
-  { "LazyVim/LazyVim", lazy = true },
 
   {
     "nvim-lualine/lualine.nvim",
@@ -666,19 +700,27 @@ return {
         group = augroup("my_visual_multi_start"),
         pattern = "visual_multi_start",
         callback = function()
-          -- vim.b['minipairs_disable'] = true
-          require("nvim-autopairs").disable()
+          -- vim.b["minipairs_disable"] = true
+          -- require("nvim-autopairs").disable()
           require("lualine").hide()
+          -- local lualine = pcall(require, "lualine")
+          -- if lualine then
+          --   lualine.hide()
+          -- end
         end,
       })
       vim.api.nvim_create_autocmd("User", {
         group = augroup("my_visual_multi_exit"),
         pattern = "visual_multi_exit",
         callback = function()
-          -- vim.b['minipairs_disable'] = false
-          require("nvim-autopairs").enable()
-          require("nvim-autopairs").force_attach()
+          -- vim.b["minipairs_disable"] = false
+          -- require("nvim-autopairs").enable()
+          -- require("nvim-autopairs").force_attach()
           require("lualine").hide({ unhide = true })
+          -- local lualine = pcall(require, "lualine")
+          -- if lualine then
+          --   lualine.hide({ unhide = true })
+          -- end
         end,
       })
       -- -- autocmd User visual_multi_mappings  imap <buffer><expr> <CR> pumvisible() ? "\<C-Y>" : "\<Plug>(VM-I-Return)"
@@ -748,7 +790,7 @@ return {
             { action = "Telescope live_grep", desc = " Live grep", icon = " ", key = "g" },
             -- { action = "exe 'edit '.stdpath('config').'/init.lua'", desc = " Config",          icon = " ",  key = "c" },
             -- { action = "Telescope files cwd=~/.config/nvim",           desc = " Config",          icon = " ",  key = "c" },
-            { action = [[lua LazyVim.telescope.config_files()()]], desc = " Config", icon = " ", key = "c" },
+            { action = [[lua LazyVim.pick.config_files()()]], desc = " Config", icon = " ", key = "c" },
             -- {
             --   action = "Telescope files cwd=" .. vim.fn.stdpath('config'),
             --   desc = " Config",
@@ -913,66 +955,66 @@ return {
     end,
   },
 
-  {
-    "windwp/nvim-autopairs",
-    event = "InsertEnter",
-    opts = {
-      -- map_cr = package.loaded["coc.nvim"] == nil,
-      ignored_next_char = [=[[%w%%%'%[%{%(%"%.%`%$]]=],
-      fast_wrap = {
-        end_key = "q",
-        -- pattern = [=[[%'%"%>%]%)%}%,%;]]=],
-        keys = "wertyuiopzxcvbnmasdfghjkl",
-      },
-    },
-    keys = {
-      {
-        "<leader>up",
-        function()
-          local npairs = require("nvim-autopairs")
-          if npairs.state.disabled then
-            npairs.enable()
-            print("autopairs enabled")
-          else
-            npairs.disable()
-            print("autopairs disabled")
-          end
-        end,
-        desc = "Autopairs toggle",
-      },
-    },
-    config = function(spec, opts)
-      opts = vim.tbl_extend("force", opts or {}, {
-        -- we remap <cr> in coc.nvim but not in nvim-cmp
-        map_cr = not LazyVim.has("coc.nvim"),
-      })
-      require("nvim-autopairs").setup(opts)
-      require("nvim-autopairs").disable()
-    end,
-  },
+  -- {
+  --   "windwp/nvim-autopairs",
+  --   event = "InsertEnter",
+  --   opts = {
+  --     -- map_cr = package.loaded["coc.nvim"] == nil,
+  --     ignored_next_char = [=[[%w%%%'%[%{%(%"%.%`%$]]=],
+  --     fast_wrap = {
+  --       end_key = "q",
+  --       -- pattern = [=[[%'%"%>%]%)%}%,%;]]=],
+  --       keys = "wertyuiopzxcvbnmasdfghjkl",
+  --     },
+  --   },
+  --   keys = {
+  --     {
+  --       "<leader>up",
+  --       function()
+  --         local npairs = require("nvim-autopairs")
+  --         if npairs.state.disabled then
+  --           npairs.enable()
+  --           print("autopairs enabled")
+  --         else
+  --           npairs.disable()
+  --           print("autopairs disabled")
+  --         end
+  --       end,
+  --       desc = "Autopairs toggle",
+  --     },
+  --   },
+  --   config = function(spec, opts)
+  --     opts = vim.tbl_extend("force", opts or {}, {
+  --       -- we remap <cr> in coc.nvim but not in nvim-cmp
+  --       map_cr = not LazyVim.has("coc.nvim"),
+  --     })
+  --     require("nvim-autopairs").setup(opts)
+  --     require("nvim-autopairs").disable()
+  --   end,
+  -- },
 
-  {
-    "nvim-treesitter/nvim-treesitter-context",
-    event = "VeryLazy",
-    enabled = true,
-    opts = { mode = "cursor", max_lines = 3 },
-    keys = {
-      { "[h", [[<cmd>:lua require("treesitter-context").go_to_context()<CR>]] },
-      {
-        "<leader>ut",
-        function()
-          local tsc = require("treesitter-context")
-          tsc.toggle()
-          if LazyVim.inject.get_upvalue(tsc.toggle, "enabled") then
-            LazyVim.info("Enabled Treesitter Context", { title = "Option" })
-          else
-            LazyVim.warn("Disabled Treesitter Context", { title = "Option" })
-          end
-        end,
-        desc = "Toggle Treesitter Context",
-      },
-    },
-  },
+  -- {
+  --   "nvim-treesitter/nvim-treesitter-context",
+  --   event = "VeryLazy",
+  --   enabled = true,
+  --   opts = { mode = "cursor", max_lines = 3 },
+  --   keys = {
+  --     { "[h", [[<cmd>:lua require("treesitter-context").go_to_context()<CR>]] },
+  --     {
+  --       "<leader>ut",
+  --       function()
+  --         local tsc = require("treesitter-context")
+  --         tsc.toggle()
+  --         if LazyVim.inject.get_upvalue(tsc.toggle, "enabled") then
+  --           LazyVim.info("Enabled Treesitter Context", { title = "Option" })
+  --         else
+  --           LazyVim.warn("Disabled Treesitter Context", { title = "Option" })
+  --         end
+  --       end,
+  --       desc = "Toggle Treesitter Context",
+  --     },
+  --   },
+  -- },
 
   {
     "windwp/nvim-ts-autotag",
@@ -983,116 +1025,63 @@ return {
   },
 
   {
+    "vrischmann/tree-sitter-templ",
+    lazy = true,
+    -- dir = "~/personal/tree-sitter-templ",
+    opts = {},
+  },
+  {
     "nvim-treesitter/nvim-treesitter",
-    version = false, -- last release is way too old and doesn't work on Windows
-    build = ":TSUpdate",
-    event = { "VeryLazy" },
-    init = function(plugin)
-      -- PERF: add nvim-treesitter queries to the rtp and it's custom query predicates early
-      -- This is needed because a bunch of plugins no longer `require("nvim-treesitter")`, which
-      -- no longer trigger the **nvim-treeitter** module to be loaded in time.
-      -- Luckily, the only thins that those plugins need are the custom queries, which we make available
-      -- during startup.
-      require("lazy.core.loader").add_to_rtp(plugin)
-      require("nvim-treesitter.query_predicates")
-    end,
-    dependencies = {
-      {
-        "nvim-treesitter/nvim-treesitter-textobjects",
-        config = function()
-          -- When in diff mode, we want to use the default
-          -- vim text objects c & C instead of the treesitter ones.
-          local move = require("nvim-treesitter.textobjects.move") ---@type table<string,fun(...)>
-          local configs = require("nvim-treesitter.configs")
-          for name, fn in pairs(move) do
-            if name:find("goto") == 1 then
-              move[name] = function(q, ...)
-                if vim.wo.diff then
-                  local config = configs.get_module("textobjects.move")[name] ---@type table<string,string>
-                  for key, query in pairs(config or {}) do
-                    if q == query and key:find("[%]%[][cC]") then
-                      vim.cmd("normal! " .. key)
-                      return
-                    end
-                  end
-                end
-                return fn(q, ...)
-              end
-            end
-          end
-        end,
-      },
-    },
-    cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
-    keys = {
-      { "<c-space>", desc = "Increment selection" },
-      { "<bs>", desc = "Decrement selection", mode = "x" },
-    },
-    ---@type TSConfig
-    ---@diagnostic disable-next-line: missing-fields
-    opts = {
-      highlight = { enable = true },
-      indent = { enable = true },
-      ensure_installed = {
-        "bash",
-        "c",
-        "diff",
-        "go",
-        "gomod",
-        "gowork",
-        "html",
-        "javascript",
-        "jsdoc",
-        "json",
-        "jsonc",
-        "lua",
-        "luadoc",
-        "luap",
-        "markdown",
-        "markdown_inline",
-        "python",
-        "query",
-        "regex",
-        "toml",
-        "tsx",
-        "typescript",
-        "vim",
-        "vimdoc",
-        "yaml",
-      },
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          init_selection = "<C-space>",
-          node_incremental = "<C-space>",
-          scope_incremental = false,
-          node_decremental = "<bs>",
+    opts = function(_, opts)
+      return {
+        highlight = { enable = true },
+        indent = { enable = true },
+        ensure_installed = {
+          "bash",
+          "c",
+          "diff",
+          "go",
+          "gomod",
+          "gowork",
+          "html",
+          "javascript",
+          "jsdoc",
+          "json",
+          "jsonc",
+          "lua",
+          "luadoc",
+          "luap",
+          "markdown",
+          "markdown_inline",
+          "python",
+          "query",
+          "regex",
+          "toml",
+          "tsx",
+          "typescript",
+          "vim",
+          "vimdoc",
+          "yaml",
         },
-      },
-      textobjects = {
-        move = {
+        incremental_selection = {
           enable = true,
-          goto_next_start = { ["]m"] = "@function.outer", ["]z"] = "@class.outer" },
-          goto_next_end = { ["]M"] = "@function.outer", ["]Z"] = "@class.outer" },
-          goto_previous_start = { ["[m"] = "@function.outer", ["[z"] = "@class.outer" },
-          goto_previous_end = { ["[M"] = "@function.outer", ["[Z"] = "@class.outer" },
+          keymaps = {
+            init_selection = "<C-space>",
+            node_incremental = "<C-space>",
+            scope_incremental = false,
+            node_decremental = "<bs>",
+          },
         },
-      },
-    },
-    ---@param opts TSConfig
-    config = function(_, opts)
-      if type(opts.ensure_installed) == "table" then
-        ---@type table<string, boolean>
-        local added = {}
-        opts.ensure_installed = vim.tbl_filter(function(lang)
-          if added[lang] then
-            return false
-          end
-          added[lang] = true
-          return true
-        end, opts.ensure_installed)
-      end
-      require("nvim-treesitter.configs").setup(opts)
+        textobjects = {
+          move = {
+            enable = true,
+            goto_next_start = { ["]m"] = "@function.outer", ["]z"] = "@class.outer" },
+            goto_next_end = { ["]M"] = "@function.outer", ["]Z"] = "@class.outer" },
+            goto_previous_start = { ["[m"] = "@function.outer", ["[z"] = "@class.outer" },
+            goto_previous_end = { ["[M"] = "@function.outer", ["[Z"] = "@class.outer" },
+          },
+        },
+      }
     end,
   },
 
@@ -1173,16 +1162,6 @@ return {
               local status = require("copilot.api").status.data
               return colors[status.status] or colors[""]
             end,
-          })
-        end,
-      },
-      {
-        "hrsh7th/nvim-cmp",
-        optional = true,
-        opts = function(opts)
-          local cmp = require("cmp")
-          opts.mapping = vim.tbl_extend("force", opts.mapping or {}, {
-            ["<C-e>"] = cmp.mapping.abort(),
           })
         end,
       },
@@ -1302,7 +1281,18 @@ return {
       -- o is mapped to open file in lf, so here we want it to use system open
       {
         "<leader>l",
-        [[<cmd>FloatermNew --name=Lf --title=Lf lf -command 'map l open;map o ${{open $f}};set sortby name;set noreverse' "%"<cr>]],
+        function()
+          local fn = vim.fn.expand("%:p")
+          -- if file doesn't exist, open directory
+          if vim.fn.filereadable(fn) == 0 then
+            fn = vim.g.project_path or vim.getcwd()
+          end
+          vim.cmd(
+            "FloatermNew --name=Lf --title=Lf lf -command 'map l open;map o ${{open $f}};set sortby name;set noreverse' '"
+              .. fn
+              .. "'"
+          )
+        end,
         desc = "Lf",
       },
     },
@@ -1316,7 +1306,11 @@ return {
       vim.api.nvim_create_autocmd("VimResized", {
         group = augroup("resize-floaterm"),
         pattern = "*",
-        command = "FloatermUpdate",
+        callback = function(args)
+          if string.find("floaterm", vim.bo.filetype) then
+            vim.cmd([[FloatermUpdate]])
+          end
+        end,
       })
       vim.api.nvim_create_autocmd("FileType", {
         group = augroup("lf-mappings"),
@@ -1368,26 +1362,27 @@ return {
       modes = {
         char = { enabled = false },
         search = { enabled = false },
+        remote = { enabled = false },
       },
       -- jump = { autojump = true },
     },
     -- stylua: ignore
     keys = {
+      { "r", mode = "o", false }, -- tpope/vim-abolish
+      { "S", mode = {"x", "v"}, false }, -- kylechui/nvim-surround
       { "s", mode = { "n" }, function() require("flash").jump() end,   desc = "Flash" },
-      { "r", mode = "o",     function() require("flash").remote() end, desc = "Remote Flash" },
+      { "z", mode = "o",     function() require("flash").remote() end, desc = "Remote Flash" },
       {
         "S",
         mode = { "n" },
         function() require("flash").treesitter() end,
-        desc =
-        "Flash Treesitter"
+        desc = "Flash visual Treesitter",
       },
       {
         "R",
         mode = { "o", "x" },
         function() require("flash").treesitter() end,
-        desc =
-        "Treesitter Search"
+        desc = "Treesitter Search"
       },
     },
   },
@@ -1465,8 +1460,15 @@ return {
   {
     "mfussenegger/nvim-dap",
     keys = {
-      { "<F8>", "<cmd>Telescope dap configurations<cr>", desc = "Dap configurations" },
-      -- { "<F8>", "<cmd>FzfLua dap_configurations<cr>", desc = "Dap configurations" },
+      {
+        "<F8>",
+        function()
+          require("dap.ext.vscode").load_launchjs()
+          require("telescope").extensions.dap.configurations()
+        end,
+        desc = "Dap configurations",
+      },
+      { "<F9>", "<cmd>lua require('dap').run_last()<cr>", desc = "Run last" },
       {
         "<leader>bB",
         function()
@@ -1502,6 +1504,26 @@ return {
     },
     config = function(_, opts)
       require("dapui").setup(opts)
+      -- load mason-nvim-dap here, after all adapters have been setup
+      if LazyVim.has("mason-nvim-dap.nvim") then
+        require("mason-nvim-dap").setup(LazyVim.opts("mason-nvim-dap.nvim"))
+      end
+
+      vim.api.nvim_set_hl(0, "DapStoppedLine", { default = true, link = "Visual" })
+
+      for name, sign in pairs(LazyVim.config.icons.dap) do
+        sign = type(sign) == "table" and sign or { sign }
+        vim.fn.sign_define(
+          "Dap" .. name,
+          { text = sign[1], texthl = sign[2] or "DiagnosticInfo", linehl = sign[3], numhl = sign[3] }
+        )
+      end
+
+      -- setup dap config by VsCode launch.json file
+      local json = require("plenary.json")
+      require("dap.ext.vscode").json_decode = function(str)
+        return vim.json.decode(json.json_strip_comments(str))
+      end
       -- require("telescope").load_extension("dap")
       -- require("nvim-dap-virtual-text").setup({})
 
@@ -1515,18 +1537,6 @@ return {
         end
         vim.keymap.set("n", key, command, { silent = true })
         save_mappings[key] = m
-      end
-
-      local function set_dap_mappings()
-        -- print("set_dap_mappings")
-        dapmap("<F7>", [[<Cmd>lua require'dap'.disconnect()<cr>]])
-        dapmap("<F8>", [[<Cmd>lua require'dap'.continue()<cr>]])
-        dapmap("<F9>", [[<Cmd>lua require'dap'.run_to_cursor()<cr>]])
-        dapmap("<F10>", [[<Cmd>lua require'dap'.step_over()<cr>]])
-        dapmap("<F11>", [[<Cmd>lua require'dap'.step_into()<cr>]])
-        dapmap("<F23>", [[<Cmd>lua require'dap'.step_out()<cr>]]) -- shift-f11
-        dapmap("<leader>kk", [[<Cmd>lua require("dapui").eval()<cr>]])
-        dapmap("K", [[<Cmd>lua require("dapui").eval()<cr>]])
       end
 
       local function clear_dap_mappings()
@@ -1547,6 +1557,22 @@ return {
         end
       end
 
+      local function set_dap_mappings()
+        -- print("set_dap_mappings")
+        dapmap("<F7>", function()
+          require("dap").terminate()
+          require("dapui").close({})
+          clear_dap_mappings()
+        end)
+        dapmap("<F8>", [[<Cmd>lua require'dap'.continue()<cr>]])
+        dapmap("<F9>", [[<Cmd>lua require'dap'.run_to_cursor()<cr>]])
+        dapmap("<F10>", [[<Cmd>lua require'dap'.step_over()<cr>]])
+        dapmap("<F11>", [[<Cmd>lua require'dap'.step_into()<cr>]])
+        dapmap("<F23>", [[<Cmd>lua require'dap'.step_out()<cr>]]) -- shift-f11
+        dapmap("<leader>kk", [[<Cmd>lua require("dapui").eval()<cr>]])
+        dapmap("K", [[<Cmd>lua require("dapui").eval()<cr>]])
+      end
+
       local function on_init()
         require("dapui").open({})
         set_dap_mappings()
@@ -1557,9 +1583,14 @@ return {
         clear_dap_mappings()
       end
 
-      require("dap").listeners.after.event_initialized["dapui_config"] = on_init
-      require("dap").listeners.before.event_terminated["dapui_config"] = on_done
-      require("dap").listeners.before.event_exited["dapui_config"] = on_done
+      require("dap").listeners.before.attach.dapui_config = on_init
+      require("dap").listeners.before.launch.dapui_config = on_init
+      require("dap").listeners.before.event_terminated.dapui_config = on_done
+      require("dap").listeners.before.event_exited.dapui_config = on_done
+      -- require("dap").listeners.after["event_initialized"]["dapui_config"] = on_init
+      -- require("dap").listeners.before["event_terminated"]["dapui_config"] = on_done
+      -- require("dap").listeners.before["event_exited"]["dapui_config"] = on_done
+      -- require("dap").listeners.before["event_stopped"]["dapui_config"] = on_done
     end,
   },
 
@@ -1620,7 +1651,7 @@ return {
           end,
           pinned = true,
           open = function()
-            vim.api.nvim_input("<esc><space>f")
+            vim.api.nvim_input("<esc><space>fe")
           end,
           size = { height = 0.8 },
         },
@@ -1819,8 +1850,8 @@ return {
       branch = "canary",
       cmd = { "CopilotChat" },
       keys = {
-        { "<C-.>", "<cmd>CopilotChatToggle<cr>", desc = "Copilot Chat", mode = { "n", "v" } },
-        -- { "<D-i>", "<cmd>CopilotChatToggle<cr>", desc = "Copilot Chat", mode = { "n", "v" } },
+        -- { "<C-S-/>", "<cmd>CopilotChatToggle<cr>", desc = "Copilot Chat", mode = { "n", "v" } },
+        { "<D-d>", "<cmd>CopilotChatToggle<cr>", desc = "Copilot Chat", mode = { "n", "v" } },
       },
       dependencies = {
         { "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
@@ -1848,15 +1879,77 @@ return {
       },
     },
   },
-  { "Bilal2453/luvit-meta", lazy = true }, -- optional `vim.uv` typings
-  { -- optional completion source for require statements and module annotations
-    "hrsh7th/nvim-cmp",
+
+  -- better yank/paste
+  {
+    "gbprod/yanky.nvim",
+    desc = "Better Yank/Paste",
+    event = "LazyFile",
+    opts = function()
+      local utils = require("yanky.utils")
+      local mapping = require("yanky.telescope.mapping")
+      return {
+        highlight = { timer = 150 },
+        picker = {
+          telescope = {
+            use_default_mappings = false,
+            mappings = {
+              default = mapping.put("p"),
+              i = {
+                ["<c-g>"] = mapping.put("p"),
+                ["<c-t>"] = mapping.put("P"),
+                ["<c-x>"] = mapping.delete(),
+                ["<c-r>"] = mapping.set_register(utils.get_default_register()),
+              },
+              n = {
+                p = mapping.put("p"),
+                P = mapping.put("P"),
+                d = mapping.delete(),
+                r = mapping.set_register(utils.get_default_register()),
+              },
+            },
+          },
+        },
+      }
+    end,
+    keys = {
+      {
+        "<leader>y",
+        function()
+          if LazyVim.pick.picker.name == "telescope" then
+            require("telescope").extensions.yank_history.yank_history({})
+          else
+            vim.cmd([[YankyRingHistory]])
+          end
+        end,
+        mode = { "n", "x" },
+        desc = "Open Yank History",
+      },
+        -- stylua: ignore
+      { "y", "<Plug>(YankyYank)", mode = { "n", "x" }, desc = "Yank Text" },
+      { "p", "<Plug>(YankyPutAfter)", mode = { "n", "x" }, desc = "Put Text After Cursor" },
+      { "P", "<Plug>(YankyPutBefore)", mode = { "n", "x" }, desc = "Put Text Before Cursor" },
+      { "gp", "<Plug>(YankyGPutAfter)", mode = { "n", "x" }, desc = "Put Text After Selection" },
+      { "gP", "<Plug>(YankyGPutBefore)", mode = { "n", "x" }, desc = "Put Text Before Selection" },
+      { "[y", "<Plug>(YankyCycleForward)", desc = "Cycle Forward Through Yank History" },
+      { "]y", "<Plug>(YankyCycleBackward)", desc = "Cycle Backward Through Yank History" },
+      { "]p", "<Plug>(YankyPutIndentAfterLinewise)", desc = "Put Indented After Cursor (Linewise)" },
+      { "[p", "<Plug>(YankyPutIndentBeforeLinewise)", desc = "Put Indented Before Cursor (Linewise)" },
+      { "]P", "<Plug>(YankyPutIndentAfterLinewise)", desc = "Put Indented After Cursor (Linewise)" },
+      { "[P", "<Plug>(YankyPutIndentBeforeLinewise)", desc = "Put Indented Before Cursor (Linewise)" },
+      { ">p", "<Plug>(YankyPutIndentAfterShiftRight)", desc = "Put and Indent Right" },
+      { "<p", "<Plug>(YankyPutIndentAfterShiftLeft)", desc = "Put and Indent Left" },
+      { ">P", "<Plug>(YankyPutIndentBeforeShiftRight)", desc = "Put Before and Indent Right" },
+      { "<P", "<Plug>(YankyPutIndentBeforeShiftLeft)", desc = "Put Before and Indent Left" },
+      { "=p", "<Plug>(YankyPutAfterFilter)", desc = "Put After Applying a Filter" },
+      { "=P", "<Plug>(YankyPutBeforeFilter)", desc = "Put Before Applying a Filter" },
+    },
+  },
+
+  {
+    "neovim/nvim-lspconfig",
     opts = function(_, opts)
-      opts.sources = opts.sources or {}
-      table.insert(opts.sources, {
-        name = "lazydev",
-        group_index = 0, -- set group index to 0 to skip loading LuaLS completions
-      })
+      opts.inlay_hints.enabled = false
     end,
   },
 }

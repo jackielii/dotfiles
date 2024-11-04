@@ -6,9 +6,8 @@ return {
       vim.api.nvim_create_autocmd("FileType", {
         pattern = "templ",
         callback = function()
-          ---@diagnostic disable-next-line: inject-field
           vim.b.autoformat = true
-          vim.o.commentstring = "// %s"
+          -- vim.o.commentstring = "// %s"
         end,
       })
     end,
@@ -18,14 +17,26 @@ return {
           filetypes = { "html", "templ" },
         },
         html = {
-          filetypes = { "html", "htm", "htmx", "templ" },
+          filetypes = { "html", "htm", "templ" },
+          -- filetypes = { "html", "htm" },
         },
         templ = {
-          cmd = { "templ", "lsp" },
+          cmd = { "/Users/jackieli/go/bin/templ", "lsp" },
+          -- cmd = { "templ", "lsp" },
         },
         -- emmet_ls = {
         --   filetypes = { "html", "htm", "htmx", "templ" },
         -- },
+      },
+      setup = {
+        html = function(_, opts)
+          LazyVim.lsp.on_attach(function(client, buffer)
+            local ft = vim.api.nvim_get_option_value("filetype", { buf = buffer })
+            if ft == "templ" then
+              client.server_capabilities.documentSymbolProvider = false
+            end
+          end, "html")
+        end,
       },
     },
   },

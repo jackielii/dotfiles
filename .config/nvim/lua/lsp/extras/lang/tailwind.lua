@@ -7,7 +7,7 @@ return {
           -- exclude a filetype from the default_config
           filetypes_exclude = { "markdown" },
           -- add additional filetypes to the default_config
-          filetypes_include = { "templ" },
+          filetypes_include = {},
           -- to fully override the default_config, change the below
           -- filetypes = {}
         },
@@ -28,6 +28,14 @@ return {
 
           -- Add additional filetypes
           vim.list_extend(opts.filetypes, opts.filetypes_include or {})
+
+          opts.settings = {
+            tailwindCSS = {
+              includeLanguages = {
+                templ = "html",
+              },
+            },
+          }
         end,
       },
     },

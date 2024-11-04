@@ -1,0 +1,103 @@
+// / 2>/dev/null ; gorun "$0" "$@" ; exit $?
+//
+//go:build ignore
+
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+	"os/exec"
+	"slices"
+	"strconv"
+)
+
+func main() {
+	all := false
+	if len(os.Args) > 1 {
+		if os.Args[1] == "all" {
+			all = true
+		}
+	}
+
+	ids := kittyGetWindowIds()
+	ids = slices.DeleteFunc(ids, func(id string) bool { return id == os.Getenv("KITTY_WINDOW_ID") })
+
+	parentId := kittyGetOverlayParrent()
+	if parentId != "" {
+		ids = slices.DeleteFunc(ids, func(id string) bool { return id == parentId })
+	}
+
+	for _, id := range ids {
+		fmt.Println(kittyGetText(id, all))
+	}
+
+	if parentId != "" {
+		// always print the parent full
+		fmt.Println(kittyGetText(parentId, true))
+	}
+}
+
+func kittyGetOverlayParrent() string {
+	cmd := exec.Command("kitten", "@ls", "-m", "state:overlay_parent")
+	out := try1(cmd.Output())
+	resp := []kittyList{}
+	try0(json.Unmarshal(out, &resp))
+	if len(resp) == 0 || len(resp[0].Tabs) == 0 || len(resp[0].Tabs[0].Windows) == 0 {
+		return ""
+	}
+	return strconv.Itoa(resp[0].Tabs[0].Windows[0].Id)
+}
+
+type kittyList struct {
+	Tabs []struct {
+		Windows []struct {
+			Id int `json:"id"`
+		} `json:"windows"`
+	} `json:"tabs"`
+}
+
+func kittyGetWindowIds() []string {
+	cmd := exec.Command("kitten", "@ls", "-t", "state:active")
+	out := try1(cmd.Output())
+	resp := []kittyList{}
+	try0(json.Unmarshal(out, &resp))
+
+	var ids []string
+	for _, tab := range resp {
+		for _, win := range tab.Tabs[0].Windows {
+			ids = append(ids, strconv.Itoa(win.Id))
+		}
+	}
+	return ids
+}
+
+func kittyGetText(id string, all bool) string {
+	extend := "screen"
+	if all {
+		extend = "all"
+	}
+	cmd := exec.Command("kitten", "@get-text", "--match=id:"+id, "--extent="+extend)
+	out := try1(cmd.Output())
+	return string(out)
+}
+
+func try0(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func try1[T any](v T, err error) T {
+	if err != nil {
+		log.Fatal(err)
+	}
+	return v
+}
+
+// go.mod >>>
+// module kitty-tab-text
+// go 1.23.2
+// <<< go.mod

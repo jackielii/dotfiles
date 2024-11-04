@@ -316,6 +316,7 @@ eval "$(starship init zsh)"
 
 export JAVA_HOME=$HOME/.jdks/current # managed by intellij
 export PATH="$JAVA_HOME/bin:$PATH"
+export XDG_CONFIG_HOME="$HOME/.config"
 
 ## macos libpq
 if [ "${OS}" = "Darwin" ]; then
@@ -348,5 +349,5 @@ fi
 ## ruby gems
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 export GEM_HOME=$HOME/.gem
-export PATH=$GEM_HOME/bin:$PATH
-export PATH=$GEM_HOME/ruby/3.2.0/bin:$PATH
+export PATH=$GEM_HOME/bin:$GEM_HOME/ruby/3.2.0/bin:$PATH
+
