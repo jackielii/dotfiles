@@ -522,19 +522,54 @@ return {
     end,
     keys = function()
       return {
+        -- <c-h> to disable completion & copilot
+        -- <c-l> to re-enable completion & copilot
+        {
+          "<C-h>",
+          function()
+            local copilot = require("copilot.suggestion")
+            if copilot.is_visible() then
+              copilot.dismiss()
+            end
+            ---@diagnostic disable-next-line: inject-field
+            vim.b.copilot_suggestion_auto_trigger = false
+
+            local cmp = require("cmp")
+            if cmp.get_config().completion.autocomplete then
+              cmp.setup.buffer({
+                completion = {
+                  autocomplete = false,
+                },
+              })
+              cmp.abort()
+              LazyVim.info("Copilot & Autocomplete disabled")
+            end
+          end,
+          mode = "i",
+        },
         { "<C-l>", require("luasnip").select_keys, mode = "x" }, -- expand visual selection
         { -- manually expand snippet
           "<C-l>",
           function()
             local ls = require("luasnip")
             local copilot = require("copilot.suggestion")
+            local cmp = require("cmp")
             if ls.choice_active() then
               ls.change_choice(1)
             elseif ls.expandable() then
               ls.expand()
-            elseif copilot.is_visible() then
-              copilot.accept_line()
+            -- elseif copilot.is_visible() then
+            --   copilot.accept_line()
             else
+              if not cmp.get_config().completion.autocomplete then
+                cmp.setup.buffer({
+                  completion = {
+                    autocomplete = { cmp.TriggerEvent.TextChanged, cmp.TriggerEvent.InsertEnter },
+                  },
+                })
+                cmp.complete()
+                LazyVim.info("Copilot & Autocomplete enabled")
+              end
               -- force copilot request
               ---@diagnostic disable-next-line: inject-field
               vim.b.copilot_suggestion_auto_trigger = true
@@ -577,14 +612,14 @@ return {
                 autocomplete = false,
               },
             })
-            print("Autocomplete disabled")
+            LazyVim.info("Autocomplete disabled")
           else
             cmp.setup.buffer({
               completion = {
                 autocomplete = { cmp.TriggerEvent.TextChanged, cmp.TriggerEvent.InsertEnter },
               },
             })
-            print("Autocomplete enabled")
+            LazyVim.info("Autocomplete enabled")
           end
         end,
         desc = "toggle autocomplete",
@@ -635,14 +670,14 @@ return {
           end
         end,
         ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-        ["<C-CR>"] = cmp.mapping.confirm({
-          behavior = cmp.ConfirmBehavior.Replace,
-          select = true,
-        }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-        ["<S-CR>"] = function(fallback)
+        ["<C-CR>"] = function(fallback)
           cmp.abort()
           fallback()
         end,
+        ["<S-CR>"] = cmp.mapping.confirm({
+          behavior = cmp.ConfirmBehavior.Replace,
+          select = true, -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+        }),
       })
 
       opts.sources = cmp.config.sources({

@@ -8,12 +8,13 @@ while read line
 end
 
 set -l load_words "split-words $tmp_file"
+set -l copy_to_clipboard "echo -n {} | pbcopy"
 
-sh -c "$load_words ' '" | fzf \
+sh -c "$load_words" | fzf \
     --tac \
     --bind "ctrl-space:reload($load_words ' ')" \
     --bind "ctrl-/:reload($load_words '-')" \
-    --bind "tab:execute-silent(echo -n {} | pbcopy)+abort" \
-    --bind "enter:execute-silent(kitty @ send-text --match state:overlay_parent {})+abort" \
+    --bind "tab:execute-silent($copy_to_clipboard)+abort" \
+    --bind "enter:execute-silent($copy_to_clipboard; kitty @ send-text --match state:overlay_parent {})+abort" \
     --header 'Tab: copy to clipboard; Enter: send to terminal; ctrl-space: split by space; ctrl-/: to split by /'
     

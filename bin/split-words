@@ -18,7 +18,7 @@ func main() {
 		log.Fatal("missing filename")
 	}
 
-	sep := " "
+	sep := " '\"`"
 	if len(os.Args) > 2 {
 		sep = os.Args[2]
 	}

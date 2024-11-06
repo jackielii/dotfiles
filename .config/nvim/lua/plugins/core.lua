@@ -1092,18 +1092,25 @@ return {
     cmd = "Copilot",
     build = ":Copilot auth",
     keys = {
-      {
-        "<C-h>",
-        function()
-          local copilot = require("copilot.suggestion")
-          if copilot.is_visible() then
-            copilot.dismiss()
-          end
-          ---@diagnostic disable-next-line: inject-field
-          vim.b.copilot_suggestion_auto_trigger = false
-        end,
-        mode = "i",
-      },
+      -- {
+      --   "<C-h>",
+      --   function()
+      --     local copilot = require("copilot.suggestion")
+      --     if copilot.is_visible() then
+      --       copilot.dismiss()
+      --     end
+      --     ---@diagnostic disable-next-line: inject-field
+      --     vim.b.copilot_suggestion_auto_trigger = false
+      --     local cmp = require("cmp")
+      --     cmp.setup.buffer({
+      --       completion = {
+      --         autocomplete = false,
+      --       },
+      --     })
+      --     print("Autocomplete disabled")
+      --   end,
+      --   mode = "i",
+      -- },
     },
     opts = {
       suggestion = {

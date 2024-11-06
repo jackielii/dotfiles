@@ -6,6 +6,7 @@ return {
   { import = "lazyvim.plugins.extras.lang.tailwind" },
   { import = "lazyvim.plugins.extras.lang.java" },
   -- { import = "lazyvim.plugins.extras.lang.markdown" },
+  -- { import = "lazyvim.plugins.extras.coding.blink" },
 
   { import = "lsp.extras.lang.python" },
   { import = "lsp.extras.lang.go" },

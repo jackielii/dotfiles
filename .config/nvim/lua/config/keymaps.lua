@@ -34,9 +34,9 @@ for _, key in ipairs({ "<C-s>", "<M-s>", "<D-s>" }) do
   map({ "n", "v", "i", "s" }, key, "<Esc><cmd>update<cr><cmd>nohl<cr>", { silent = true, noremap = true })
 end
 
-for _, key in ipairs({ "n", "N", "*", "#", "g*", "g#" }) do
-  map("n", key, key .. "zz", { silent = true })
-end
+-- for _, key in ipairs({ "n", "N", "*", "#", "g*", "g#" }) do
+--   map("n", key, key .. "zz", { silent = true })
+-- end
 
 map("n", "<leader><tab>", "<C-^>", { silent = true })
 map("n", "<M-tab>", "<C-^>", { silent = true })
@@ -81,7 +81,20 @@ map("n", "<M-J>", "2<C-w>+", { silent = true })
 map("n", "<M-K>", "2<C-w>-", { silent = true })
 map("n", "<M-L>", "2<C-w>>", { silent = true })
 
-map("n", "<leader><leader>5", [[:let @+=expand("%:p")<cr>:echom "copied: " . expand("%:p")<cr>]], { silent = true })
+map("n", "<leader><leader>5", function()
+  -- local cmd = [[:let @+=expand("%:p")<cr>:echom "copied: " . expand("%:p")<cr>]]
+  local print_path = function()
+    local path = vim.api.nvim_buf_get_name(0)
+    vim.fn.setreg("+", path)
+    print("copied: " .. path)
+  end
+  local ok, noice = pcall(require, "noice")
+  if ok then
+    noice.redirect(print_path)
+  else
+    print_path()
+  end
+end, { silent = true })
 
 -- break undo on common chars
 for _, key in ipairs({ " ", ".", ",", "!", "?", "<", "#", "/" }) do
