@@ -26,17 +26,18 @@ return {
     init = function()
       vim.api.nvim_create_autocmd("User", {
         pattern = "PersistenceLoadPost",
-        callback = function()
-          local cursor_pos = vim.api.nvim_win_get_cursor(0)
-          local win_id = vim.api.nvim_get_current_win()
-          require("edgy").open()
-
-          -- workaround for edgy.nvim moves the cursor to a different window
-          vim.schedule(function()
-            vim.api.nvim_set_current_win(win_id)
-            vim.api.nvim_win_set_cursor(win_id, cursor_pos)
-          end)
-        end,
+        callback = toggle_edgy_keep_cursor,
+        -- callback = function()
+        --   local cursor_pos = vim.api.nvim_win_get_cursor(0)
+        --   local win_id = vim.api.nvim_get_current_win()
+        --   require("edgy").open()
+        --
+        --   -- workaround for edgy.nvim moves the cursor to a different window
+        --   vim.schedule(function()
+        --     vim.api.nvim_set_current_win(win_id)
+        --     vim.api.nvim_win_set_cursor(win_id, cursor_pos)
+        --   end)
+        -- end,
       })
     end,
     opts = {},
@@ -127,8 +128,6 @@ return {
     opts = {},
   },
 
-  { "nvim-tree/nvim-web-devicons", lazy = true },
-
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
@@ -196,6 +195,7 @@ return {
   -- },
   {
     "3rd/image.nvim",
+    enabled = false,
     ft = { "markdown" },
     dependencies = {
       "leafo/magick",
@@ -268,25 +268,25 @@ return {
   --   end,
   -- },
 
-  {
-    "JoosepAlviste/nvim-ts-context-commentstring",
-    lazy = true,
-    opts = {
-      enable_autocmd = false,
-    },
-  },
+  -- {
+  --   "JoosepAlviste/nvim-ts-context-commentstring",
+  --   lazy = true,
+  --   opts = {
+  --     enable_autocmd = false,
+  --   },
+  -- },
 
-  {
-    "echasnovski/mini.comment",
-    event = "VeryLazy",
-    opts = {
-      options = {
-        custom_commentstring = function()
-          return require("ts_context_commentstring.internal").calculate_commentstring() or vim.bo.commentstring
-        end,
-      },
-    },
-  },
+  -- {
+  --   "echasnovski/mini.comment",
+  --   event = "VeryLazy",
+  --   opts = {
+  --     options = {
+  --       custom_commentstring = function()
+  --         return require("ts_context_commentstring.internal").calculate_commentstring() or vim.bo.commentstring
+  --       end,
+  --     },
+  --   },
+  -- },
 
   {
     "chaoren/vim-wordmotion",
@@ -449,184 +449,175 @@ return {
     end,
   },
 
-  {
-    "nvim-lualine/lualine.nvim",
-    -- dir = '~/personal/lualine.nvim',
-    event = "VeryLazy",
-    init = function()
-      vim.g.lualine_laststatus = vim.o.laststatus
-      if vim.fn.argc(-1) > 0 then
-        -- set an empty statusline till lualine loads
-        vim.o.statusline = " "
-      else
-        -- hide the statusline on the starter page
-        vim.o.laststatus = 0
-      end
-      -- vim.highlight.create('LualineSelected',)
-    end,
-    opts = function()
-      -- PERF: we don't need this lualine require madness 🤷
-      local lualine_require = require("lualine_require")
-      lualine_require.require = require
-
-      local icons = require("lazyvim.config").icons
-      vim.o.laststatus = vim.g.lualine_laststatus
-
-      return {
-        options = {
-          theme = "auto",
-          component_separators = { left = "|", right = "|" },
-          section_separators = { left = " ", right = " " },
-          globalstatus = true,
-          disabled_filetypes = { statusline = { "dashboard", "alpha", "starter" } },
-        },
-        sections = {
-          lualine_a = { "mode" },
-          lualine_b = { "branch" },
-          lualine_c = {
-            {
-              function()
-                local cwd = vim.fn.getcwd()
-                local p = vim.g.project_path
-                if cwd == p then
-                  return "󱂵  " .. vim.fs.basename(p)
-                end
-                return "󱂵 " .. vim.fs.basename(p) .. " 󱉭 " .. vim.fs.basename(cwd)
-              end,
-              color = LazyVim.ui.fg("Special"),
-            },
-            {
-              "filetype",
-              icon_only = true,
-              separator = "",
-              padding = {
-                left = 1,
-                right = 0,
-              },
-            },
-            -- coc current function
-            {
-              function()
-                return vim.b["coc_current_package"] or ""
-              end,
-            },
-            {
-              function(self)
-                local path = vim.fn.expand("%:p")
-                if path == "" then
-                  return ""
-                end
-                local pp = vim.g.project_path
-                if path:find(pp, 1, true) == 1 then
-                  path = path:sub(#pp + 2)
-                end
-                if path:find(vim.fn.expand("~"), 1, true) == 1 then
-                  path = path:gsub(vim.fn.expand("~"), "~", 1)
-                end
-                path = path:gsub("%%", "%%%%")
-                local sep = package.config:sub(1, 1)
-                local parts = vim.split(path, "[\\/]")
-                if #parts > 3 then
-                  parts = { parts[1], "…", parts[#parts - 1], parts[#parts] }
-                end
-                if vim.bo.modified then
-                  parts[#parts] = LazyVim.lualine.format(self, parts[#parts], "Constant")
-                end
-                return table.concat(parts, sep)
-              end,
-            },
-            {
-              function()
-                return vim.b["coc_current_function"] or ""
-              end,
-            },
-            { "g:coc_status" },
-          },
-          lualine_x = {
-            -- stylua: ignore
-            -- {
-            --   function() return require("noice").api.status.command.get() end,
-            --   cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
-            --   color = LazyVim.ui.fg("Statement"),
-            -- },
-            -- stylua: ignore
-            {
-              function() return require("noice").api.status.mode.get() end,
-              cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
-              color = LazyVim.ui.fg("Constant"),
-            },
-            -- stylua: ignore
-            {
-              function() return "  " .. require("dap").status() end,
-              cond = function()
-                return package.loaded["dap"] and
-                    require("dap").status() ~= ""
-              end,
-              color = LazyVim.ui.fg("Debug"),
-            },
-            -- {
-            --   function()
-            --     return require("molten.status").kernels()
-            --   end,
-            --   cond = function()
-            --     return package.loaded["molten.status"] and require("molten.status").initialized() ~= ""
-            --   end,
-            -- },
-            {
-              "diagnostics",
-              symbols = {
-                error = icons.diagnostics.Error,
-                warn = icons.diagnostics.Warn,
-                info = icons.diagnostics.Info,
-                hint = icons.diagnostics.Hint,
-              },
-            },
-            -- {
-            --   function()
-            --     return vim.bo.ft
-            --   end,
-            -- },
-            {
-              require("lazy.status").updates,
-              cond = require("lazy.status").has_updates,
-              color = LazyVim.ui.fg("Special"),
-            },
-            {
-              "diff",
-              symbols = {
-                added = icons.git.added,
-                modified = icons.git.modified,
-                removed = icons.git.removed,
-              },
-              source = function()
-                local gitsigns = vim.b.gitsigns_status_dict
-                if gitsigns then
-                  return {
-                    added = gitsigns.added,
-                    modified = gitsigns.changed,
-                    removed = gitsigns.removed,
-                  }
-                end
-              end,
-            },
-          },
-          lualine_y = {
-            { "progress", separator = " ", padding = { left = 1, right = 0 } },
-          },
-          lualine_z = {
-            { "location", padding = { left = 1, right = 1 } },
-          },
-        },
-        -- winbar = {
-        --   lualine_z = { 'modified', 'readonly', 'filename' },
-        -- },
-        -- inactive_winbar = {
-        --   lualine_x = { 'modified', 'readonly', 'filename' },
-        -- },
-        extensions = { "lazy", "quickfix" },
-      }
-    end,
-  },
+  -- {
+  --   "nvim-lualine/lualine.nvim",
+  --   -- dir = '~/personal/lualine.nvim',
+  --   event = "VeryLazy",
+  --   init = function()
+  --     vim.g.lualine_laststatus = vim.o.laststatus
+  --     if vim.fn.argc(-1) > 0 then
+  --       -- set an empty statusline till lualine loads
+  --       vim.o.statusline = " "
+  --     else
+  --       -- hide the statusline on the starter page
+  --       vim.o.laststatus = 0
+  --     end
+  --   end,
+  --   opts = function()
+  --     -- PERF: we don't need this lualine require madness 🤷
+  --     local lualine_require = require("lualine_require")
+  --     lualine_require.require = require
+  --
+  --     local icons = LazyVim.config.icons
+  --     vim.o.laststatus = vim.g.lualine_laststatus
+  --
+  --     return {
+  --       options = {
+  --         theme = "auto",
+  --         component_separators = { left = "|", right = "|" },
+  --         section_separators = { left = " ", right = " " },
+  --         globalstatus = vim.o.laststatus == 3,
+  --         disabled_filetypes = { statusline = { "dashboard", "alpha", "starter" } },
+  --       },
+  --       sections = {
+  --         lualine_a = { "mode" },
+  --         lualine_b = { "branch" },
+  --         lualine_c = {
+  --           {
+  --             function()
+  --               local cwd = vim.fn.getcwd()
+  --               local p = vim.g.project_path
+  --               if cwd == p then
+  --                 return "󱂵  " .. vim.fs.basename(p)
+  --               end
+  --               return "󱂵 " .. vim.fs.basename(p) .. " 󱉭 " .. vim.fs.basename(cwd)
+  --             end,
+  --             color = Snacks.util.color("Special"),
+  --           },
+  --           { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
+  --           -- coc current function
+  --           -- {
+  --           --   function()
+  --           --     return vim.b["coc_current_package"] or ""
+  --           --   end,
+  --           -- },
+  --           -- {
+  --           --   function(self)
+  --           --     local path = vim.fn.expand("%:p")
+  --           --     if path == "" then
+  --           --       return ""
+  --           --     end
+  --           --     local pp = vim.g.project_path
+  --           --     if path:find(pp, 1, true) == 1 then
+  --           --       path = path:sub(#pp + 2)
+  --           --     end
+  --           --     if path:find(vim.fn.expand("~"), 1, true) == 1 then
+  --           --       path = path:gsub(vim.fn.expand("~"), "~", 1)
+  --           --     end
+  --           --     path = path:gsub("%%", "%%%%")
+  --           --     local sep = package.config:sub(1, 1)
+  --           --     local parts = vim.split(path, "[\\/]")
+  --           --     if #parts > 3 then
+  --           --       parts = { parts[1], "…", parts[#parts - 1], parts[#parts] }
+  --           --     end
+  --           --     if vim.bo.modified then
+  --           --       parts[#parts] = LazyVim.lualine.format(self, parts[#parts], "Constant")
+  --           --     end
+  --           --     return table.concat(parts, sep)
+  --           --   end,
+  --           -- },
+  --           { LazyVim.lualine.pretty_path() },
+  --           -- {
+  --           --   function()
+  --           --     return vim.b["coc_current_function"] or ""
+  --           --   end,
+  --           -- },
+  --           -- { "g:coc_status" },
+  --         },
+  --         lualine_x = {
+  --           -- stylua: ignore
+  --           -- {
+  --           --   function() return require("noice").api.status.command.get() end,
+  --           --   cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
+  --           --   color = Snacks.util.color("Statement"),
+  --           -- },
+  --           -- stylua: ignore
+  --           {
+  --             function() return require("noice").api.status.mode.get() end,
+  --             cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
+  --             color = function() return Snacks.util.color("Constant") end,
+  --           },
+  --           -- stylua: ignore
+  --           {
+  --             function() return "  " .. require("dap").status() end,
+  --             cond = function() return package.loaded["dap"] and require("dap").status() ~= "" end,
+  --             color = function() return Snacks.util.color("Debug") end,
+  --           },
+  --           -- {
+  --           --   function()
+  --           --     return require("molten.status").kernels()
+  --           --   end,
+  --           --   cond = function()
+  --           --     return package.loaded["molten.status"] and require("molten.status").initialized() ~= ""
+  --           --   end,
+  --           -- },
+  --           {
+  --             "diagnostics",
+  --             symbols = {
+  --               error = icons.diagnostics.Error,
+  --               warn = icons.diagnostics.Warn,
+  --               info = icons.diagnostics.Info,
+  --               hint = icons.diagnostics.Hint,
+  --             },
+  --           },
+  --           -- {
+  --           --   function()
+  --           --     return vim.bo.ft
+  --           --   end,
+  --           -- },
+  --           -- {
+  --           --   require("lazy.status").updates,
+  --           --   cond = require("lazy.status").has_updates,
+  --           --   color = function()
+  --           --     return Snacks.util.color("Special")
+  --           --   end,
+  --           -- },
+  --           {
+  --             "diff",
+  --             symbols = {
+  --               added = icons.git.added,
+  --               modified = icons.git.modified,
+  --               removed = icons.git.removed,
+  --             },
+  --             source = function()
+  --               local gitsigns = vim.b.gitsigns_status_dict
+  --               if gitsigns then
+  --                 return {
+  --                   added = gitsigns.added,
+  --                   modified = gitsigns.changed,
+  --                   removed = gitsigns.removed,
+  --                 }
+  --               end
+  --             end,
+  --           },
+  --         },
+  --         lualine_y = {
+  --           { "progress", separator = " ", padding = { left = 1, right = 0 } },
+  --         },
+  --         lualine_z = {
+  --           { "location", padding = { left = 1, right = 1 } },
+  --         },
+  --       },
+  --       -- winbar = {
+  --       --   lualine_z = { 'modified', 'readonly', 'filename' },
+  --       -- },
+  --       -- inactive_winbar = {
+  --       --   lualine_x = { 'modified', 'readonly', 'filename' },
+  --       -- },
+  --       extensions = { "neo-tree", "lazy" },
+  --     }
+  --   end,
+  -- },
 
   {
     "b0o/incline.nvim",
@@ -700,7 +691,7 @@ return {
         group = augroup("my_visual_multi_start"),
         pattern = "visual_multi_start",
         callback = function()
-          -- vim.b["minipairs_disable"] = true
+          vim.b["minipairs_disable"] = true
           -- require("nvim-autopairs").disable()
           require("lualine").hide()
           -- local lualine = pcall(require, "lualine")
@@ -713,7 +704,7 @@ return {
         group = augroup("my_visual_multi_exit"),
         pattern = "visual_multi_exit",
         callback = function()
-          -- vim.b["minipairs_disable"] = false
+          vim.b["minipairs_disable"] = false
           -- require("nvim-autopairs").enable()
           -- require("nvim-autopairs").force_attach()
           require("lualine").hide({ unhide = true })
@@ -747,78 +738,34 @@ return {
   },
 
   {
-    "nvimdev/dashboard-nvim",
-    event = "VimEnter",
-    config = function()
-      local logo = {
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "███████╗██████╗  █████╗  ██████╗███████╗ ██████╗██████╗  █████╗ ███████╗████████╗",
-        "██╔════╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝",
-        "███████╗██████╔╝███████║██║     █████╗  ██║     ██████╔╝███████║█████╗     ██║   ",
-        "╚════██║██╔═══╝ ██╔══██║██║     ██╔══╝  ██║     ██╔══██╗██╔══██║██╔══╝     ██║   ",
-        "███████║██║     ██║  ██║╚██████╗███████╗╚██████╗██║  ██║██║  ██║██║        ██║   ",
-        "╚══════╝╚═╝     ╚═╝  ╚═╝ ╚═════╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝        ╚═╝   ",
-        "",
-        "",
-        "",
-      }
-      local opts = {
-        theme = "doom",
-        hide = {
-          -- this is taken care of by lualine
-          -- enabling this messes up the actual laststatus setting after loading a file
-          statusline = false,
-        },
-        config = {
-          header = logo,
+    "folke/snacks.nvim",
+    opts = {
+      dashboard = {
+        preset = {
+          header = [[
+   ███████╗██████╗  █████╗  ██████╗███████╗ ██████╗██████╗  █████╗ ███████╗████████╗
+   ██╔════╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝
+   ███████╗██████╔╝███████║██║     █████╗  ██║     ██████╔╝███████║█████╗     ██║   
+   ╚════██║██╔═══╝ ██╔══██║██║     ██╔══╝  ██║     ██╔══██╗██╔══██║██╔══╝     ██║   
+   ███████║██║     ██║  ██║╚██████╗███████╗╚██████╗██║  ██║██║  ██║██║        ██║   
+   ╚══════╝╚═╝     ╚═╝  ╚═╝ ╚═════╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝        ╚═╝   
+   ]],
           -- stylua: ignore
-          center = {
-            { action = "ene", desc = " Empty file", icon = " ", key = "e" },
-            { action = "Telescope find_files", desc = " Find file", icon = " ", key = "f" },
-            { action = "Telescope oldfiles", desc = " Old files", icon = " ", key = "o" },
-            {
-              action = [[lua require("telescope.builtin").oldfiles({ only_cwd = true })]],
-              desc = " Old files (cwd)",
-              icon = " ",
-              key = "O",
-            },
-            { action = "Telescope live_grep", desc = " Live grep", icon = " ", key = "g" },
-            -- { action = "exe 'edit '.stdpath('config').'/init.lua'", desc = " Config",          icon = " ",  key = "c" },
-            -- { action = "Telescope files cwd=~/.config/nvim",           desc = " Config",          icon = " ",  key = "c" },
-            { action = [[lua LazyVim.pick.config_files()()]], desc = " Config", icon = " ", key = "c" },
-            -- {
-            --   action = "Telescope files cwd=" .. vim.fn.stdpath('config'),
-            --   desc = " Config",
-            --   icon = " ",
-            --   key = "c"
-            -- },
-            { action = 'lua require("persistence").load()', desc = " Restore Session", icon = " ", key = "a" },
-            { action = "Lazy", desc = " Lazy", icon = "󰒲 ", key = "l" },
-            { action = "qa", desc = " Quit", icon = " ", key = "q" },
+          ---@type snacks.dashboard.Item[]
+          keys = {
+            { icon = " ", key = "e", desc = "New File", action = ":ene" },
+            { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+            { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+            { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
+            { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
+            { icon = " ", key = "a", desc = "Restore Session", section = "session" },
+            { icon = " ", key = "x", desc = "Lazy Extras", action = ":LazyExtras" },
+            { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
+            { icon = " ", key = "q", desc = "Quit", action = ":qa" },
           },
-          footer = function()
-            local stats = require("lazy").stats()
-            local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
-            return {
-              "⚡ Neovim loaded " .. stats.loaded .. "/" .. stats.count .. " plugins in " .. ms .. "ms",
-            }
-          end,
         },
-        shortcut_type = "number",
-      }
-      for _, button in ipairs(opts.config.center) do
-        button.desc = button.desc .. string.rep(" ", 43 - #button.desc)
-        button.key_format = "  [%s]"
-        button.key_hl = "@variable.builtin"
-      end
-      require("dashboard").setup(opts)
-    end,
-    dependencies = { { "nvim-tree/nvim-web-devicons" } },
+      },
+    },
   },
 
   { "udalov/kotlin-vim", ft = { "kotlin" } },
@@ -955,66 +902,28 @@ return {
     end,
   },
 
-  -- {
-  --   "windwp/nvim-autopairs",
-  --   event = "InsertEnter",
-  --   opts = {
-  --     -- map_cr = package.loaded["coc.nvim"] == nil,
-  --     ignored_next_char = [=[[%w%%%'%[%{%(%"%.%`%$]]=],
-  --     fast_wrap = {
-  --       end_key = "q",
-  --       -- pattern = [=[[%'%"%>%]%)%}%,%;]]=],
-  --       keys = "wertyuiopzxcvbnmasdfghjkl",
-  --     },
-  --   },
-  --   keys = {
-  --     {
-  --       "<leader>up",
-  --       function()
-  --         local npairs = require("nvim-autopairs")
-  --         if npairs.state.disabled then
-  --           npairs.enable()
-  --           print("autopairs enabled")
-  --         else
-  --           npairs.disable()
-  --           print("autopairs disabled")
-  --         end
-  --       end,
-  --       desc = "Autopairs toggle",
-  --     },
-  --   },
-  --   config = function(spec, opts)
-  --     opts = vim.tbl_extend("force", opts or {}, {
-  --       -- we remap <cr> in coc.nvim but not in nvim-cmp
-  --       map_cr = not LazyVim.has("coc.nvim"),
-  --     })
-  --     require("nvim-autopairs").setup(opts)
-  --     require("nvim-autopairs").disable()
-  --   end,
-  -- },
-
-  -- {
-  --   "nvim-treesitter/nvim-treesitter-context",
-  --   event = "VeryLazy",
-  --   enabled = true,
-  --   opts = { mode = "cursor", max_lines = 3 },
-  --   keys = {
-  --     { "[h", [[<cmd>:lua require("treesitter-context").go_to_context()<CR>]] },
-  --     {
-  --       "<leader>ut",
-  --       function()
-  --         local tsc = require("treesitter-context")
-  --         tsc.toggle()
-  --         if LazyVim.inject.get_upvalue(tsc.toggle, "enabled") then
-  --           LazyVim.info("Enabled Treesitter Context", { title = "Option" })
-  --         else
-  --           LazyVim.warn("Disabled Treesitter Context", { title = "Option" })
-  --         end
-  --       end,
-  --       desc = "Toggle Treesitter Context",
-  --     },
-  --   },
-  -- },
+  {
+    "nvim-treesitter/nvim-treesitter-context",
+    event = "VeryLazy",
+    enabled = true,
+    opts = { mode = "cursor", max_lines = 3 },
+    keys = {
+      { "[h", [[<cmd>:lua require("treesitter-context").go_to_context()<CR>]] },
+      {
+        "<leader>ut",
+        function()
+          local tsc = require("treesitter-context")
+          tsc.toggle()
+          if LazyVim.inject.get_upvalue(tsc.toggle, "enabled") then
+            LazyVim.info("Enabled Treesitter Context", { title = "Option" })
+          else
+            LazyVim.warn("Disabled Treesitter Context", { title = "Option" })
+          end
+        end,
+        desc = "Toggle Treesitter Context",
+      },
+    },
+  },
 
   {
     "windwp/nvim-ts-autotag",
@@ -1024,12 +933,6 @@ return {
     },
   },
 
-  {
-    "vrischmann/tree-sitter-templ",
-    lazy = true,
-    -- dir = "~/personal/tree-sitter-templ",
-    opts = {},
-  },
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
@@ -1092,6 +995,21 @@ return {
     cmd = "Copilot",
     build = ":Copilot auth",
     keys = {
+      {
+        "<tab>",
+        function()
+          local copilot = require("copilot.suggestion")
+          if copilot.is_visible() then
+            copilot.accept()
+            return ""
+          else
+            return "<tab>"
+          end
+        end,
+        expr = true,
+        mode = "i",
+      },
+      { "<leader>ua", "<cmd>Copilot toggle<cr>", desc = "Copilot toggle" },
       -- {
       --   "<C-h>",
       --   function()
@@ -1138,10 +1056,10 @@ return {
         optional = true,
         opts = function(_, opts)
           local colors = {
-            [""] = LazyVim.ui.fg("Special"),
-            ["Normal"] = LazyVim.ui.fg("Special"),
-            ["Warning"] = LazyVim.ui.fg("DiagnosticError"),
-            ["InProgress"] = LazyVim.ui.fg("DiagnosticWarn"),
+            [""] = Snacks.util.color("Special"),
+            ["Normal"] = Snacks.util.color("Special"),
+            ["Warning"] = Snacks.util.color("DiagnosticError"),
+            ["InProgress"] = Snacks.util.color("DiagnosticWarn"),
           }
           table.insert(opts.sections.lualine_x, 2, {
             function()
@@ -1199,68 +1117,6 @@ return {
   --     },
   --   },
   -- },
-
-  {
-    "lukas-reineke/indent-blankline.nvim",
-    event = { "BufReadPost", "BufNewFile" },
-    opts = {
-      indent = { char = "┊" },
-      scope = { enabled = false },
-      exclude = {
-        filetypes = { "startify", "coc-explorer", "fzf", "dashboard" },
-      },
-    },
-    main = "ibl",
-  },
-
-  {
-    "echasnovski/mini.indentscope",
-    version = false, -- wait till new 0.7.0 release to put it back on semver
-    event = { "BufReadPost", "BufNewFile" },
-    opts = function()
-      return {
-        draw = {
-          delay = 100,
-          animation = function()
-            return 5
-          end,
-          --   require('mini.indentscope').gen_animation.quadratic({
-          --   easing = 'in',
-          --   duration = 80,
-          --   unit = 'total'
-          -- })
-          -- animation = require('mini.indentscope').gen_animation.none(),
-        },
-        -- symbol = "▏",
-        symbol = "│",
-        options = { try_as_border = true },
-      }
-    end,
-    init = function()
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = {
-          "help",
-          "alpha",
-          "dashboard",
-          "neo-tree",
-          "Trouble",
-          "trouble",
-          "lazy",
-          "mason",
-          "notify",
-          "toggleterm",
-          "lazyterm",
-          "startify",
-          "coc-explorer",
-          "fzf",
-          "floaterm",
-        },
-        callback = function()
-          vim.b.miniindentscope_disable = true
-        end,
-      })
-    end,
-  },
 
   { "nvim-lua/plenary.nvim", lazy = true },
 
@@ -1471,7 +1327,11 @@ return {
         "<F8>",
         function()
           require("dap.ext.vscode").load_launchjs()
-          require("telescope").extensions.dap.configurations()
+          require("telescope").extensions.dap.configurations({
+            language_filter = function(lang)
+              return lang == vim.bo.ft
+            end,
+          })
         end,
         desc = "Dap configurations",
       },
@@ -1626,98 +1486,6 @@ return {
     end,
   },
 
-  {
-    "folke/edgy.nvim",
-    -- dir = "~/personal/edgy.nvim",
-    -- enabled = false,
-    event = "VeryLazy",
-    -- stylua: ignore
-    keys = {
-      { "<leader>ue", function() require("edgy").toggle() end, desc = "Edgy Toggle" },
-      { "<leader>uE", function() require("edgy").select() end, desc = "Edgy Select Window" },
-    },
-    opts = {
-      -- stylua: ignore
-      keys = {
-        -- increase width
-        ["<M-L>"] = function(win) win:resize("width", 2) end,
-        -- decrease width
-        ["<M-H>"] = function(win) win:resize("width", -2) end,
-        -- increase height
-        ["<M-J>"] = function(win) win:resize("height", 2) end,
-        -- decrease height
-        ["<M-K>"] = function(win) win:resize("height", -2) end,
-      },
-      animate = { enabled = false },
-      left = {
-        {
-          title = "Neo-Tree",
-          ft = "neo-tree",
-          filter = function(buf)
-            return vim.b[buf].neo_tree_source == "filesystem"
-          end,
-          pinned = true,
-          open = function()
-            vim.api.nvim_input("<esc><space>fe")
-          end,
-          size = { height = 0.8 },
-        },
-        { title = "Neotest Summary", ft = "neotest-summary" },
-        {
-          title = "Neo-Tree Git",
-          ft = "neo-tree",
-          filter = function(buf)
-            return vim.b[buf].neo_tree_source == "git_status"
-          end,
-          -- pinned = true,
-          open = "Neotree position=right git_status",
-        },
-        {
-          title = "Neo-Tree Buffers",
-          ft = "neo-tree",
-          filter = function(buf)
-            return vim.b[buf].neo_tree_source == "buffers"
-          end,
-          -- pinned = true,
-          open = "Neotree position=top buffers",
-        },
-        {
-          title = "Document Symbols",
-          ft = "neo-tree",
-          filter = function(buf)
-            return vim.b[buf].neo_tree_source == "document_symbols"
-          end,
-          -- pinned = true,
-          open = "Neotree position=top document_symbols",
-        },
-        -- {
-        --   title = "Pinned Buffers",
-        --   ft = "neo-tree",
-        --   filter = function(buf)
-        --     return vim.b[buf].neo_tree_source == "pinned-buffers"
-        --   end,
-        --   pinned = true,
-        --   open = "Neotree position=top pinned-buffers",
-        --   size = { height = 0.2 },
-        -- },
-        {
-          title = "Harpoon",
-          ft = "neo-tree",
-          filter = function(buf)
-            return vim.b[buf].neo_tree_source == "harpoon-buffers"
-          end,
-          pinned = true,
-          open = "Neotree position=top harpoon-buffers",
-          -- open = function()
-          --   vim.api.nvim_input("<esc><space>f")
-          -- end,
-          size = { height = 0.2 },
-        },
-        "neo-tree",
-      },
-    },
-  },
-
   { "lbrayner/vim-rzip", ft = { "zip" } },
   { "jjo/vim-cue", ft = { "cue" } },
   -- {
@@ -1813,43 +1581,42 @@ return {
     end,
   },
 
-  {
-    "stevearc/oil.nvim",
-    keys = {
-      -- {
-      --   "<C-.>",
-      --   function()
-      --     require("oil").toggle_float()
-      --   end,
-      --   desc = "Oil",
-      -- },
-    },
-    opts = {
-      -- Configuration for the floating window in oil.open_float
-      float = {
-        -- Padding around the floating window
-        padding = 2,
-        max_width = 80,
-        max_height = 30,
-        border = "rounded",
-        win_options = {
-          winblend = 0,
-        },
-        -- This is the config that will be passed to nvim_open_win.
-        -- Change values here to customize the layout
-        override = function(conf)
-          return conf
-        end,
-      },
-      keymaps = {
-        ["<C-v>"] = "actions.select_vsplit",
-        ["<C-s>"] = "actions.select_split",
-        ["q"] = "actions.close",
-      },
-    },
-    -- Optional dependencies
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-  },
+  -- {
+  --   "stevearc/oil.nvim",
+  --   keys = {
+  --     -- {
+  --     --   "<C-.>",
+  --     --   function()
+  --     --     require("oil").toggle_float()
+  --     --   end,
+  --     --   desc = "Oil",
+  --     -- },
+  --   },
+  --   opts = {
+  --     -- Configuration for the floating window in oil.open_float
+  --     float = {
+  --       -- Padding around the floating window
+  --       padding = 2,
+  --       max_width = 80,
+  --       max_height = 30,
+  --       border = "rounded",
+  --       win_options = {
+  --         winblend = 0,
+  --       },
+  --       -- This is the config that will be passed to nvim_open_win.
+  --       -- Change values here to customize the layout
+  --       override = function(conf)
+  --         return conf
+  --       end,
+  --     },
+  --     keymaps = {
+  --       ["<C-v>"] = "actions.select_vsplit",
+  --       ["<C-s>"] = "actions.select_split",
+  --       ["q"] = "actions.close",
+  --     },
+  --   },
+  --   -- Optional dependencies
+  -- },
 
   {
     {
@@ -1957,6 +1724,26 @@ return {
     "neovim/nvim-lspconfig",
     opts = function(_, opts)
       opts.inlay_hints.enabled = false
+    end,
+  },
+
+  {
+    "echasnovski/mini.pairs",
+    event = "VeryLazy",
+    opts = {
+      modes = { insert = true, command = false, terminal = false },
+    },
+  },
+
+  {
+    "echasnovski/mini.indentscope",
+    opts = function(_, opts)
+      opts.draw = {
+        delay = 100,
+        animation = function()
+          return 5
+        end,
+      }
     end,
   },
 }

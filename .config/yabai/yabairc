@@ -85,6 +85,7 @@ yabai -m rule --add app='WhatsApp$' scratchpad=whatsapp grid=11:11:1:1:9:9
 yabai -m rule --add app="^Finder$" scratchpad=finder grid=11:11:1:1:9:9
 yabai -m rule --add app="^Notes$" scratchpad=notes grid=11:11:1:1:9:9
 yabai -m rule --add app="^ChatGPT$" scratchpad=chatgpt grid=11:11:1:1:9:9
+yabai -m rule --add app="^Skype$" scratchpad=skype grid=11:11:1:1:9:9
 
 #SPACEBAR_HEIGHT=$(spacebar -m config height)
 #yabai -m config external_bar all:${SPACEBAR_HEIGHT}:0

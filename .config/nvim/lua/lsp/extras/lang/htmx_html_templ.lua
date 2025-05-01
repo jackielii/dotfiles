@@ -1,5 +1,23 @@
 return {
   {
+    "vrischmann/tree-sitter-templ",
+    dir = "~/personal/tree-sitter-templ",
+    config = function()
+      -- For debugging the Templ parser
+      local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()
+      parser_configs.templ = {
+        install_info = {
+          url = "/Users/jackieli/personal/tree-sitter-templ",
+          files = {
+            "src/parser.c",
+            "src/scanner.c",
+          },
+        },
+      }
+    end,
+  },
+
+  {
     "neovim/nvim-lspconfig",
     init = function()
       vim.filetype.add({ extension = { templ = "templ" } })
@@ -7,7 +25,9 @@ return {
         pattern = "templ",
         callback = function()
           vim.b.autoformat = true
-          -- vim.o.commentstring = "// %s"
+          vim.bo.shiftwidth = 4
+          vim.bo.tabstop = 4
+          vim.bo.commentstring = "// %s"
         end,
       })
     end,

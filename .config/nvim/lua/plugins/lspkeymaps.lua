@@ -6,45 +6,6 @@ _G.__code_action_operator = function(type)
   vim.lsp.buf.code_action({ range = range })
 end
 
----@param handler string
----@param opts? table
-local function go(handler, opts)
-  opts = opts
-    or {
-      include_current_line = false,
-      include_declaration = false,
-      ignore_current_line = true,
-      jump_to_single_result = true,
-    }
-  return function()
-    local provider = require("telescope.builtin")
-    -- local provider = require("fzf-lua")
-    provider[handler](opts)
-  end
-end
-
----@param count number
----@param cycle? boolean
-local function jump(count, cycle)
-  local words, idx = LazyVim.lsp.words.get()
-  if not idx then
-    return
-  end
-  idx = idx + count
-  if cycle then
-    idx = (idx - 1) % #words + 1
-  end
-  if idx < 1 then
-    idx = 1
-  elseif idx > #words then
-    idx = #words
-  end
-  local target = words[idx]
-  if target then
-    vim.api.nvim_win_set_cursor(0, target.from)
-  end
-end
-
 -- LSP keymaps
 return {
   "neovim/nvim-lspconfig",
@@ -60,7 +21,7 @@ return {
     keys[#keys + 1] = { "<leader>cR", false }
     keys[#keys + 1] = { "<leader>cr", [[<cmd>LspRestart<cr>]], desc = "Restart LSP" }
     keys[#keys + 1] = { "<leader>rn", vim.lsp.buf.rename, desc = "Rename" }
-    keys[#keys + 1] = { "<leader>rN", LazyVim.lsp.rename_file, desc = "Rename File", mode = { "n" }, has = { "workspace/didRenameFiles", "workspace/willRenameFiles" } }
+    keys[#keys + 1] = { "<leader>rN", function() Snacks.rename.rename_file() end, desc = "Rename File", mode = { "n" }, has = { "workspace/didRenameFiles", "workspace/willRenameFiles" } }
     keys[#keys + 1] =
       { "<leader>a", "<Esc><cmd>set operatorfunc=v:lua.__code_action_operator<CR>g@", desc = "Code Action Operator" }
     keys[#keys + 1] = { "<leader>a", vim.lsp.buf.code_action, desc = "[C]ode [A]ction", mode = { "v" } }

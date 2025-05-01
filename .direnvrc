@@ -53,3 +53,22 @@ layout_poetry() {
     export POETRY_ACTIVE=1
     export VIRTUAL_ENV
 }
+
+use_zig() {
+  if [ -z "$1" ]; then
+    log_status "No Zig version specified, using master"
+    version="master"
+  else
+    version="$1"
+  fi
+  export ZIG_HOME="$HOME/zig/$version/files"
+  if [ ! -d "$ZIG_HOME" ]; then
+    log_status "Zig $version not found at $ZIG_HOME, downloading"
+    zigup fetch $version
+  fi
+  if [ ! -d "$ZIG_HOME" ]; then
+    log_error "Failed to download Zig $version"
+    return 1
+  fi
+  export PATH="$ZIG_HOME:$PATH"
+}

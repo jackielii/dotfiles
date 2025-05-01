@@ -1,5 +1,27 @@
 local map = vim.keymap.set
 
+local disable_completion = function()
+  local cmp = require("cmp")
+  if cmp.get_config().completion.autocomplete then
+    cmp.setup.buffer({
+      completion = {
+        autocomplete = false,
+      },
+    })
+    cmp.abort()
+  end
+  LazyVim.info("Autocomplete disabled")
+end
+local disable_copilot = function()
+  local copilot = require("copilot.suggestion")
+  if copilot.is_visible() then
+    copilot.dismiss()
+  end
+  ---@diagnostic disable-next-line: inject-field
+  vim.b.copilot_suggestion_auto_trigger = false
+  LazyVim.info("Copilot disabled")
+end
+
 -- diagnostic
 local diagnostic_goto = function(next, severity)
   local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
@@ -16,9 +38,12 @@ map("n", "[e", diagnostic_goto(false, "ERROR"), { desc = "Prev Error" })
 map("n", "]w", diagnostic_goto(true, "WARN"), { desc = "Next Warning" })
 map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
 
--- map({ "n", "i" }, "<F7>", function()
---   pcall(require("lsp_signature").toggle_float_win)
--- end, { desc = "Close all floating windows" })
+map({ "n", "i", "x" }, "<F7>", function()
+  local nldocs = require("noice.lsp.docs")
+  local message = nldocs.get("signature")
+  nldocs.hide(message)
+  vim.cmd([[NoiceDismiss]])
+end, { desc = "Close all floating windows" })
 
 return {
   {
@@ -47,44 +72,36 @@ return {
   --   },
   -- },
 
-  {
-    "rcarriga/nvim-notify",
-    keys = {},
-    opts = {
-      timeout = 3000,
-      max_height = function()
-        return math.floor(vim.o.lines * 0.75)
-      end,
-      max_width = function()
-        return math.floor(vim.o.columns * 0.75)
-      end,
-      on_open = function(win)
-        vim.api.nvim_win_set_config(win, { zindex = 100 })
-      end,
-    },
-    -- init = function()
-    --   -- when noice is not enabled, install notify on VeryLazy
-    --   if not LazyVim.has("noice.nvim") then
-    --     LazyVim.on_very_lazy(function()
-    --       vim.notify = require("notify")
-    --     end)
-    --   end
-    -- end,
-  },
+  -- {
+  --   "rcarriga/nvim-notify",
+  --   keys = {},
+  --   opts = {
+  --     timeout = 3000,
+  --     max_height = function()
+  --       return math.floor(vim.o.lines * 0.75)
+  --     end,
+  --     max_width = function()
+  --       return math.floor(vim.o.columns * 0.75)
+  --     end,
+  --     on_open = function(win)
+  --       vim.api.nvim_win_set_config(win, { zindex = 100 })
+  --     end,
+  --   },
+  --   -- init = function()
+  --   --   -- when noice is not enabled, install notify on VeryLazy
+  --   --   if not LazyVim.has("noice.nvim") then
+  --   --     LazyVim.on_very_lazy(function()
+  --   --       vim.notify = require("notify")
+  --   --     end)
+  --   --   end
+  --   -- end,
+  -- },
 
   -- Highly experimental plugin that completely replaces the UI for messages, cmdline and the popupmenu.
   {
     -- dir = "~/personal/noice.nvim",
     "folke/noice.nvim",
     event = "VeryLazy",
-    dependencies = {
-      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-      "MunifTanjim/nui.nvim",
-      -- OPTIONAL:
-      --   `nvim-notify` is only needed, if you want to use the notification view.
-      --   If not available, we use `mini` as the fallback
-      "rcarriga/nvim-notify",
-    },
     opts = {
       views = {
         hover = {
@@ -171,7 +188,6 @@ return {
     },
     -- stylua: ignore
     keys = {
-      { "<F7>", [[<cmd>NoiceDismiss<cr>]], desc = "Dismiss all Notifications", },
       {
         "<S-Enter>",
         function() require("noice").redirect(vim.fn.getcmdline()) end,
@@ -207,24 +223,6 @@ return {
     end,
   },
 
-  -- better vim.ui
-  {
-    "stevearc/dressing.nvim",
-    lazy = true,
-    init = function()
-      ---@diagnostic disable-next-line: duplicate-set-field
-      vim.ui.select = function(...)
-        require("lazy").load({ plugins = { "dressing.nvim" } })
-        return vim.ui.select(...)
-      end
-      ---@diagnostic disable-next-line: duplicate-set-field
-      vim.ui.input = function(...)
-        require("lazy").load({ plugins = { "dressing.nvim" } })
-        return vim.ui.input(...)
-      end
-    end,
-  },
-
   -- git signs highlights text that has changed since the list
   -- git commit, and also lets you interactively stage & unstage
   -- hunks in a commit.
@@ -232,14 +230,6 @@ return {
     "lewis6991/gitsigns.nvim",
     event = "LazyFile",
     opts = {
-      signs = {
-        add = { text = "▎" },
-        change = { text = "▎" },
-        delete = { text = "" },
-        topdelete = { text = "" },
-        changedelete = { text = "▎" },
-        untracked = { text = "▎" },
-      },
       on_attach = function(buffer)
         local gs = package.loaded.gitsigns
 
@@ -322,157 +312,10 @@ return {
     },
   },
 
-  -- -- search/replace in multiple files
-  -- {
-  --   "nvim-pack/nvim-spectre",
-  --   build = false,
-  --   cmd = "Spectre",
-  --   opts = { open_cmd = "noswapfile vnew" },
-  --   -- stylua: ignore
-  --   keys = {
-  --     { "<leader>cs", function() require("spectre").open() end, desc = "Replace in files (Spectre)" },
-  --   },
-  -- },
-
-  -- file explorer
-  {
-    "nvim-neo-tree/neo-tree.nvim",
-    -- dir = "~/personal/neo-tree.nvim",
-    -- branch = "v3.x",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
-      "MunifTanjim/nui.nvim",
-      "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
-      { dir = "~/personal/neo-tree-harpoon.nvim" },
-    },
-    cmd = "Neotree",
-    keys = {
-      { "<leader>e", false },
-      {
-        "<leader>fe",
-        function()
-          require("neo-tree.command").execute({ focus = true, dir = LazyVim.root() })
-        end,
-        desc = "Explorer NeoTree (root dir)",
-      },
-      {
-        "<leader>F",
-        function()
-          require("neo-tree.command").execute({ toggle = true, dir = vim.loop.cwd() })
-        end,
-        desc = "Explorer NeoTree (cwd)",
-      },
-      {
-        "<leader>ge",
-        function()
-          require("neo-tree.command").execute({ source = "git_status", toggle = true })
-        end,
-        desc = "Git explorer",
-      },
-      {
-        "<leader>be",
-        function()
-          require("neo-tree.command").execute({ source = "buffers", toggle = true })
-        end,
-        desc = "Buffer explorer",
-      },
-      {
-        "<leader>bo",
-        "<cmd>Neotree harpoon-buffers<cr>",
-        desc = "Harpoon buffers",
-      },
-      {
-        "<leader>ko",
-        "<cmd>Neotree document_symbols<cr>",
-        desc = "Document symbols",
-      },
-    },
-    deactivate = function()
-      vim.cmd([[Neotree close]])
-    end,
-    init = function()
-      if vim.fn.argc(-1) == 1 then
-        local stat = vim.loop.fs_stat(vim.fn.argv(0))
-        if stat and stat.type == "directory" then
-          require("neo-tree")
-        end
-      end
-    end,
-    opts = {
-      enable_git_status = false,
-      enable_diagnostics = false,
-      log_level = "warn", -- "trace", "debug", "info", "warn", "error", "fatal"
-      sources = { "filesystem", "buffers", "git_status", "document_symbols", "harpoon-buffers" },
-      open_files_do_not_replace_types = { "terminal", "Trouble", "trouble", "qf", "Outline" },
-      filesystem = {
-        bind_to_cwd = false,
-        follow_current_file = { enabled = true },
-        use_libuv_file_watcher = true,
-      },
-      commands = {
-        copy_path = function(state)
-          local node = state.tree:get_node()
-          local content = node.path
-          vim.fn.setreg('"', content)
-          vim.fn.setreg("+", content)
-          print("copy to clipboard: " .. content)
-        end,
-        copy_filename = function(state)
-          local node = state.tree:get_node()
-          local content = node.path:gsub("(.*/)(.*)", "%2")
-          vim.fn.setreg('"', content)
-          vim.fn.setreg("+", content)
-          print("copy to clipboard: " .. content)
-        end,
-      },
-      window = {
-        mappings = {
-          ["<space>"] = "none",
-          ["s"] = "none",
-          ["<C-s>"] = "open_split",
-          ["<C-v>"] = "open_vsplit",
-          y = "none",
-          yy = "copy_to_clipboard",
-          yn = "copy_filename",
-          yp = "copy_path",
-        },
-      },
-      default_component_configs = {
-        indent = {
-          with_expanders = true, -- if nil and file nesting is enabled, will enable expanders
-          expander_collapsed = "",
-          expander_expanded = "",
-          expander_highlight = "NeoTreeExpander",
-        },
-      },
-    },
-    config = function(_, opts)
-      local function on_move(data)
-        LazyVim.lsp.on_rename(data.source, data.destination)
-      end
-
-      local events = require("neo-tree.events")
-      opts.event_handlers = opts.event_handlers or {}
-      vim.list_extend(opts.event_handlers, {
-        { event = events.FILE_MOVED, handler = on_move },
-        { event = events.FILE_RENAMED, handler = on_move },
-      })
-      require("neo-tree").setup(opts)
-      vim.api.nvim_create_autocmd("TermClose", {
-        pattern = "*lazygit",
-        callback = function()
-          if package.loaded["neo-tree.sources.git_status"] then
-            require("neo-tree.sources.git_status").refresh()
-          end
-        end,
-      })
-    end,
-  },
-
   -- snippets
   {
     "L3MON4D3/LuaSnip",
+    lazy = true,
     build = (not jit.os:find("Windows"))
         and "echo 'NOTE: jsregexp is optional, so not a big deal if it fails to build'; make install_jsregexp"
       or nil,
@@ -524,36 +367,18 @@ return {
       return {
         -- <c-h> to disable completion & copilot
         -- <c-l> to re-enable completion & copilot
-        {
-          "<C-h>",
-          function()
-            local copilot = require("copilot.suggestion")
-            if copilot.is_visible() then
-              copilot.dismiss()
-            end
-            ---@diagnostic disable-next-line: inject-field
-            vim.b.copilot_suggestion_auto_trigger = false
-
-            local cmp = require("cmp")
-            if cmp.get_config().completion.autocomplete then
-              cmp.setup.buffer({
-                completion = {
-                  autocomplete = false,
-                },
-              })
-              cmp.abort()
-              LazyVim.info("Copilot & Autocomplete disabled")
-            end
-          end,
-          mode = "i",
-        },
+        { "<C-h><C-c>", disable_completion, mode = "i" },
+        { "<C-h><C-l>", disable_completion, mode = "i" },
+        { "<leader>uc", disable_completion, mode = "n" },
+        { "<C-h><C-h>", disable_copilot, mode = "i" },
+        { "<C-h>", disable_copilot, mode = "i" },
         { "<C-l>", require("luasnip").select_keys, mode = "x" }, -- expand visual selection
         { -- manually expand snippet
           "<C-l>",
           function()
             local ls = require("luasnip")
             local copilot = require("copilot.suggestion")
-            local cmp = require("cmp")
+            -- local cmp = require("cmp")
             if ls.choice_active() then
               ls.change_choice(1)
             elseif ls.expandable() then
@@ -561,15 +386,16 @@ return {
             -- elseif copilot.is_visible() then
             --   copilot.accept_line()
             else
-              if not cmp.get_config().completion.autocomplete then
-                cmp.setup.buffer({
-                  completion = {
-                    autocomplete = { cmp.TriggerEvent.TextChanged, cmp.TriggerEvent.InsertEnter },
-                  },
-                })
-                cmp.complete()
-                LazyVim.info("Copilot & Autocomplete enabled")
-              end
+              -- if not cmp.get_config().completion.autocomplete then
+              --   cmp.setup.buffer({
+              --     completion = {
+              --       autocomplete = { cmp.TriggerEvent.TextChanged, cmp.TriggerEvent.InsertEnter },
+              --     },
+              --   })
+              --   cmp.complete()
+              --   LazyVim.info("Copilot & Autocomplete enabled")
+              -- end
+              LazyVim.info("Copilot enabled")
               -- force copilot request
               ---@diagnostic disable-next-line: inject-field
               vim.b.copilot_suggestion_auto_trigger = true
@@ -578,14 +404,20 @@ return {
           end,
           mode = "i",
         },
-        -- stylua: ignore
-        { "<C-j>", function() require("luasnip").jump(1) end,  mode = { "i", "s" } },
-        -- stylua: ignore
-        { "<C-k>", function() require("luasnip").jump(-1) end, mode = { "i", "s" } },
+        -- -- stylua: ignore
+        -- { "<C-j>", function() require("luasnip").jump(1) end,  mode = { "i", "s" } },
+        -- -- stylua: ignore
+        -- { "<C-k>", function() require("luasnip").jump(-1) end, mode = { "i", "s" } },
       }
     end,
   },
 
+  { "garymjr/nvim-snippets", enabled = false },
+  {
+    "saghen/blink.cmp",
+    enabled = false,
+    optional = true,
+  },
   {
     "hrsh7th/nvim-cmp",
     version = false, -- last release is way too old
@@ -595,6 +427,7 @@ return {
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
+      "hrsh7th/cmp-cmdline",
       "saadparwaiz1/cmp_luasnip",
       { "petertriho/cmp-git", opts = {} },
       "L3MON4D3/LuaSnip",
@@ -602,28 +435,9 @@ return {
       -- "hrsh7th/cmp-nvim-lsp-signature-help",
     },
     keys = {
-      {
-        "<leader>uc",
-        function()
-          local cmp = require("cmp")
-          if cmp.get_config().completion.autocomplete then
-            cmp.setup.buffer({
-              completion = {
-                autocomplete = false,
-              },
-            })
-            LazyVim.info("Autocomplete disabled")
-          else
-            cmp.setup.buffer({
-              completion = {
-                autocomplete = { cmp.TriggerEvent.TextChanged, cmp.TriggerEvent.InsertEnter },
-              },
-            })
-            LazyVim.info("Autocomplete enabled")
-          end
-        end,
-        desc = "toggle autocomplete",
-      },
+      { "<Tab>", false, mode = { "i", "s" } },
+      { "<S-Tab>", false, mode = { "i", "s" } },
+      { "<leader>uc", disable_completion, desc = "toggle autocomplete" },
     },
     opts = function(_, opts)
       local cmp = require("cmp")
@@ -632,6 +446,13 @@ return {
       -- local defaults = require("cmp.config.default")()
       opts.experimental = {}
 
+      opts.snippet = {
+        expand = function(args)
+          require("luasnip").lsp_expand(args.body)
+        end,
+      }
+
+      opts.mapping["<tab>"] = false
       -- opts.completion.autocomplete = true
       opts.mapping = cmp.mapping.preset.insert({
         ["<C-j>"] = function()
@@ -674,10 +495,14 @@ return {
           cmp.abort()
           fallback()
         end,
-        ["<S-CR>"] = cmp.mapping.confirm({
-          behavior = cmp.ConfirmBehavior.Replace,
-          select = true, -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-        }),
+        ["<S-CR>"] = function(fallback)
+          cmp.abort()
+          fallback()
+        end,
+        -- ["<S-CR>"] = cmp.mapping.confirm({
+        --   behavior = cmp.ConfirmBehavior.Replace,
+        --   select = true, -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+        -- }),
       })
 
       opts.sources = cmp.config.sources({
@@ -820,5 +645,28 @@ return {
     --   require("cmp").setup(opts)
     -- end,
     main = "lazyvim.util.cmp",
+    config = function(_, opts)
+      LazyVim.cmp.setup(opts)
+
+      local cmp = require("cmp")
+      -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+      cmp.setup.cmdline({ "/", "?" }, {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = {
+          { name = "buffer" },
+        },
+      })
+
+      -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+      cmp.setup.cmdline(":", {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = cmp.config.sources({
+          { name = "path" },
+        }, {
+          { name = "cmdline" },
+        }),
+        matching = { disallow_symbol_nonprefix_matching = false },
+      })
+    end,
   },
 }

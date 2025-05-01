@@ -199,6 +199,7 @@ return {
             "<leader>kgt",
             "<cmd>lua require('dap-go').debug_tests_in_file()<CR>",
             desc = "Debug go tests in file (picker)",
+            ft = { "go" },
           },
           { "<leader>td", "<cmd>lua require('dap-go').debug_test()<CR>", desc = "Debug Nearest (Go)" },
         },

@@ -10,7 +10,7 @@ map("i", "II", "<Esc>I", { silent = true })
 map("i", "Ii", "<Esc>i", { silent = true })
 map("i", "AA", "<Esc>A", { silent = true })
 map("i", "OO", "<Esc>O", { silent = true })
-map("i", "UU", "<Esc>u", { silent = true })
+-- map("i", "UU", "<Esc>u", { silent = true })
 map("i", "Pp", "<Esc>P", { silent = true })
 map("i", "PP", "<Esc>pa", { silent = true })
 map("i", "CC", "<Esc>cc", { silent = true })
@@ -33,6 +33,30 @@ map({ "n", "i" }, "<Esc>", "<Esc><cmd>nohl<cr>", { silent = true, noremap = true
 for _, key in ipairs({ "<C-s>", "<M-s>", "<D-s>" }) do
   map({ "n", "v", "i", "s" }, key, "<Esc><cmd>update<cr><cmd>nohl<cr>", { silent = true, noremap = true })
 end
+map({ "n", "i", "x", "v" }, "<C-s><C-s>", "<Esc><cmd>wa<cr>", { silent = true, noremap = true })
+
+map({ "v" }, "<D-c>", '"+y', { silent = true, noremap = true })
+map({ "n" }, "<D-c>", function()
+  local reg = vim.fn.getreg('"')
+  if reg == "" then
+    vim.cmd('normal! gv"+y')
+  else
+    vim.fn.setreg("+", reg)
+  end
+end, { silent = true, noremap = true })
+map({ "v" }, "<D-v>", '"+p', { silent = true, noremap = true })
+map({ "n" }, "<D-v>", function()
+  vim.schedule(function()
+    local vstart = vim.fn.getpos("'<")
+    local vend = vim.fn.getpos("'>")
+    if vstart[2] == vend[2] and vstart[3] == vend[3] then
+      vim.cmd.normal('"+p')
+    else
+      vim.cmd.normal('gv"+P')
+    end
+  end)
+end, { silent = true, noremap = true, expr = true })
+map({ "i" }, "<D-v>", "<c-r>+", { silent = true, noremap = true })
 
 -- for _, key in ipairs({ "n", "N", "*", "#", "g*", "g#" }) do
 --   map("n", key, key .. "zz", { silent = true })
@@ -210,16 +234,6 @@ map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" 
 map("n", "<F13>", [[:execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h') <bar> let g:project_path = expand('%:p:h')<CR>]])
 
 map("n", "<F4>", "<cmd>CloseNonProjectBuffers<cr>")
-map("n", "<F2>", function()
-  local cursor_pos = vim.api.nvim_win_get_cursor(0)
-  local win_id = vim.api.nvim_get_current_win()
-  require("edgy").toggle()
-  -- workaround for edgy.nvim moves the cursor to a different window
-  vim.schedule(function()
-    vim.api.nvim_set_current_win(win_id)
-    vim.api.nvim_win_set_cursor(win_id, cursor_pos)
-  end)
-end)
 
 -- local lazyterm = function()
 --   LazyVim.terminal(nil, { cwd = LazyVim.root() })
@@ -235,37 +249,18 @@ end)
 map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
 map("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
 
--- toggle options
-LazyVim.toggle.map("<leader>uf", LazyVim.toggle.format())
-LazyVim.toggle.map("<leader>uF", LazyVim.toggle.format(true))
-LazyVim.toggle.map("<leader>us", LazyVim.toggle("spell", { name = "Spelling" }))
-LazyVim.toggle.map("<leader>uw", LazyVim.toggle("wrap", { name = "Wrap" }))
-LazyVim.toggle.map("<leader>uL", LazyVim.toggle("relativenumber", { name = "Relative Number" }))
-LazyVim.toggle.map("<leader>ud", LazyVim.toggle.diagnostics)
-LazyVim.toggle.map("<leader>ul", LazyVim.toggle.number)
-LazyVim.toggle.map(
-  "<leader>uc",
-  LazyVim.toggle("conceallevel", { values = { 0, vim.o.conceallevel > 0 and vim.o.conceallevel or 2 } })
-)
-LazyVim.toggle.map("<leader>uT", LazyVim.toggle.treesitter)
-LazyVim.toggle.map("<leader>ub", LazyVim.toggle("background", { values = { "light", "dark" }, name = "Background" }))
-if vim.lsp.inlay_hint then
-  LazyVim.toggle.map("<leader>uh", LazyVim.toggle.inlay_hints)
-end
-
 -- stylua: ignore start
 -- lazygit
-map("n", "<F6>", function() LazyVim.lazygit({ cwd = LazyVim.root.git() }) end,                          { desc = "Lazygit (Root Dir)" })
-map("n", "<leader>glG", function() LazyVim.lazygit() end,                                               { desc = "Lazygit (cwd)" })
-map("n", "<leader>glg", function() LazyVim.lazygit({ cwd = LazyVim.root.git() }) end,                   { desc = "Lazygit (Root Dir)" })
-map("n", "<leader>glb", LazyVim.lazygit.blame_line,                                                     { desc = "Git Blame Line" })
-map("n", "<leader>glB", LazyVim.lazygit.browse,                                                         { desc = "Git Browse" })
-map("n", "<leader>gll", function() LazyVim.lazygit({ args = { "log" }, cwd = LazyVim.root.git() }) end, { desc = "Lazygit Log" })
-map("n", "<leader>glL", function() LazyVim.lazygit({ args = { "log" } }) end,                           { desc = "Lazygit Log (cwd)" })
-map("n", "<leader>glf", function()
-  local git_path = vim.api.nvim_buf_get_name(0)
-  LazyVim.lazygit({ args = { "-f", vim.trim(git_path) } })
-end, { desc = "Lazygit Current File History" })
+if vim.fn.executable("lazygit") == 1 then
+  map("n", "<F6>", function() Snacks.lazygit({ cwd = LazyVim.root.git() }) end,                           { desc = "Lazygit (Root Dir)" })
+  map("n", "<leader>gg", function() Snacks.lazygit( { cwd = LazyVim.root.git() }) end, { desc = "Lazygit (Root Dir)" })
+  map("n", "<leader>gG", function() Snacks.lazygit() end, { desc = "Lazygit (cwd)" })
+  map("n", "<leader>gb", function() Snacks.git.blame_line() end, { desc = "Git Blame Line" })
+  map({ "n", "x" }, "<leader>gB", function() Snacks.gitbrowse() end, { desc = "Git Browse" })
+  map("n", "<leader>gf", function() Snacks.lazygit.log_file() end, { desc = "Lazygit Current File History" })
+  map("n", "<leader>gl", function() Snacks.lazygit.log({ cwd = LazyVim.root.git() }) end, { desc = "Lazygit Log" })
+  map("n", "<leader>gL", function() Snacks.lazygit.log() end, { desc = "Lazygit Log (cwd)" })
+end
 
 -- formatting
 map({ "n", "v" }, "<leader>kf", function()

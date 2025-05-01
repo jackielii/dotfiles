@@ -1,5 +1,12 @@
-return {
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "zig",
+  callback = function()
+    vim.b.autoformat = true
+    vim.g.zig_fmt_autosave = false
+  end,
+})
 
+return {
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
@@ -10,24 +17,30 @@ return {
   },
 
   {
+    "jackielii/zigutils.nvim",
+    dir = "~/personal/zigutils.nvim",
+    lazy = true,
+    keys = {
+      {
+        "<leader>kgt",
+        "<cmd>lua require('zigutils').tests_in_file()<CR>",
+        desc = "Debug tests in file (picker)",
+        ft = { "zig" },
+      },
+    },
+  },
+
+  {
     "neovim/nvim-lspconfig",
-    init = function()
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = "zig",
-        callback = function()
-          ---@diagnostic disable-next-line: inject-field
-          vim.b.autoformat = true
-        end,
-      })
-    end,
+    init = function() end,
     opts = {
       servers = {
         zls = {
           cmd = { "/Users/jackieli/personal/zls/zig-out/bin/zls" },
           settings = {
             enable_argument_placeholders = false,
-          }
-        }
+          },
+        },
       },
       -- setup = { zls = {} },
     },

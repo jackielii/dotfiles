@@ -1,3 +1,5 @@
+vim.g.lazyvim_picker = "telescope"
+
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
@@ -6,6 +8,7 @@ vim.o.writebackup = false
 vim.o.swapfile = false
 vim.o.undofile = true
 vim.o.undodir = vim.fn.expand("~") .. "/.undodir"
+vim.o.clipboard = ""
 
 vim.o.list = false
 -- " set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<
@@ -26,8 +29,9 @@ vim.o.formatexpr = ""
 vim.o.conceallevel = 0
 
 vim.g.autoformat = false
-vim.g.minipairs_disable = true
+vim.g.minipairs_disable = false
 
+-- vim.lsp.set_log_level("info")
 vim.lsp.set_log_level("off")
 
 -- vim.lsp.set_log_level(vim.lsp.log_levels.DEBUG)

@@ -12,3 +12,5 @@
 	followTags = true
 [difftool]
 	prompt = false
+; [url "https://x-access-token:@github.com/"]
+; 	insteadOf = https://github.com/

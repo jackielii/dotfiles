@@ -1,9 +1,3 @@
-if lazyvim_docs then
-  -- In case you don't want to use `:LazyExtras`,
-  -- then you need to set the option below.
-  vim.g.lazyvim_picker = "telescope"
-end
-
 ---@type LazyPicker
 local picker = {
   name = "telescope",
@@ -48,7 +42,7 @@ end
 return {
   {
     "nvim-telescope/telescope.nvim",
-    event = "VeryLazy",
+    -- event = "VeryLazy",
     cmd = "Telescope",
     keys = {
       {
@@ -124,6 +118,19 @@ return {
           require("telescope.builtin").find_files({ hidden = true, cwd = LazyVim.root() or vim.fn.expand("%:p:h") })
         end,
         desc = "Telescope current folder (with hidden)",
+      },
+      {
+        "<leader>fa",
+        function()
+          require("telescope.builtin").find_files({
+            hidden = true,
+            cwd = LazyVim.root() or vim.fn.expand("%:p:h"),
+            no_ignore = true,
+            no_ignore_parent = true,
+            file_ignore_patterns = { "^.git/" },
+          })
+        end,
+        desc = "fzf current folder (all files)",
       },
       {
         "<leader>za",
