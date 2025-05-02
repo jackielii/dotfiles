@@ -22,58 +22,12 @@ return {
   },
   {
     "folke/persistence.nvim", -- replace Obsession
-    event = "BufReadPre",
     init = function()
       vim.api.nvim_create_autocmd("User", {
         pattern = "PersistenceLoadPost",
         callback = toggle_edgy_keep_cursor,
-        -- callback = function()
-        --   local cursor_pos = vim.api.nvim_win_get_cursor(0)
-        --   local win_id = vim.api.nvim_get_current_win()
-        --   require("edgy").open()
-        --
-        --   -- workaround for edgy.nvim moves the cursor to a different window
-        --   vim.schedule(function()
-        --     vim.api.nvim_set_current_win(win_id)
-        --     vim.api.nvim_win_set_cursor(win_id, cursor_pos)
-        --   end)
-        -- end,
       })
     end,
-    opts = {},
-    -- stylua: ignore
-    keys = {
-      {
-        "<leader>qs",
-        function() require("persistence").load() end,
-        desc = "Restore Session"
-      },
-      {
-        "<leader>ql",
-        function() require("persistence").load({ last = true }) end,
-        desc =
-        "Restore Last Session"
-      },
-      {
-        "<leader>qd",
-        function()
-          require("persistence").stop()
-          print("stopped session save")
-        end,
-        desc = "Don't Save Current Session"
-      },
-    },
-    -- init = function()
-    --   vim.api.nvim_create_user_command("Obsession", function(args)
-    --     local fn = vim.fn.fnamemodify('Session.vim', ':p')
-    --     if (args.bang) then
-    --       vim.fn.delete(fn)
-    --     else
-    --       vim.fn.writefile({ "lua require('persistence').load()" }, fn)
-    --     end
-    --     -- require("persistence").load({ last = true })
-    --   end, { nargs = 0, bang = true })
-    -- end,
   },
 
   { "tpope/vim-unimpaired", keys = { { "[" }, { "]" }, { "yo" } } },
@@ -193,34 +147,35 @@ return {
   --     rocks = { "magick" },
   --   },
   -- },
-  {
-    "3rd/image.nvim",
-    enabled = false,
-    ft = { "markdown" },
-    dependencies = {
-      "leafo/magick",
-    },
-    opts = {
-      -- backend = 'kitty', -- whatever backend you would like to use
-      -- max_width = 100,
-      -- max_height = 12,
-      -- max_height_window_percentage = math.huge,
-      -- max_width_window_percentage = math.huge,
-      -- window_overlap_clear_enabled = true, -- toggles images when windows are overlapped
-      -- window_overlap_clear_ft_ignore = { 'cmp_menu', 'cmp_docs', '' },
-      --
-      --
-      integrations = {
-        markdown = {
-          enabled = false,
-          -- clear_in_insert_mode = false,
-          -- download_remote_images = true,
-          -- only_render_image_at_cursor = true,
-          -- filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
-        },
-      },
-    },
-  },
+
+  -- {
+  --   "3rd/image.nvim",
+  --   enabled = false,
+  --   ft = { "markdown" },
+  --   dependencies = {
+  --     "leafo/magick",
+  --   },
+  --   opts = {
+  --     -- backend = 'kitty', -- whatever backend you would like to use
+  --     -- max_width = 100,
+  --     -- max_height = 12,
+  --     -- max_height_window_percentage = math.huge,
+  --     -- max_width_window_percentage = math.huge,
+  --     -- window_overlap_clear_enabled = true, -- toggles images when windows are overlapped
+  --     -- window_overlap_clear_ft_ignore = { 'cmp_menu', 'cmp_docs', '' },
+  --     --
+  --     --
+  --     integrations = {
+  --       markdown = {
+  --         enabled = false,
+  --         -- clear_in_insert_mode = false,
+  --         -- download_remote_images = true,
+  --         -- only_render_image_at_cursor = true,
+  --         -- filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
+  --       },
+  --     },
+  --   },
+  -- },
 
   -- {
   --   "benlubas/molten-nvim",
@@ -334,120 +289,124 @@ return {
     end,
   },
 
-  { "echasnovski/mini.bufremove", lazy = true },
   {
     "akinsho/bufferline.nvim",
     enabled = false,
-    -- dir = "~/personal/bufferline.nvim",
-    event = "VimEnter",
-    keys = function()
-      -- stylua: ignore
-      local keys = {
-        { "<leader>bp",        "<cmd>BufferLineTogglePin<cr>",                       desc = "Toggle pin", },
-        { "<M-m>",             "<cmd>BufferLineTogglePin<cr>",                       desc = "Toggle pin", },
-        { "<leader>bP",        "<cmd>BufferLineGroupClose ungrouped<cr>",            desc = "Delete non-pinned buffers", },
-        { "<leader><leader>o", "<cmd>BufferLineCloseOthers<cr>",                     desc = "Delete other buffers", },
-        { "<leader>br",        "<cmd>BufferLineCloseRight<cr>",                      desc = "Delete buffers to the right", },
-        { "<leader>bl",        "<cmd>BufferLineCloseLeft<cr>",                       desc = "Delete buffers to the left", },
-        { "[b",                "<cmd>BufferLineCyclePrev<cr>",                       desc = "Prev buffer", },
-        { "]b",                "<cmd>BufferLineCycleNext<cr>",                       desc = "Next buffer", },
-        --
-        { "<leader>dL",        "<cmd>BufferLineCloseRight<cr>",                      desc = "Delete buffers to the right", },
-        { "<leader>dH",        "<cmd>BufferLineCloseLeft<cr>",                       desc = "Delete buffers to the left", },
-        { "<M-[>",             "<cmd>BufferLineCyclePrev<cr>",                       desc = "Prev buffer", },
-        { "<M-]>",             "<cmd>BufferLineCycleNext<cr>",                       desc = "Next buffer", },
-        { "<M-S-]>",           "<cmd>BufferLineMoveNext<cr>",                        desc = "Move buffer to Next", },
-        { "<M-S-[>",           "<cmd>BufferLineMovePrev<cr>",                        desc = "Move buffer to Previous", },
-        { "<M-S-0>",           "<cmd>lua require'bufferline'.move_to(1)<cr>",        desc = "Move buffer to first", },
-        { "<M-S-4>",           "<cmd>lua require'bufferline'.move_to(-1)<cr>",       desc = "Move buffer to last", },
-        { "<M-9>",             "<cmd>lua require('bufferline').go_to(-1, true)<cr>", desc = "Go to last buffer", },
-        { "<leader>9",         "<cmd>lua require('bufferline').go_to(-1, true)<cr>", desc = "Go to last buffer", },
-      }
-      for i = 1, 8 do
-        table.insert(keys, {
-          "<leader>" .. i,
-          "<cmd>lua require('bufferline').go_to(" .. i .. ", true)<cr>",
-          desc = "Go to buffer " .. i,
-        })
-        table.insert(keys, {
-          "<M-" .. i .. ">",
-          "<cmd>lua require('bufferline').go_to(" .. i .. ", true)<cr>",
-          desc = "Go to buffer " .. i,
-          mode = { "n", "v", "i" },
-        })
-      end
-      -- print(vim.inspect(keys))
-      return keys
-    end,
-    opts = function()
-      -- local colors = require("base16-colorscheme").colors
-      -- local colors = require("colors.tokyodark-terminal")
-      vim.api.nvim_set_hl(0, "MyBufferSelected", { fg = vim.g.base16_gui00, bg = vim.g.base16_gui09, bold = true })
-      -- vim.api.nvim_set_hl(0, 'MyHarpoonSelected', { fg = colors.base01, bg = colors.base0B })
-      return {
-        highlights = {
-          buffer_selected = { link = "MyBufferSelected" },
-          numbers_selected = { link = "MyBufferSelected" },
-          tab_selected = { link = "MyBufferSelected" },
-          modified_selected = { link = "MyBufferSelected" },
-          duplicate_selected = { link = "MyBufferSelected" },
-        },
-        options = {
-          dispatch_update_events = true,
-          -- numbers = 'ordinal',
-          numbers = function(opts)
-            local state = require("bufferline.state")
-            for i, buf in ipairs(state.components) do
-              if buf.id == opts.id then
-                return i
-              end
-            end
-            return opts.ordinal
-          end,
-          close_command = function(n)
-            require("mini.bufremove").delete(n, false)
-          end,
-          right_mouse_command = function(n)
-            require("mini.bufremove").delete(n, false)
-          end,
-          diagnostics = false,
-          -- diagnostics = "coc",
-          -- always_show_bufferline = false,
-          show_close_icon = false,
-          show_buffer_close_icons = false,
-          show_buffer_icons = false,
-          indicator = { style = "none" },
-          separator_style = { "", "" },
-          offsets = {
-            {
-              filetype = "coc-explorer",
-              text = "File Explorer",
-              highlight = "Directory",
-              text_align = "left",
-            },
-            {
-              filetype = "neo-tree",
-              text = "Neo-tree",
-              highlight = "Directory",
-              text_align = "left",
-            },
-          },
-        },
-      }
-    end,
-    config = function(_, opts)
-      require("bufferline").setup(opts)
-      -- Fix bufferline when restoring a session
-      -- print(vim.inspect(require('bufferline.state')))
-      vim.api.nvim_create_autocmd("BufAdd", {
-        callback = function()
-          vim.schedule(function()
-            pcall(nvim_bufferline)
-          end)
-        end,
-      })
-    end,
   },
+
+  -- {
+  --   "akinsho/bufferline.nvim",
+  --   enabled = false,
+  --   -- dir = "~/personal/bufferline.nvim",
+  --   event = "VimEnter",
+  --   keys = function()
+  --     -- stylua: ignore
+  --     local keys = {
+  --       { "<leader>bp",        "<cmd>BufferLineTogglePin<cr>",                       desc = "Toggle pin", },
+  --       { "<M-m>",             "<cmd>BufferLineTogglePin<cr>",                       desc = "Toggle pin", },
+  --       { "<leader>bP",        "<cmd>BufferLineGroupClose ungrouped<cr>",            desc = "Delete non-pinned buffers", },
+  --       { "<leader><leader>o", "<cmd>BufferLineCloseOthers<cr>",                     desc = "Delete other buffers", },
+  --       { "<leader>br",        "<cmd>BufferLineCloseRight<cr>",                      desc = "Delete buffers to the right", },
+  --       { "<leader>bl",        "<cmd>BufferLineCloseLeft<cr>",                       desc = "Delete buffers to the left", },
+  --       { "[b",                "<cmd>BufferLineCyclePrev<cr>",                       desc = "Prev buffer", },
+  --       { "]b",                "<cmd>BufferLineCycleNext<cr>",                       desc = "Next buffer", },
+  --       --
+  --       { "<leader>dL",        "<cmd>BufferLineCloseRight<cr>",                      desc = "Delete buffers to the right", },
+  --       { "<leader>dH",        "<cmd>BufferLineCloseLeft<cr>",                       desc = "Delete buffers to the left", },
+  --       { "<M-[>",             "<cmd>BufferLineCyclePrev<cr>",                       desc = "Prev buffer", },
+  --       { "<M-]>",             "<cmd>BufferLineCycleNext<cr>",                       desc = "Next buffer", },
+  --       { "<M-S-]>",           "<cmd>BufferLineMoveNext<cr>",                        desc = "Move buffer to Next", },
+  --       { "<M-S-[>",           "<cmd>BufferLineMovePrev<cr>",                        desc = "Move buffer to Previous", },
+  --       { "<M-S-0>",           "<cmd>lua require'bufferline'.move_to(1)<cr>",        desc = "Move buffer to first", },
+  --       { "<M-S-4>",           "<cmd>lua require'bufferline'.move_to(-1)<cr>",       desc = "Move buffer to last", },
+  --       { "<M-9>",             "<cmd>lua require('bufferline').go_to(-1, true)<cr>", desc = "Go to last buffer", },
+  --       { "<leader>9",         "<cmd>lua require('bufferline').go_to(-1, true)<cr>", desc = "Go to last buffer", },
+  --     }
+  --     for i = 1, 8 do
+  --       table.insert(keys, {
+  --         "<leader>" .. i,
+  --         "<cmd>lua require('bufferline').go_to(" .. i .. ", true)<cr>",
+  --         desc = "Go to buffer " .. i,
+  --       })
+  --       table.insert(keys, {
+  --         "<M-" .. i .. ">",
+  --         "<cmd>lua require('bufferline').go_to(" .. i .. ", true)<cr>",
+  --         desc = "Go to buffer " .. i,
+  --         mode = { "n", "v", "i" },
+  --       })
+  --     end
+  --     -- print(vim.inspect(keys))
+  --     return keys
+  --   end,
+  --   opts = function()
+  --     -- local colors = require("base16-colorscheme").colors
+  --     -- local colors = require("colors.tokyodark-terminal")
+  --     vim.api.nvim_set_hl(0, "MyBufferSelected", { fg = vim.g.base16_gui00, bg = vim.g.base16_gui09, bold = true })
+  --     -- vim.api.nvim_set_hl(0, 'MyHarpoonSelected', { fg = colors.base01, bg = colors.base0B })
+  --     return {
+  --       highlights = {
+  --         buffer_selected = { link = "MyBufferSelected" },
+  --         numbers_selected = { link = "MyBufferSelected" },
+  --         tab_selected = { link = "MyBufferSelected" },
+  --         modified_selected = { link = "MyBufferSelected" },
+  --         duplicate_selected = { link = "MyBufferSelected" },
+  --       },
+  --       options = {
+  --         dispatch_update_events = true,
+  --         -- numbers = 'ordinal',
+  --         numbers = function(opts)
+  --           local state = require("bufferline.state")
+  --           for i, buf in ipairs(state.components) do
+  --             if buf.id == opts.id then
+  --               return i
+  --             end
+  --           end
+  --           return opts.ordinal
+  --         end,
+  --         close_command = function(n)
+  --           require("mini.bufremove").delete(n, false)
+  --         end,
+  --         right_mouse_command = function(n)
+  --           require("mini.bufremove").delete(n, false)
+  --         end,
+  --         diagnostics = false,
+  --         -- diagnostics = "coc",
+  --         -- always_show_bufferline = false,
+  --         show_close_icon = false,
+  --         show_buffer_close_icons = false,
+  --         show_buffer_icons = false,
+  --         indicator = { style = "none" },
+  --         separator_style = { "", "" },
+  --         offsets = {
+  --           {
+  --             filetype = "coc-explorer",
+  --             text = "File Explorer",
+  --             highlight = "Directory",
+  --             text_align = "left",
+  --           },
+  --           {
+  --             filetype = "neo-tree",
+  --             text = "Neo-tree",
+  --             highlight = "Directory",
+  --             text_align = "left",
+  --           },
+  --         },
+  --       },
+  --     }
+  --   end,
+  --   config = function(_, opts)
+  --     require("bufferline").setup(opts)
+  --     -- Fix bufferline when restoring a session
+  --     -- print(vim.inspect(require('bufferline.state')))
+  --     vim.api.nvim_create_autocmd("BufAdd", {
+  --       callback = function()
+  --         vim.schedule(function()
+  --           pcall(nvim_bufferline)
+  --         end)
+  --       end,
+  --     })
+  --   end,
+  -- },
 
   -- {
   --   "nvim-lualine/lualine.nvim",
@@ -862,16 +821,16 @@ return {
     end,
   },
 
-  {
-    "iamcco/markdown-preview.nvim",
-    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    build = function()
-      vim.fn["mkdp#util#install"]()
-    end,
-    config = function()
-      vim.cmd([[do FileType]])
-    end,
-  },
+  -- {
+  --   "iamcco/markdown-preview.nvim",
+  --   cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+  --   build = function()
+  --     vim.fn["mkdp#util#install"]()
+  --   end,
+  --   config = function()
+  --     vim.cmd([[do FileType]])
+  --   end,
+  -- },
 
   {
     "tyru/open-browser.vim",
@@ -904,24 +863,8 @@ return {
 
   {
     "nvim-treesitter/nvim-treesitter-context",
-    event = "VeryLazy",
-    enabled = true,
-    opts = { mode = "cursor", max_lines = 3 },
     keys = {
       { "[h", [[<cmd>:lua require("treesitter-context").go_to_context()<CR>]] },
-      {
-        "<leader>ut",
-        function()
-          local tsc = require("treesitter-context")
-          tsc.toggle()
-          if LazyVim.inject.get_upvalue(tsc.toggle, "enabled") then
-            LazyVim.info("Enabled Treesitter Context", { title = "Option" })
-          else
-            LazyVim.warn("Disabled Treesitter Context", { title = "Option" })
-          end
-        end,
-        desc = "Toggle Treesitter Context",
-      },
     },
   },
 
@@ -1639,20 +1582,20 @@ return {
     },
   },
 
-  {
-    "folke/lazydev.nvim",
-    ft = "lua", -- only load on lua files
-    opts = {
-      library = {
-        -- Library items can be absolute paths
-        -- "~/projects/my-awesome-lib",
-        -- Or relative, which means they will be resolved as a plugin
-        -- "LazyVim",
-        -- When relative, you can also provide a path to the library in the plugin dir
-        "luvit-meta/library", -- see below
-      },
-    },
-  },
+  -- {
+  --   "folke/lazydev.nvim",
+  --   ft = "lua", -- only load on lua files
+  --   opts = {
+  --     library = {
+  --       -- Library items can be absolute paths
+  --       -- "~/projects/my-awesome-lib",
+  --       -- Or relative, which means they will be resolved as a plugin
+  --       -- "LazyVim",
+  --       -- When relative, you can also provide a path to the library in the plugin dir
+  --       "luvit-meta/library", -- see below
+  --     },
+  --   },
+  -- },
 
   -- better yank/paste
   {

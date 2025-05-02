@@ -12,6 +12,7 @@ _G.toggle_edgy_keep_cursor = function()
     -- we just move the the window on the right
     vim.schedule(function()
       local bufnr = vim.api.nvim_get_current_buf()
+
       local filetype = vim.bo[bufnr].filetype
       if filetype == "snacks_picker_list" or filetype == "snacks_picker_input" then
         vim.cmd.wincmd("l")
