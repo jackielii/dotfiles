@@ -365,7 +365,7 @@ ctrl + cmd - k | cmd - k
 cmd + ralt - r : yabai -m window --scratchpad recover
 ralt - 0x32 : yabai -m window --toggle music || open -a "YT Music"
 alt - return: yabai -m window --toggle tt || fish -c "kitty -o tab_bar_min_tabs=3 -o hide_window_decorations=false -d ~ -T 'T_T'"
-alt - c: yabai -m window --toggle wechat || open -a "WeChat"
+lalt - c: yabai -m window --toggle wechat || open -a "WeChat"
 alt - a: yabai -m window --toggle whatsapp || open -a "WhatsApp"
 alt - d: yabai -m window --toggle finder || open ~/Downloads
 ralt - n: yabai -m window --toggle notes || open -a "Notes"

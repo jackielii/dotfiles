@@ -22,7 +22,7 @@ require("lazy").setup({
       import = "lazyvim.plugins",
       opts = {
         defaults = {
-          keymaps = false,
+          keymaps = true,
         },
       },
     },
@@ -30,9 +30,13 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.editor.snacks_explorer" },
     { import = "lazyvim.plugins.extras.editor.snacks_picker" },
 
+    { import = "lazyvim.plugins.extras.coding.yanky" },
+    { import = "lazyvim.plugins.extras.coding.luasnip" },
+
     { import = "lazyvim.plugins.extras.ui.mini-indentscope" },
     { import = "lazyvim.plugins.extras.ui.edgy" },
     { import = "lazyvim.plugins.extras.ui.treesitter-context" },
+    { import = "lazyvim.plugins.extras.ai.copilot" },
 
     { import = "lazyvim.plugins.extras.linting.eslint" },
     { import = "lazyvim.plugins.extras.formatting.prettier" },
@@ -54,7 +58,7 @@ require("lazy").setup({
     -- { import = "lsp.extras.lang.tailwind" },
     { import = "lsp.extras.lang.clangd" },
     { import = "lsp.extras.lang.proto" },
-    { import = "lsp.extras.lang.lua" },
+    -- { import = "lsp.extras.lang.lua" },
     { import = "lsp.extras.lang.xml" },
     { import = "lsp.extras.lang.typst" },
 

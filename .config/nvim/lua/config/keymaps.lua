@@ -10,10 +10,11 @@ map("i", "II", "<Esc>I", { silent = true })
 map("i", "Ii", "<Esc>i", { silent = true })
 map("i", "AA", "<Esc>A", { silent = true })
 map("i", "OO", "<Esc>O", { silent = true })
--- map("i", "UU", "<Esc>u", { silent = true })
+map("i", "UU", "<C-o>u", { silent = true })
 map("i", "Pp", "<Esc>P", { silent = true })
 map("i", "PP", "<Esc>pa", { silent = true })
 map("i", "CC", "<Esc>cc", { silent = true })
+map("i", "CD", "<C-o>c$", { silent = true })
 map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit all" })
 map("n", "<leader>QQ", "<cmd>qa!<cr>", { desc = "Quit all" })
 
@@ -62,8 +63,7 @@ map({ "i" }, "<D-v>", "<c-r>+", { silent = true, noremap = true })
 --   map("n", key, key .. "zz", { silent = true })
 -- end
 
-map("n", "<leader><tab>", "<C-^>", { silent = true })
-map("n", "<M-tab>", "<C-^>", { silent = true })
+map("n", "<leader><tab>", "<C-^>", { silent = true, nowait = true })
 map({ "n", "i" }, "<M-q>", "<Esc><C-^>", { silent = true })
 map({ "n", "i" }, "<M-tab>", "<Esc><C-^>", { silent = true })
 
@@ -155,10 +155,13 @@ map({ "n" }, "^", [[<cmd>call ToggleMovement("^", "0")<cr>]], { silent = true })
 -- map("n", "]]", [[j0[[%:silent! eval search('{')<cr>]], { silent = true, noremap = true })
 -- map("n", "[]", [[k$][%:silent! eval search('}', 'b')<cr>]], { silent = true, noremap = true })
 
-map("n", "<leader>bd", "<cmd>bd<cr>", { silent = true })
-map("n", "<leader>bD", "<cmd>bw!<cr>", { silent = true })
-map("n", "<leader>bw", "<cmd>bw<cr>", { silent = true })
-map("n", "<leader>bW", "<cmd>bw!<cr>", { silent = true })
+-- map("n", "<leader>bd", "<cmd>bd<cr>", { silent = true })
+-- stylua: ignore start
+map("n", "<leader>bd", function() Snacks.bufdelete() end, { desc = "Delete Buffer" })
+map("n", "<leader>bD", function() Snacks.bufdelete({force=true}) end, { desc = "Delete Buffer!" })
+map("n", "<leader>bw", function() Snacks.bufdelete({wipe=true}) end, { desc = "Wipeout Buffer" })
+map("n", "<leader>bW", function() Snacks.bufdelete({wipe=true, force=true}) end, { desc = "Wipeout Buffer!" })
+map("n", "<leader>bo", function() Snacks.bufdelete.other() end, { desc = "Delete Other Buffers" })
 map("n", "<leader>kn", "<cmd>enew<cr>", { silent = true })
 
 map("n", "<leader>tw", "<cmd>tabclose!<cr>", { silent = true })
@@ -284,3 +287,137 @@ _G.__format_operator = function(type)
 end
 map("v", "<leader>gf", "<cmd>lua __format_operator('v')<CR>", { desc = "Format Visual" })
 map("n", "<leader>gf", "<Esc><cmd>set operatorfunc=v:lua.__format_operator<CR>g@", { desc = "Format Operator" })
+
+-- -- diagnostic
+-- local diagnostic_goto = function(next, severity)
+--   local go = next and vim.diagnostic.jump
+--   severity = severity and vim.diagnostic.severity[severity] or nil
+--   return function()
+--     go({ severity = severity })
+--   end
+-- end
+map("n", "<D-i>", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
+-- map("n", "]d", diagnostic_goto(true), { desc = "Next Diagnostic" })
+-- map("n", "[d", diagnostic_goto(false), { desc = "Prev Diagnostic" })
+-- map("n", "]e", diagnostic_goto(true, "ERROR"), { desc = "Next Error" })
+-- map("n", "[e", diagnostic_goto(false, "ERROR"), { desc = "Prev Error" })
+-- map("n", "]w", diagnostic_goto(true, "WARN"), { desc = "Next Warning" })
+-- map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
+
+map({ "n", "i", "x" }, "<F7>", function()
+  local nldocs = require("noice.lsp.docs")
+  local message = nldocs.get("signature")
+  nldocs.hide(message)
+  vim.cmd([[NoiceDismiss]])
+end, { desc = "Close all floating windows" })
+
+map("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Lazy" })
+
+
+-- picker mappings
+--
+map("n", "<C-p>", LazyVim.pick("smart", {multi = {"files"},cwd=vim.g.project_root}), { desc = "File Files (Root Dir)" })
+map("n", "<leader>e", LazyVim.pick("buffers"), { desc = "File Buffers" })
+map("n", "<leader>ds", LazyVim.pick("lsp_symbols"), {desc = "LSP Document Symbols" })
+map("n", "<leader>dS", LazyVim.pick("lsp_workspace_symbols"), {desc = "LSP Workspace Symbols" })
+map("n", "<leader>dl", LazyVim.pick("lsp_workspace_symbols"), {desc = "LSP Workspace Symbols" })
+map("n", "<leader>da", LazyVim.pick("diagnostics_buffer"), {desc = "Diagnostics Buffer" })
+map("n", "<leader>dA", LazyVim.pick("diagnostics"), {desc = "Diagnostics All" })
+map("n", "<leader>zg", LazyVim.pick("git_files"), {desc = "Git File" })
+map("n", "<leader>zf", function() LazyVim.pick("files", {dirs={vim.fn.expand("%:p:h")}})() end, {desc = "" })
+-- map("n", "<leader>zh", LazyVim.pick(), {desc = "" })
+-- map("n", "<leader>fa", LazyVim.pick(), {desc = "" })
+-- map("n", "<leader>za", LazyVim.pick(), {desc = "" })
+map("n", "<leader>cc", LazyVim.pick("commands"), {desc = "Commands" })
+map("n", "<leader>p", LazyVim.pick("resume"), {desc = "Picker resume" })
+map("n", "<leader>;", LazyVim.pick("pickers"), {desc = "Picker sources" })
+map("n", "<leader>km", LazyVim.pick("filetypes"), {desc = "Pick filetypes" })
+map("n", "<leader>kh", LazyVim.pick("help"), {desc = "Help" })
+map("n", "<leader>k'", LazyVim.pick("marks"), {desc = "Marks" })
+-- map("n", "<leader>k<space>", ":lua", {desc = "" })
+map("n", "<leader>o", LazyVim.pick("recent", {filter={cwd=true}}), {desc = "Recent files" })
+map("n", "<leader>O", LazyVim.pick("recent"), {desc = "Recent Files (All)" })
+map("n", "<leader>k:", LazyVim.pick("command_history"), {desc = "Command history" })
+map("n", "<leader>k/", LazyVim.pick("search_history"), {desc = "Search history" })
+-- map("n", "<leader>ci", LazyVim.pick("grep"), {desc = "" })
+map("n", "<leader>/", LazyVim.pick("grep"), {desc = "Live Grep" })
+map("n", "<leader>?", function()
+  local dir = vim.fn.expand("%:p:h")
+  LazyVim.pick("grep", { cwd=dir, title="Grep " .. pretty_path(dir) })()
+end, {desc = "Live Grep current file dir" })
+
+map("n", "<leader>dgg", LazyVim.pick("grep_word"), { desc = "Grep word" })
+map("v", "<leader>dg", LazyVim.pick("grep_word"), { desc = "Grep word" })
+-- stylua: ignore end
+_G.__picker_grep_operator = function(type)
+  local save = vim.fn.getreg("@")
+  if type ~= "char" then
+    return
+  end
+  vim.cmd([[noautocmd sil norm `[v`]y]])
+  local word = vim.fn.substitute(vim.fn.getreg("@"), "\n$", "", "g")
+  vim.fn.setreg("@", save)
+  LazyVim.pick("grep_word", { search = word })()
+end
+map("n", "<leader>dg", "<Esc><cmd>set operatorfunc=v:lua.__picker_grep_operator<CR>g@", { desc = "Grep Operator" })
+
+map("i", "<tab>", function()
+  return LazyVim.cmp.actions.ai_accept() or "<tab>"
+end, { expr = true, desc = "Accept Copilot" })
+map("i", "<C-h>", function()
+  LazyVim.cmp.actions.cmp_disable()
+  LazyVim.cmp.actions.ai_disable()
+end, { desc = "Disable Completion & Copilot" })
+map("i", "<C-l>", function()
+  if
+    LazyVim.cmp.actions.snippet_change_choice()
+    or LazyVim.cmp.actions.snippet_expand()
+    or LazyVim.cmp.actions.cmp_insert_next()
+  then
+    return
+  end
+  LazyVim.cmp.actions.cmp_enable()
+  LazyVim.cmp.actions.ai_enable()
+end, { desc = "Enable Completion & Copilot" })
+map("x", "<C-l>", function()
+  return LazyVim.cmp.actions.snippet_expand_visual()
+end, { expr = true })
+
+map({ "i", "s" }, "<C-j>", function()
+  return LazyVim.cmp.actions.cmp_select_next()
+    or LazyVim.cmp.actions.snippet_forward()
+    or LazyVim.cmp.actions.ai_next()
+    or LazyVim.cmp.actions.cmp_show()
+    or ""
+end, { expr = true, desc = "Select Next Completion" })
+
+map({ "i", "s" }, "<C-k>", function()
+  return LazyVim.cmp.actions.cmp_select_prev()
+    or LazyVim.cmp.actions.snippet_backward()
+    or LazyVim.cmp.actions.ai_prev()
+    or vim.lsp.buf.signature_help()
+    or ""
+end, { expr = true, desc = "Select Previous Completion" })
+
+Snacks.toggle
+  .new({
+    name = "Completion",
+    get = function()
+      return vim.b.completion == nil or vim.b.completion
+    end,
+    set = function(state)
+      vim.b.completion = state
+    end,
+  })
+  :map("<leader>uc")
+Snacks.toggle
+  .new({
+    name = "Copilot",
+    get = function()
+      return vim.b.copilot_suggestion_auto_trigger == nil or vim.b.copilot_suggestion_auto_trigger
+    end,
+    set = function(state)
+      vim.b.copilot_suggestion_auto_trigger = state
+    end,
+  })
+  :map("<leader>uC")

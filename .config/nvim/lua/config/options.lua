@@ -1,6 +1,3 @@
-vim.g.lazyvim_picker = "telescope"
-vim.g.snacks_animate = false
-
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
@@ -31,6 +28,10 @@ vim.o.conceallevel = 0
 
 vim.g.autoformat = false
 vim.g.minipairs_disable = false
+
+vim.g.lazyvim_picker = "snacks"
+vim.g.snacks_animate = false
+vim.g.ai_cmp = false
 
 -- vim.lsp.set_log_level("info")
 vim.lsp.set_log_level("off")

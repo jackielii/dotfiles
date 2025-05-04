@@ -9,10 +9,12 @@ end
 -- LSP keymaps
 return {
   "neovim/nvim-lspconfig",
-  opts = function()
+  opts = function(_, opts)
+    opts.inlay_hints.enabled = false
     local keys = require("lazyvim.plugins.lsp.keymaps").get()
 
     -- stylua: ignore start
+    keys[#keys + 1] = { "<C-k>", mode = "i", false }
     keys[#keys + 1] = { "<A-n>", mode = "n", false }
     keys[#keys + 1] = { "<A-p>", mode = "n", false }
 
@@ -57,22 +59,22 @@ return {
     }
     --   { "K", vim.lsp.buf.hover, desc = "Hover" },
     --   { "gK", vim.lsp.buf.signature_help, desc = "Signature Help" },
-    keys[#keys + 1] = {
-      "<C-k>",
-      function()
-        local cmp = require("cmp")
-        local snip = require("luasnip")
-        if cmp.visible() then
-          cmp.select_prev_item()
-        elseif snip.jumpable(-1) then
-          snip.jump(-1)
-        else
-          vim.lsp.buf.signature_help()
-        end
-      end,
-      desc = "Signature Documentation",
-      mode = "i",
-    }
+    -- keys[#keys + 1] = {
+    --   "<C-k>",
+    --   function()
+    --     local cmp = require("cmp")
+    --     local snip = require("luasnip")
+    --     if cmp.visible() then
+    --       cmp.select_prev_item()
+    --     elseif snip.jumpable(-1) then
+    --       snip.jump(-1)
+    --     else
+    --       vim.lsp.buf.signature_help()
+    --     end
+    --   end,
+    --   desc = "Signature Documentation",
+    --   mode = "i",
+    -- }
     keys[#keys + 1] = { "<D-i>", vim.lsp.buf.signature_help, desc = "Signature Documentation", mode = "i" }
     --
     --   {

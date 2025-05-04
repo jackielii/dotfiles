@@ -22,7 +22,6 @@ _G.toggle_edgy_keep_cursor = function()
 end
 
 return {
-
   {
     "folke/snacks.nvim",
     opts = {
@@ -82,6 +81,20 @@ return {
           require("snacks.explorer").open()
         end,
       })
+      opts.keys = {
+        ["<M-L>"] = function(win)
+          win:resize("width", 2)
+        end,
+        ["<M-H>"] = function(win)
+          win:resize("width", -2)
+        end,
+        ["<M-K>"] = function(win)
+          win:resize("height", 2)
+        end,
+        ["<M-J>"] = function(win)
+          win:resize("height", -2)
+        end,
+      }
     end,
     -- left = {
     --   {

@@ -92,6 +92,13 @@ return {
 
     keys = {
       { "<leader>?", false },
+      {
+        "<leader>k?",
+        function()
+          require("which-key").show({ global = false })
+        end,
+        desc = "Buffer Keymaps",
+      },
     },
     opts = {
       preset = "modern",
@@ -254,10 +261,9 @@ return {
   -- { "will133/vim-dirdiff",         cmd = { "DirDiff" } },
 
   -- { "jackielii/vim-gomod",         ft = { "gomod" } },
-
   {
     "RRethy/nvim-base16",
-    priority = 1000,
+    -- priority = 1000,
     init = function()
       vim.api.nvim_create_autocmd({ "ColorScheme", "VimEnter" }, {
         group = augroup("my_highlights"),
@@ -275,17 +281,30 @@ return {
         end,
       })
     end,
-    config = function()
-      -- this works on nvim 0.9.4 but not on 0.10
-      -- require("base16-colorscheme").setup()
-      --
+    -- config = function()
+    --   -- this works on nvim 0.9.4 but not on 0.10
+    --   -- require("base16-colorscheme").setup()
+    --   --
+    --   local base16_theme = "decaf"
+    --   if vim.env.BASE16_THEME and vim.env.BASE16_THEME ~= "" then
+    --     base16_theme = vim.env.BASE16_THEME
+    --   end
+    --   if not vim.g.colors_name or vim.g.colors_name ~= "base16-" .. base16_theme then
+    --     vim.cmd.colorscheme("base16-" .. base16_theme)
+    --   end
+    -- end,
+  },
+  {
+    "LazyVim/LazyVim",
+    opts = function(_, opts)
       local base16_theme = "decaf"
       if vim.env.BASE16_THEME and vim.env.BASE16_THEME ~= "" then
         base16_theme = vim.env.BASE16_THEME
       end
-      if not vim.g.colors_name or vim.g.colors_name ~= "base16-" .. base16_theme then
-        vim.cmd.colorscheme("base16-" .. base16_theme)
-      end
+      -- if not vim.g.colors_name or vim.g.colors_name ~= "base16-" .. base16_theme then
+      --   vim.cmd.colorscheme("base16-" .. base16_theme)
+      -- end
+      opts.colorscheme = "base16-" .. base16_theme
     end,
   },
 
@@ -627,76 +646,6 @@ return {
   -- },
 
   {
-    "mg979/vim-visual-multi",
-    branch = "master",
-    keys = {
-      { "<M-n>", desc = "Visual Multi find under", mode = { "n", "v" } },
-      { "<C-Up>", desc = "Visual Multi up" },
-      { "<C-Down>", desc = "Visual Multi down" },
-      { [["\\gS"]], desc = "Visual Multi reselect" },
-      { [["\\A"]], desc = "Visual Multi select all" },
-      { [["\\/"]], desc = "Visual Multi regex" },
-    },
-    init = function()
-      vim.g.VM_maps = {
-        ["Find Under"] = "<A-n>",
-        ["Find Subword Under"] = "<A-n>",
-        ["Switch Mode"] = "v",
-        -- ["I BS"]               = '', -- disable backspace mapping
-      }
-      vim.g.VM_theme = "ocean"
-      vim.g.VM_set_statusline = 3
-      vim.api.nvim_create_autocmd("User", {
-        group = augroup("my_visual_multi_start"),
-        pattern = "visual_multi_start",
-        callback = function()
-          vim.b["minipairs_disable"] = true
-          -- require("nvim-autopairs").disable()
-          require("lualine").hide()
-          -- local lualine = pcall(require, "lualine")
-          -- if lualine then
-          --   lualine.hide()
-          -- end
-        end,
-      })
-      vim.api.nvim_create_autocmd("User", {
-        group = augroup("my_visual_multi_exit"),
-        pattern = "visual_multi_exit",
-        callback = function()
-          vim.b["minipairs_disable"] = false
-          -- require("nvim-autopairs").enable()
-          -- require("nvim-autopairs").force_attach()
-          require("lualine").hide({ unhide = true })
-          -- local lualine = pcall(require, "lualine")
-          -- if lualine then
-          --   lualine.hide({ unhide = true })
-          -- end
-        end,
-      })
-      -- -- autocmd User visual_multi_mappings  imap <buffer><expr> <CR> pumvisible() ? "\<C-Y>" : "\<Plug>(VM-I-Return)"
-      -- vim.api.nvim_create_autocmd("User", {
-      --   group = augroup("my_visual_multi"),
-      --   pattern = "visual_multi_mappings",
-      --   command = [[imap <buffer><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<Plug>(VM-I-Return)"]],
-      -- })
-      vim.api.nvim_create_autocmd("User", {
-        group = augroup("my_visual_multi_mapping"),
-        pattern = "visual_multi_mappings",
-        -- command = [[imap <buffer><expr> <CR> v:lua.require'cmp'.visible() ? v:lua.require'cmp'.confirm() : "\<Plug>(VM-I-Return)"]],
-        callback = function()
-          vim.keymap.set("i", "<CR>", function()
-            if require("cmp").visible() then
-              require("cmp").confirm({ select = true })
-              return "<NOP>"
-            end
-            return "<Plug>(VM-I-Return)"
-          end, { buffer = true, expr = true })
-        end,
-      })
-    end,
-  },
-
-  {
     "folke/snacks.nvim",
     opts = {
       dashboard = {
@@ -931,111 +880,6 @@ return {
     end,
   },
 
-  -- copilot
-  {
-    "zbirenbaum/copilot.lua",
-    event = "InsertEnter",
-    cmd = "Copilot",
-    build = ":Copilot auth",
-    keys = {
-      {
-        "<tab>",
-        function()
-          local copilot = require("copilot.suggestion")
-          if copilot.is_visible() then
-            copilot.accept()
-            return ""
-          else
-            return "<tab>"
-          end
-        end,
-        expr = true,
-        mode = "i",
-      },
-      { "<leader>ua", "<cmd>Copilot toggle<cr>", desc = "Copilot toggle" },
-      -- {
-      --   "<C-h>",
-      --   function()
-      --     local copilot = require("copilot.suggestion")
-      --     if copilot.is_visible() then
-      --       copilot.dismiss()
-      --     end
-      --     ---@diagnostic disable-next-line: inject-field
-      --     vim.b.copilot_suggestion_auto_trigger = false
-      --     local cmp = require("cmp")
-      --     cmp.setup.buffer({
-      --       completion = {
-      --         autocomplete = false,
-      --       },
-      --     })
-      --     print("Autocomplete disabled")
-      --   end,
-      --   mode = "i",
-      -- },
-    },
-    opts = {
-      suggestion = {
-        enabled = true,
-        auto_trigger = true,
-        debounce = 75,
-        keymap = {
-          -- accept = "<tab>",
-          accept_word = "<M-l>",
-          accept_line = "<M-C-L>",
-          next = "<M-j>",
-          prev = "<M-k>",
-          -- dismiss = "<C-h>",
-        },
-      },
-      panel = { enabled = false },
-      filetypes = {
-        markdown = true,
-        help = true,
-      },
-    },
-    dependencies = {
-      {
-        "nvim-lualine/lualine.nvim",
-        optional = true,
-        opts = function(_, opts)
-          local colors = {
-            [""] = Snacks.util.color("Special"),
-            ["Normal"] = Snacks.util.color("Special"),
-            ["Warning"] = Snacks.util.color("DiagnosticError"),
-            ["InProgress"] = Snacks.util.color("DiagnosticWarn"),
-          }
-          table.insert(opts.sections.lualine_x, 2, {
-            function()
-              local icon = require("lazyvim.config").icons.kinds.Copilot
-              local status = require("copilot.api").status.data
-              return icon .. (status.message or "")
-            end,
-            cond = function()
-              if not package.loaded["copilot"] then
-                return
-              end
-              local ok, clients = pcall(LazyVim.lsp.get_clients, { name = "copilot", bufnr = 0 })
-              if not ok then
-                return false
-              end
-              if not vim.b.copilot_suggestion_auto_trigger then
-                return false
-              end
-              return ok and #clients > 0
-            end,
-            color = function()
-              if not package.loaded["copilot"] then
-                return
-              end
-              local status = require("copilot.api").status.data
-              return colors[status.status] or colors[""]
-            end,
-          })
-        end,
-      },
-    },
-  },
-
   -- {
   --   "github/copilot.vim",
   --   event = { "BufReadPost", "BufNewFile" },
@@ -1060,8 +904,6 @@ return {
   --     },
   --   },
   -- },
-
-  { "nvim-lua/plenary.nvim", lazy = true },
 
   {
     "jackielii/vim-floaterm",
@@ -1438,25 +1280,27 @@ return {
   --     vim.g.zig_fmt_autosave = 0;
   --   end
   -- },
-  {
-    "Bekaboo/dropbar.nvim",
-    enabled = false,
-    cond = function()
-      return vim.fn.has("nvim-0.10") == 1
-    end,
-  },
-  {
-    "HakonHarnes/img-clip.nvim",
-    event = "VeryLazy",
-    opts = {
-      -- add options here
-      -- or leave it empty to use the default settings
-    },
-    keys = {
-      -- suggested keymap
-      -- { "<leader>p", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },
-    },
-  },
+
+  -- {
+  --   "Bekaboo/dropbar.nvim",
+  --   enabled = false,
+  --   cond = function()
+  --     return vim.fn.has("nvim-0.10") == 1
+  --   end,
+  -- },
+
+  -- {
+  --   "HakonHarnes/img-clip.nvim",
+  --   event = "VeryLazy",
+  --   opts = {
+  --     -- add options here
+  --     -- or leave it empty to use the default settings
+  --   },
+  --   keys = {
+  --     -- suggested keymap
+  --     -- { "<leader>p", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },
+  --   },
+  -- },
   {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
@@ -1597,78 +1441,78 @@ return {
   --   },
   -- },
 
-  -- better yank/paste
   {
     "gbprod/yanky.nvim",
-    desc = "Better Yank/Paste",
-    event = "LazyFile",
-    opts = function()
-      local utils = require("yanky.utils")
-      local mapping = require("yanky.telescope.mapping")
-      return {
-        highlight = { timer = 150 },
-        picker = {
-          telescope = {
-            use_default_mappings = false,
-            mappings = {
-              default = mapping.put("p"),
-              i = {
-                ["<c-g>"] = mapping.put("p"),
-                ["<c-t>"] = mapping.put("P"),
-                ["<c-x>"] = mapping.delete(),
-                ["<c-r>"] = mapping.set_register(utils.get_default_register()),
-              },
-              n = {
-                p = mapping.put("p"),
-                P = mapping.put("P"),
-                d = mapping.delete(),
-                r = mapping.set_register(utils.get_default_register()),
-              },
-            },
-          },
-        },
-      }
-    end,
     keys = {
-      {
-        "<leader>y",
-        function()
-          if LazyVim.pick.picker.name == "telescope" then
-            require("telescope").extensions.yank_history.yank_history({})
-          else
-            vim.cmd([[YankyRingHistory]])
-          end
-        end,
-        mode = { "n", "x" },
-        desc = "Open Yank History",
-      },
-        -- stylua: ignore
-      { "y", "<Plug>(YankyYank)", mode = { "n", "x" }, desc = "Yank Text" },
-      { "p", "<Plug>(YankyPutAfter)", mode = { "n", "x" }, desc = "Put Text After Cursor" },
-      { "P", "<Plug>(YankyPutBefore)", mode = { "n", "x" }, desc = "Put Text Before Cursor" },
-      { "gp", "<Plug>(YankyGPutAfter)", mode = { "n", "x" }, desc = "Put Text After Selection" },
-      { "gP", "<Plug>(YankyGPutBefore)", mode = { "n", "x" }, desc = "Put Text Before Selection" },
-      { "[y", "<Plug>(YankyCycleForward)", desc = "Cycle Forward Through Yank History" },
-      { "]y", "<Plug>(YankyCycleBackward)", desc = "Cycle Backward Through Yank History" },
-      { "]p", "<Plug>(YankyPutIndentAfterLinewise)", desc = "Put Indented After Cursor (Linewise)" },
-      { "[p", "<Plug>(YankyPutIndentBeforeLinewise)", desc = "Put Indented Before Cursor (Linewise)" },
-      { "]P", "<Plug>(YankyPutIndentAfterLinewise)", desc = "Put Indented After Cursor (Linewise)" },
-      { "[P", "<Plug>(YankyPutIndentBeforeLinewise)", desc = "Put Indented Before Cursor (Linewise)" },
-      { ">p", "<Plug>(YankyPutIndentAfterShiftRight)", desc = "Put and Indent Right" },
-      { "<p", "<Plug>(YankyPutIndentAfterShiftLeft)", desc = "Put and Indent Left" },
-      { ">P", "<Plug>(YankyPutIndentBeforeShiftRight)", desc = "Put Before and Indent Right" },
-      { "<P", "<Plug>(YankyPutIndentBeforeShiftLeft)", desc = "Put Before and Indent Left" },
-      { "=p", "<Plug>(YankyPutAfterFilter)", desc = "Put After Applying a Filter" },
-      { "=P", "<Plug>(YankyPutBeforeFilter)", desc = "Put Before Applying a Filter" },
+      { "<leader>p", false },
     },
   },
 
-  {
-    "neovim/nvim-lspconfig",
-    opts = function(_, opts)
-      opts.inlay_hints.enabled = false
-    end,
-  },
+  -- better yank/paste
+  -- {
+  --   "gbprod/yanky.nvim",
+  --   desc = "Better Yank/Paste",
+  --   event = "LazyFile",
+  --   opts = function()
+  --     local utils = require("yanky.utils")
+  --     local mapping = require("yanky.telescope.mapping")
+  --     return {
+  --       highlight = { timer = 150 },
+  --       picker = {
+  --         telescope = {
+  --           use_default_mappings = false,
+  --           mappings = {
+  --             default = mapping.put("p"),
+  --             i = {
+  --               ["<c-g>"] = mapping.put("p"),
+  --               ["<c-t>"] = mapping.put("P"),
+  --               ["<c-x>"] = mapping.delete(),
+  --               ["<c-r>"] = mapping.set_register(utils.get_default_register()),
+  --             },
+  --             n = {
+  --               p = mapping.put("p"),
+  --               P = mapping.put("P"),
+  --               d = mapping.delete(),
+  --               r = mapping.set_register(utils.get_default_register()),
+  --             },
+  --           },
+  --         },
+  --       },
+  --     }
+  --   end,
+  --   keys = {
+  --     {
+  --       "<leader>y",
+  --       function()
+  --         if LazyVim.pick.picker.name == "telescope" then
+  --           require("telescope").extensions.yank_history.yank_history({})
+  --         else
+  --           vim.cmd([[YankyRingHistory]])
+  --         end
+  --       end,
+  --       mode = { "n", "x" },
+  --       desc = "Open Yank History",
+  --     },
+  --       -- stylua: ignore
+  --     { "y", "<Plug>(YankyYank)", mode = { "n", "x" }, desc = "Yank Text" },
+  --     { "p", "<Plug>(YankyPutAfter)", mode = { "n", "x" }, desc = "Put Text After Cursor" },
+  --     { "P", "<Plug>(YankyPutBefore)", mode = { "n", "x" }, desc = "Put Text Before Cursor" },
+  --     { "gp", "<Plug>(YankyGPutAfter)", mode = { "n", "x" }, desc = "Put Text After Selection" },
+  --     { "gP", "<Plug>(YankyGPutBefore)", mode = { "n", "x" }, desc = "Put Text Before Selection" },
+  --     { "[y", "<Plug>(YankyCycleForward)", desc = "Cycle Forward Through Yank History" },
+  --     { "]y", "<Plug>(YankyCycleBackward)", desc = "Cycle Backward Through Yank History" },
+  --     { "]p", "<Plug>(YankyPutIndentAfterLinewise)", desc = "Put Indented After Cursor (Linewise)" },
+  --     { "[p", "<Plug>(YankyPutIndentBeforeLinewise)", desc = "Put Indented Before Cursor (Linewise)" },
+  --     { "]P", "<Plug>(YankyPutIndentAfterLinewise)", desc = "Put Indented After Cursor (Linewise)" },
+  --     { "[P", "<Plug>(YankyPutIndentBeforeLinewise)", desc = "Put Indented Before Cursor (Linewise)" },
+  --     { ">p", "<Plug>(YankyPutIndentAfterShiftRight)", desc = "Put and Indent Right" },
+  --     { "<p", "<Plug>(YankyPutIndentAfterShiftLeft)", desc = "Put and Indent Left" },
+  --     { ">P", "<Plug>(YankyPutIndentBeforeShiftRight)", desc = "Put Before and Indent Right" },
+  --     { "<P", "<Plug>(YankyPutIndentBeforeShiftLeft)", desc = "Put Before and Indent Left" },
+  --     { "=p", "<Plug>(YankyPutAfterFilter)", desc = "Put After Applying a Filter" },
+  --     { "=P", "<Plug>(YankyPutBeforeFilter)", desc = "Put Before Applying a Filter" },
+  --   },
+  -- },
 
   {
     "echasnovski/mini.pairs",
@@ -1688,5 +1532,167 @@ return {
         end,
       }
     end,
+  },
+
+  {
+    -- dir = "~/personal/noice.nvim",
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {
+      views = {
+        hover = {
+          border = {
+            style = "rounded",
+            padding = { 0, 1 },
+          },
+          size = {
+            max_width = 80,
+          },
+          position = { row = 2, col = 2 },
+        },
+      },
+      lsp = {
+        override = {
+          ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+          ["vim.lsp.util.stylize_markdown"] = true,
+          ["cmp.entry.get_documentation"] = true,
+        },
+        hover = {
+          -- view = "split",
+        },
+      },
+      routes = {
+        {
+          filter = {
+            any = {
+              { find = "No information available" },
+            },
+          },
+          skip = true,
+        },
+        {
+          filter = {
+            event = "msg_show",
+            any = {
+              { find = "%d+L, %d+B" },
+              { find = "; after #%d+" },
+              { find = "; before #%d+" },
+              { find = "%d+ fewer lines" },
+            },
+          },
+          view = "mini",
+        },
+      },
+      presets = {
+        bottom_search = true, -- use a classic bottom cmdline for search
+        command_palette = false, -- position the cmdline and popupmenu together
+        long_message_to_split = true, -- long messages will be sent to a split
+        inc_rename = false, -- enables an input dialog for inc-rename.nvim
+        lsp_doc_border = true, -- add a border to hover docs and signature help
+      },
+      cmdline = {
+        enabled = true,
+        view = "cmdline",
+      },
+      messages = {
+        enabled = true,
+        view = "mini",
+        view_warn = "mini",
+        view_error = "mini",
+        -- view_history = "messages",
+        -- view = "notify",
+        -- view_error = "messages", -- view for errors
+        -- view_warn = "messages", -- view for warnings
+        -- view_history = "messages", -- view for :messages
+        -- view_search = "virtualtext", -- view for search count messages. Set to `false` to disable
+      },
+      redirect = {
+        view = "popup",
+        filter = { event = "msg_show" },
+      },
+      popupmenu = {
+        enabled = true,
+      },
+      notify = {
+        enabled = true,
+        view = "mini",
+      },
+      --
+      commands = {
+        all = {
+          view = "split",
+          opts = { enter = true, format = "details" },
+          filter = {},
+        },
+      },
+    },
+    -- stylua: ignore
+    keys = {
+      {
+        "<C-CR>",
+        function() require("noice").redirect(vim.fn.getcmdline()) end,
+        mode = "c",
+        desc = "Redirect Cmdline"
+      },
+      { "<leader>nn", function() require("noice").cmd("last") end,    desc = "Noice Last Message" },
+      { "<leader>nl", function() require("noice").cmd("history") end, desc = "Noice History" },
+      { "<leader>na", function() require("noice").cmd("all") end,     desc = "Noice All" },
+      { "<leader>nm", [[<cmd>messages<cr>]],                          desc = "messages" },
+      { "<leader>nd", function() require("noice").cmd("dismiss") end, desc = "Dismiss All" },
+      {
+        "<c-f>",
+        function() if not require("noice.lsp").scroll(4) then return "<c-f>" end end,
+        silent = true,
+        expr = true,
+        desc = "Scroll forward",
+        mode = { "i", "n", "s" }
+      },
+      {
+        "<c-b>",
+        function() if not require("noice.lsp").scroll(-4) then return "<c-b>" end end,
+        silent = true,
+        expr = true,
+        desc = "Scroll backward",
+        mode = { "i", "n", "s" }
+      },
+    },
+    config = function(_, opts)
+      require("noice").setup(opts)
+      vim.api.nvim_set_hl(0, "LspSignatureActiveParameter", { link = "@type.builtin", default = true })
+      vim.api.nvim_set_hl(0, "NoiceVirtualText", { fg = "#c8d3f5", bg = "#3e68d7", italic = true })
+    end,
+  },
+
+  -- git signs highlights text that has changed since the list
+  -- git commit, and also lets you interactively stage & unstage
+  -- hunks in a commit.
+  {
+    "lewis6991/gitsigns.nvim",
+    event = "LazyFile",
+    opts = {
+      on_attach = function(buffer)
+        local gs = package.loaded.gitsigns
+
+        local function map(mode, l, r, desc)
+          vim.keymap.set(mode, l, r, { buffer = buffer, desc = desc })
+        end
+
+        -- stylua: ignore start
+        map("n", "]c", gs.next_hunk, "Next Hunk")
+        map("n", "[c", gs.prev_hunk, "Prev Hunk")
+        map({ "n", "v" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
+        map({ "n", "v" }, "<leader>ghr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
+        map("n", "<leader>ghS", gs.stage_buffer, "Stage Buffer")
+        map("n", "<leader>ghu", gs.undo_stage_hunk, "Undo Stage Hunk")
+        map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
+        map("n", "<leader>ghp", gs.preview_hunk, "Preview Hunk")
+        map("n", "<leader>ki", gs.preview_hunk, "Preview Hunk")
+        map("n", "<leader>ku", gs.reset_hunk, "Reset Hunk")
+        map("n", "<leader>ghb", function() gs.blame_line({ full = true }) end, "Blame Line")
+        map("n", "<leader>ghd", gs.diffthis, "Diff This")
+        map("n", "<leader>ghD", function() gs.diffthis("~") end, "Diff This ~")
+        map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
+      end,
+    },
   },
 }
