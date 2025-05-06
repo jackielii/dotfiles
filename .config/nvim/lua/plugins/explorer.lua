@@ -1,29 +1,35 @@
-_G.toggle_edgy_keep_cursor = function()
-  local win_id = vim.api.nvim_get_current_win()
-  local cursor_pos = vim.api.nvim_win_get_cursor(win_id)
-  require("edgy").toggle()
-  -- workaround for edgy.nvim moves the cursor to a different window
-  vim.schedule(function()
-    vim.api.nvim_set_current_win(win_id)
-    vim.api.nvim_win_set_cursor(win_id, cursor_pos)
+_G.toggle_explorer = function()
+  local explorer = Snacks.picker.get({ source = "explorer" })[1]
+  if explorer and not explorer.closed then
+    explorer:close()
+  else
+    explorer = Snacks.picker.explorer({ file = vim.g.project_root })
+  end
 
-    -- somehow the cursor is not set correctly
-    -- we use a simpler workaround: if the current window is a snacks picker
-    -- we just move the the window on the right
-    vim.schedule(function()
-      local bufnr = vim.api.nvim_get_current_buf()
-
-      local filetype = vim.bo[bufnr].filetype
-      if filetype == "snacks_picker_list" or filetype == "snacks_picker_input" then
-        vim.cmd.wincmd("l")
-      end
-    end)
-  end)
+  vim.defer_fn(function()
+    local filetype = vim.bo.filetype
+    if filetype == "snacks_picker_list" or filetype == "snacks_picker_input" then
+      vim.cmd.wincmd("l")
+    end
+  end, 50)
 end
 
 return {
   {
     "folke/snacks.nvim",
+    keys = {
+      {
+        "<leader>fe",
+        function()
+          local buf = vim.api.nvim_get_current_buf() or 0
+          local explorer = Snacks.explorer.reveal({ buf = buf })
+          explorer:set_cwd(LazyVim.root.get({ buf = buf }))
+          explorer:focus()
+        end,
+        desc = "Explorer Snacks (root dir)",
+      },
+      { "<leader>e", false },
+    },
     opts = {
       picker = {
         sources = {
@@ -51,18 +57,15 @@ return {
         },
       },
     },
-    keys = {
-      { "<leader>e", false },
-    },
   },
 
   {
     "folke/edgy.nvim",
     -- dir = "~/personal/edgy.nvim",
-    -- enabled = false,
+    enabled = false,
     -- event = "VeryLazy",
     keys = {
-      { "<F2>", toggle_edgy_keep_cursor, desc = "Edge Toggle" },
+      { "<F2>", toggle_explorer, desc = "Edge Toggle" },
     },
     opts = function(_, opts)
       -- P(opts)
@@ -73,6 +76,7 @@ return {
       --   right = { size = 30 },
       --   top = { size = 10 },
       -- }
+      opts.left = {}
       table.insert(opts.left, 1, {
         title = "Explorer",
         pinned = true,

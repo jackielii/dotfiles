@@ -25,7 +25,7 @@ return {
       end
       LazyVim.cmp.actions.cmp_enable = function()
         vim.b.completion = true
-        require("blink.cmp").show()
+        -- require("blink.cmp").show()
       end
     end,
   },

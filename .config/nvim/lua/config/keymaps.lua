@@ -231,6 +231,7 @@ endfunction
 vim.g.project_root = vim.fn.getcwd()
 vim.g.project_path = vim.g.project_root
 map("n", "<F1>", [[<cmd>let g:project_path=g:project_root <bar> execute 'lcd '.g:project_path <bar> echo g:project_path<cr>]])
+map("n", "<F2>", toggle_explorer, { desc = "Toggle Explorer" })
 -- map("n", "<F2>", [[<cmd>Glcd <bar> let g:project_path=getcwd() <bar> echo g:project_path<cr>]])
 -- map("n", "<F3>", [[:execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h') <bar> let g:project_path = expand('%:p:h')<CR>]])
 map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" } )
@@ -313,10 +314,9 @@ end, { desc = "Close all floating windows" })
 
 map("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Lazy" })
 
-
 -- picker mappings
 --
-map("n", "<C-p>", LazyVim.pick("smart", {multi = {"files"},cwd=vim.g.project_root}), { desc = "File Files (Root Dir)" })
+map("n", "<C-p>", function() LazyVim.pick("smart", { multi = { "files" }, cwd = vim.fn.getcwd() })() end, { desc = "File Files" })
 map("n", "<leader>e", LazyVim.pick("buffers"), { desc = "File Buffers" })
 map("n", "<leader>ds", LazyVim.pick("lsp_symbols"), {desc = "LSP Document Symbols" })
 map("n", "<leader>dS", LazyVim.pick("lsp_workspace_symbols"), {desc = "LSP Workspace Symbols" })

@@ -25,7 +25,7 @@ return {
     init = function()
       vim.api.nvim_create_autocmd("User", {
         pattern = "PersistenceLoadPost",
-        callback = toggle_edgy_keep_cursor,
+        callback = toggle_explorer,
       })
     end,
   },
@@ -40,28 +40,28 @@ return {
     end,
   },
 
-  {
-    "tpope/vim-fugitive",
-    dependencies = { { "tpope/vim-rhubarb" } },
-    event = "VeryLazy",
-    cmd = { "GBrowse", "Gbrowse" },
-    keys = {
-      { "<leader>g<space>", [[:Git ]], desc = "Git" },
-      { "<leader>g<cr>", [[<cmd>tab Git<cr>]], desc = "Git" },
-      { "<leader>ge", [[<cmd>Gedit<cr>]], desc = "Gedit" },
-      { "<leader>gb", [[<cmd>Git blame<cr>]], desc = "Git blame" },
-      { "<leader>gc", [[<cmd>Git commit<cr>]], desc = "Git commit" },
-      { "<leader>gd", desc = "+Git diff" },
-      { "<leader>gds", [[<cmd>tab Git diff --staged<cr>]], desc = "Git diff staged" },
-      { "<leader>gda", [[<cmd>tab Git diff<cr>]], desc = "Git diff" },
-      { "<leader>gdd", [[<cmd>tab Git diff %<cr>]], desc = "Git diff current" },
-      { "<leader>gp", [[<cmd>Git pull<cr>]], desc = "Git pull" },
-      { "<leader>gP", [[<cmd>Git push<cr>]], desc = "Git push" },
-      { "<leader>gl0", [[:tabnew % <bar> 0Gclog<cr>]], desc = "Fugitive Git log file" },
-      { "<leader>gla", [[:tabnew % <bar> Git log<cr>]], desc = "Fugitive Git history" },
-      { "<leader>ga", [[<cmd>Git add --all<cr>]], desc = "Git add" },
-    },
-  },
+  -- {
+  --   "tpope/vim-fugitive",
+  --   dependencies = { { "tpope/vim-rhubarb" } },
+  --   event = "VeryLazy",
+  --   cmd = { "GBrowse" },
+  --   keys = {
+  --     { "<leader>g<space>", [[:Git ]], desc = "Git" },
+  --     { "<leader>g<cr>", [[<cmd>tab Git<cr>]], desc = "Git" },
+  --     { "<leader>ge", [[<cmd>Gedit<cr>]], desc = "Gedit" },
+  --     { "<leader>gb", [[<cmd>Git blame<cr>]], desc = "Git blame" },
+  --     { "<leader>gc", [[<cmd>Git commit<cr>]], desc = "Git commit" },
+  --     { "<leader>gd", desc = "+Git diff" },
+  --     { "<leader>gds", [[<cmd>tab Git diff --staged<cr>]], desc = "Git diff staged" },
+  --     { "<leader>gda", [[<cmd>tab Git diff<cr>]], desc = "Git diff" },
+  --     { "<leader>gdd", [[<cmd>tab Git diff %<cr>]], desc = "Git diff current" },
+  --     { "<leader>gp", [[<cmd>Git pull<cr>]], desc = "Git pull" },
+  --     { "<leader>gP", [[<cmd>Git push<cr>]], desc = "Git push" },
+  --     { "<leader>gl0", [[:tabnew % <bar> 0Gclog<cr>]], desc = "Fugitive Git log file" },
+  --     { "<leader>gla", [[:tabnew % <bar> Git log<cr>]], desc = "Fugitive Git history" },
+  --     { "<leader>ga", [[<cmd>Git add --all<cr>]], desc = "Git add" },
+  --   },
+  -- },
 
   {
     "tpope/vim-abolish",
@@ -678,86 +678,86 @@ return {
 
   { "udalov/kotlin-vim", ft = { "kotlin" } },
 
-  {
-    "lervag/wiki.vim",
-    -- tag = "v0.8",
-    keys = {
-      {
-        "<leader>kp",
-        function()
-          -- require("wiki.telescope").pages()
-          local builtin = require("telescope.builtin")
-          local actions = require("telescope.actions")
-          local action_state = require("telescope.actions.state")
-          builtin.find_files({
-            prompt_title = "Wiki files",
-            cwd = "~/personal/notes",
-            disable_devicons = true,
-            find_command = { "rg", "--files", "--sort", "path" },
-            file_ignore_patterns = {
-              "%.stversions/",
-              "%.git/",
-            },
-            path_display = function(_, path)
-              local name = path:match("(.+)%.[^.]+$")
-              return name or path
-            end,
-            attach_mappings = function(prompt_bufnr, _)
-              actions.select_default:replace_if(function()
-                return action_state.get_selected_entry() == nil
-              end, function()
-                actions.close(prompt_bufnr)
-
-                local new_name = action_state.get_current_line()
-                if new_name == nil or new_name == "" then
-                  return
-                end
-
-                vim.fn["wiki#page#open"](new_name)
-              end)
-
-              return true
-            end,
-          })
-        end,
-        -- function()
-        --   require("fzf-lua").files({
-        --     prompt = "WikiPages> ",
-        --     cwd = vim.g.wiki_root,
-        --     cmd = "fd -t f -E .git",
-        --     actions = {
-        --       ["ctrl-x"] = function()
-        --         -- vim.cmd("edit " .. require("fzf-lua").get_last_query())
-        --         vim.fn["wiki#page#open"](require("fzf-lua").get_last_query())
-        --       end,
-        --     },
-        --   })
-        -- end,
-        desc = "Wiki pages",
-      },
-    },
-    ft = { "markdown" },
-    -- dependencies = { "junegunn/fzf.vim" },
-    init = function()
-      vim.g.wiki_root = "~/personal/notes"
-      vim.g.wiki_mappings_use_defaults = "none"
-      vim.g.wiki_filetypes = { "md" }
-      vim.g.wiki_link_creation = {
-        ["md"] = {
-          ["url_transform"] = function(url)
-            return string.lower(url):gsub(" ", "-")
-          end,
-        },
-      }
-      vim.g.wiki_mappings_local = {
-        ["<plug>(wiki-link-prev)"] = "<S-Tab>",
-        ["<plug>(wiki-link-next)"] = "<Tab>",
-        -- ['<plug>(wiki-link-toggle-operator)'] = 'gl',
-        ["<plug>(wiki-link-follow)"] = "<C-]>",
-        ["x_<plug>(wiki-link-transform-visual)"] = "<cr>",
-      }
-    end,
-  },
+  -- {
+  --   "lervag/wiki.vim",
+  --   -- tag = "v0.8",
+  --   keys = {
+  --     {
+  --       "<leader>kp",
+  --       function()
+  --         -- require("wiki.telescope").pages()
+  --         local builtin = require("telescope.builtin")
+  --         local actions = require("telescope.actions")
+  --         local action_state = require("telescope.actions.state")
+  --         builtin.find_files({
+  --           prompt_title = "Wiki files",
+  --           cwd = "~/personal/notes",
+  --           disable_devicons = true,
+  --           find_command = { "rg", "--files", "--sort", "path" },
+  --           file_ignore_patterns = {
+  --             "%.stversions/",
+  --             "%.git/",
+  --           },
+  --           path_display = function(_, path)
+  --             local name = path:match("(.+)%.[^.]+$")
+  --             return name or path
+  --           end,
+  --           attach_mappings = function(prompt_bufnr, _)
+  --             actions.select_default:replace_if(function()
+  --               return action_state.get_selected_entry() == nil
+  --             end, function()
+  --               actions.close(prompt_bufnr)
+  --
+  --               local new_name = action_state.get_current_line()
+  --               if new_name == nil or new_name == "" then
+  --                 return
+  --               end
+  --
+  --               vim.fn["wiki#page#open"](new_name)
+  --             end)
+  --
+  --             return true
+  --           end,
+  --         })
+  --       end,
+  --       -- function()
+  --       --   require("fzf-lua").files({
+  --       --     prompt = "WikiPages> ",
+  --       --     cwd = vim.g.wiki_root,
+  --       --     cmd = "fd -t f -E .git",
+  --       --     actions = {
+  --       --       ["ctrl-x"] = function()
+  --       --         -- vim.cmd("edit " .. require("fzf-lua").get_last_query())
+  --       --         vim.fn["wiki#page#open"](require("fzf-lua").get_last_query())
+  --       --       end,
+  --       --     },
+  --       --   })
+  --       -- end,
+  --       desc = "Wiki pages",
+  --     },
+  --   },
+  --   ft = { "markdown" },
+  --   -- dependencies = { "junegunn/fzf.vim" },
+  --   init = function()
+  --     vim.g.wiki_root = "~/personal/notes"
+  --     vim.g.wiki_mappings_use_defaults = "none"
+  --     vim.g.wiki_filetypes = { "md" }
+  --     vim.g.wiki_link_creation = {
+  --       ["md"] = {
+  --         ["url_transform"] = function(url)
+  --           return string.lower(url):gsub(" ", "-")
+  --         end,
+  --       },
+  --     }
+  --     vim.g.wiki_mappings_local = {
+  --       ["<plug>(wiki-link-prev)"] = "<S-Tab>",
+  --       ["<plug>(wiki-link-next)"] = "<Tab>",
+  --       -- ['<plug>(wiki-link-toggle-operator)'] = 'gl',
+  --       ["<plug>(wiki-link-follow)"] = "<C-]>",
+  --       ["x_<plug>(wiki-link-transform-visual)"] = "<cr>",
+  --     }
+  --   end,
+  -- },
 
   {
     -- " for toggle todo list item
@@ -792,17 +792,17 @@ return {
 
   {
     "skywind3000/asynctasks.vim",
-    dependencies = { "skywind3000/asyncrun.vim", "GustavoKatel/telescope-asynctasks.nvim" },
+    dependencies = { "skywind3000/asyncrun.vim" },
     cmd = { "AsyncTask", "AsyncTaskEdit", "AsyncTaskRun", "AsyncTaskStop" },
     keys = {
       { "<F5>", "<cmd>AsyncTaskLast<cr>", desc = "AsyncTaskLast" },
-      {
-        "<leader>ct",
-        function()
-          require("telescope").extensions.asynctasks.all()
-        end,
-        desc = "Async Task list",
-      },
+      -- {
+      --   "<leader>ct",
+      --   function()
+      --     require("telescope").extensions.asynctasks.all()
+      --   end,
+      --   desc = "Async Task list",
+      -- },
     },
     init = function()
       vim.g.asyncrun_open = 4
@@ -1106,18 +1106,32 @@ return {
   },
 
   {
+    "rcarriga/nvim-dap-ui",
+    keys = {
+      {
+        "<leader>dd",
+        function()
+          require("dapui").toggle({ reset = true })
+        end,
+        desc = "DapUI",
+      },
+    },
+  },
+  {
     "mfussenegger/nvim-dap",
     keys = {
       {
         "<F8>",
-        function()
-          require("dap.ext.vscode").load_launchjs()
-          require("telescope").extensions.dap.configurations({
-            language_filter = function(lang)
-              return lang == vim.bo.ft
-            end,
-          })
-        end,
+        "<cmd>DapNew<CR>",
+        -- function()
+        --   -- require("dap.ext.vscode").load_launchjs()
+        --   P("TODO: LazyVim.pick...")
+        --   -- require("telescope").extensions.dap.configurations({
+        --   --   language_filter = function(lang)
+        --   --     return lang == vim.bo.ft
+        --   --   end,
+        --   -- })
+        -- end,
         desc = "Dap configurations",
       },
       { "<F9>", "<cmd>lua require('dap').run_last()<cr>", desc = "Run last" },
@@ -1137,18 +1151,6 @@ return {
       },
     },
     dependencies = {
-      {
-        "rcarriga/nvim-dap-ui",
-        keys = {
-          {
-            "<leader>dd",
-            function()
-              require("dapui").toggle({ reset = true })
-            end,
-            desc = "DapUI",
-          },
-        },
-      },
       "nvim-neotest/nvim-nio",
       -- "nvim-telescope/telescope-dap.nvim",
       -- virtual text for the debugger
@@ -1414,6 +1416,7 @@ return {
         -- { "<C-S-/>", "<cmd>CopilotChatToggle<cr>", desc = "Copilot Chat", mode = { "n", "v" } },
         { "<D-d>", "<cmd>CopilotChatToggle<cr>", desc = "Copilot Chat", mode = { "n", "v" } },
       },
+      build = "make tiktoken", -- Only on MacOS or Linux
       dependencies = {
         { "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
         { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper

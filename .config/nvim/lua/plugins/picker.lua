@@ -65,6 +65,7 @@ return {
               ["<C-e>"] = "list_down",
               ["<C-y>"] = "list_up",
               ["<c-k>"] = false,
+              ["<c-p>"] = false,
             },
           },
         },

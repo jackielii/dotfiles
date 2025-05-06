@@ -1,5 +1,14 @@
 return {
   {
+    "nvim-treesitter/nvim-treesitter",
+    opts = function(_, opts)
+      vim.list_extend(opts.ensure_installed, {
+        "templ",
+        "html",
+      })
+    end,
+  },
+  {
     "vrischmann/tree-sitter-templ",
     dir = "~/personal/tree-sitter-templ",
     config = function()

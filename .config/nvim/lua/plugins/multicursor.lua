@@ -4,11 +4,14 @@ return {
     branch = "1.0",
     keys = {
       -- stylua: ignore start
-      { "<M-n>",      function() require("multicursor-nvim").matchAddCursor(1) end,    desc = "Multi find under",         mode = { "n", "v" } },
-      { "<M-N>",      function() require("multicursor-nvim").matchAddCursor(-1) end,   desc = "Multi find under reverse", mode = { "n", "v" } },
-      { "<C-Down>",   function() require("multicursor-nvim").lineAddCursor(1) end,     desc = "Multi down" },
-      { "<C-Up>",     function() require("multicursor-nvim").lineAddCursor(-1) end,    desc = "Multi up" },
-      { "<leader>gv", function() require("multicursor-nvim").restoreCursors() end,     desc = "Multi reselect" },
+      { "<M-n>",           function() require("multicursor-nvim").matchAddCursor(1) end,    desc = "Multi find under",         mode = { "n", "v" } },
+      { "<M-N>",           function() require("multicursor-nvim").matchAddCursor(-1) end,   desc = "Multi find under reverse", mode = { "n", "v" } },
+      { "<C-Down>",        function() require("multicursor-nvim").lineAddCursor(1) end,     desc = "Multi down" },
+      { "<C-Up>",          function() require("multicursor-nvim").lineAddCursor(-1) end,    desc = "Multi up" },
+      { "<leader>gv",      function() require("multicursor-nvim").restoreCursors() end,     desc = "Multi reselect" },
+      { "<A-leftmouse>",   function() require("multicursor-nvim").handleMouse() end,        desc = "Multi mouse" },
+      { "<A-leftdrag>",    function() require("multicursor-nvim").handleMouseDrag() end,    desc = "Multi mouse" },
+      { "<A-leftrelease>", function() require("multicursor-nvim").handleMouseRelease() end, desc = "Multi mouse" },
 
       { "<leader><leader>m", function() require("multicursor-nvim").matchCursors() end,       desc = "Multi regex",       mode = "x" },
       { "<leader><leader>s", function() require("multicursor-nvim").splitCursors() end,       desc = "Multi split regex", mode = "x" },
@@ -27,9 +30,12 @@ return {
         map({ "n", "x" }, "q", function()
           mc.matchSkipCursor(1)
         end)
-        map("n", "<A-leftmouse>", mc.handleMouse)
-        map("n", "<A-leftdrag>", mc.handleMouseDrag)
-        map("n", "<A-leftrelease>", mc.handleMouseRelease)
+
+        -- Select a different cursor as the main one.
+        map({ "n", "x" }, "<left>", mc.prevCursor)
+        map({ "n", "x" }, "<right>", mc.nextCursor)
+        -- Delete the main cursor.
+        map({ "n", "x" }, "<leader>x", mc.deleteCursor)
 
         map("x", "I", mc.insertVisual)
         map("x", "A", mc.appendVisual)
@@ -45,6 +51,25 @@ return {
 
         map("n", "<leader>A", mc.alignCursors)
       end)
+    end,
+  },
+
+  {
+    "nvim-lualine/lualine.nvim",
+    optional = true,
+    opts = function(_, opts)
+      -- https://github.com/jake-stewart/multicursor.nvim/issues/20
+      table.insert(opts.sections.lualine_a, { -- MultiCursors
+        function()
+          local mc = require("multicursor-nvim")
+          local enabled = mc.numEnabledCursors()
+          local disabled = mc.numDisabledCursors()
+          return enabled .. " Cursors" .. (disabled == 0 and "" or " [" .. disabled .. " disabled]")
+        end,
+        cond = function()
+          return require("multicursor-nvim").hasCursors()
+        end,
+      })
     end,
   },
 }
