@@ -1,0 +1,56 @@
+# This file contains fish universal variable definitions.
+# VERSION: 3.0
+SETUVAR --export EDITOR:/opt/homebrew/bin/nvim
+SETUVAR --export FZF_DEFAULT_COMMAND:fd\x20\x2d\x2dtype\x20f\x20\x2d\x2dhidden\x20\x2d\x2dfollow\x20\x2d\x2dexclude\x20\x2egit
+SETUVAR --export FZF_DEFAULT_OPTS:\x2d\x2dhistory\x3d/Users/jackieli/\x2efzf_history\x20\x2d\x2dbind\x3d\x27ctrl\x2de\x3apreview\x2ddown\x2cctrl\x2dy\x3apreview\x2dup\x2cctrl\x2do\x3atoggle\x2dpreview\x27
+SETUVAR --export --path GOPATH:/Users/jackieli/go
+SETUVAR HOMEBREW_NO_AUTO_UPDATE:false
+SETUVAR --export LESSKEYIN:/Users/jackieli/\x2econfig/lesskey
+SETUVAR --export NODE_VERSIONS:/Users/jackieli/\x2envm/versions/node
+SETUVAR --export NODE_VERSIONS_PREFIX:
+SETUVAR --export NODE_VERSION_PREFIX:\x1d
+SETUVAR --export NVM_DIR:/Users/jackieli/\x2envm
+SETUVAR --export PAGER:less
+SETUVAR --export SUDO_EDITOR:/opt/homebrew/bin/nvim
+SETUVAR --export VISUAL:/opt/homebrew/bin/nvim
+SETUVAR __fish_initialized:3400
+SETUVAR _fisher_evanlucas_2F_fish_2D_kubectl_2D_completions_files:\x7e/\x2econfig/fish/completions/kubectl\x2efish
+SETUVAR _fisher_franciscolourenco_2F_done_files:\x7e/\x2econfig/fish/conf\x2ed/done\x2efish
+SETUVAR _fisher_halostatue_2F_fish_2D_docker_40_v1_2E_x_files:\x7e/\x2econfig/fish/conf\x2ed/halostatue_fish_docker\x2efish\x1e\x7e/\x2econfig/fish/completions/docker\x2dcompose\x2efish\x1e\x7e/\x2econfig/fish/completions/docker\x2efish
+SETUVAR _fisher_jhillyerd_2F_plugin_2D_git_files:\x7e/\x2econfig/fish/functions/__git\x2ebranch_has_wip\x2efish\x1e\x7e/\x2econfig/fish/functions/__git\x2ecurrent_branch\x2efish\x1e\x7e/\x2econfig/fish/functions/__git\x2edefault_branch\x2efish\x1e\x7e/\x2econfig/fish/functions/__git\x2edestroy\x2efish\x1e\x7e/\x2econfig/fish/functions/__git\x2einit\x2efish\x1e\x7e/\x2econfig/fish/functions/gbage\x2efish\x1e\x7e/\x2econfig/fish/functions/gbda\x2efish\x1e\x7e/\x2econfig/fish/functions/gdv\x2efish\x1e\x7e/\x2econfig/fish/functions/gignored\x2efish\x1e\x7e/\x2econfig/fish/functions/glp\x2efish\x1e\x7e/\x2econfig/fish/functions/grename\x2efish\x1e\x7e/\x2econfig/fish/functions/grt\x2efish\x1e\x7e/\x2econfig/fish/functions/gtest\x2efish\x1e\x7e/\x2econfig/fish/functions/gtl\x2efish\x1e\x7e/\x2econfig/fish/functions/gunwip\x2efish\x1e\x7e/\x2econfig/fish/functions/gwip\x2efish\x1e\x7e/\x2econfig/fish/conf\x2ed/git\x2efish
+SETUVAR _fisher_jorgebucaran_2F_fisher_files:\x7e/\x2econfig/fish/functions/fisher\x2efish\x1e\x7e/\x2econfig/fish/completions/fisher\x2efish
+SETUVAR _fisher_lengyijun_2F_fc_2D_fish_files:\x7e/\x2econfig/fish/functions/fc\x2efish
+SETUVAR _fisher_oh_2D_my_2D_fish_2F_plugin_2D_pyenv_files:\x7e/\x2econfig/fish/functions/pyenv\x2efish\x1e\x7e/\x2econfig/fish/conf\x2ed/pyenv\x2efish\x1e\x7e/\x2econfig/fish/completions/pyenv\x2efish
+SETUVAR _fisher_patrickf1_2F_fzf_2E_fish_files:\x7e/\x2econfig/fish/functions/_fzf_configure_bindings_help\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_extract_var_info\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_preview_changed_file\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_preview_file\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_report_diff_type\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_report_file_type\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_search_directory\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_search_git_log\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_search_git_status\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_search_history\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_search_processes\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_search_variables\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_wrapper\x2efish\x1e\x7e/\x2econfig/fish/functions/fzf_configure_bindings\x2efish\x1e\x7e/\x2econfig/fish/conf\x2ed/fzf\x2efish\x1e\x7e/\x2econfig/fish/completions/fzf_configure_bindings\x2efish
+SETUVAR _fisher_plugins:jorgebucaran/fisher\x1ejhillyerd/plugin\x2dgit\x1eevanlucas/fish\x2dkubectl\x2dcompletions\x1efranciscolourenco/done\x1elengyijun/fc\x2dfish\x1ehalostatue/fish\x2ddocker\x40v1\x2ex\x1epatrickf1/fzf\x2efish\x1eoh\x2dmy\x2dfish/plugin\x2dpyenv
+SETUVAR _fisher_upgraded_to_4_4:\x1d
+SETUVAR base16_fish_theme:decaf
+SETUVAR fish_color_autosuggestion:555\x1ebrblack
+SETUVAR fish_color_cancel:\x2dr
+SETUVAR fish_color_command:blue
+SETUVAR fish_color_comment:red
+SETUVAR fish_color_cwd:green
+SETUVAR fish_color_cwd_root:red
+SETUVAR fish_color_end:green
+SETUVAR fish_color_error:brred
+SETUVAR fish_color_escape:brcyan
+SETUVAR fish_color_history_current:\x2d\x2dbold
+SETUVAR fish_color_host:normal
+SETUVAR fish_color_host_remote:yellow
+SETUVAR fish_color_normal:normal
+SETUVAR fish_color_operator:brcyan
+SETUVAR fish_color_param:cyan
+SETUVAR fish_color_quote:yellow
+SETUVAR fish_color_redirection:cyan\x1e\x2d\x2dbold
+SETUVAR fish_color_search_match:bryellow\x1e\x2d\x2dbackground\x3dbrblack
+SETUVAR fish_color_selection:white\x1e\x2d\x2dbold\x1e\x2d\x2dbackground\x3dbrblack
+SETUVAR fish_color_status:red
+SETUVAR fish_color_user:brgreen
+SETUVAR fish_color_valid_path:\x2d\x2dunderline
+SETUVAR fish_key_bindings:fish_default_key_bindings
+SETUVAR fish_pager_color_completion:normal
+SETUVAR fish_pager_color_description:B3A06D\x1eyellow\x1e\x2di
+SETUVAR fish_pager_color_prefix:normal\x1e\x2d\x2dbold\x1e\x2d\x2dunderline
+SETUVAR fish_pager_color_progress:brwhite\x1e\x2d\x2dbackground\x3dcyan
+SETUVAR fish_pager_color_selected_background:\x2dr
+SETUVAR fish_user_paths:/Library/TeX/texbin\x1e/Users/jackieli/\x2ecargo/bin\x1e/Users/jackieli/\x2efzf/bin\x1e/Users/jackieli/go\x1e/Users/jackieli/\x2elocal/bin\x1e/Users/jackieli/go/bin\x1e/Users/jackieli/bin
