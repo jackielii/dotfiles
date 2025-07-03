@@ -13,6 +13,22 @@ _G.toggle_explorer = function()
     end
   end, 50)
 end
+_G.snacks_action_copy_path = function(fullpath)
+  return function(picker, item)
+    local path = item.file
+    if not path or path == "" then
+      vim.notify("No path found", vim.log.levels.WARN)
+      return
+    end
+    P(path)
+    if not fullpath then
+      path = vim.fs.basename(path)
+    end
+    P(path)
+    vim.fn.setreg('"', path)
+    vim.fn.setreg("+", path)
+  end
+end
 
 return {
   {
@@ -22,8 +38,14 @@ return {
         "<leader>fe",
         function()
           local buf = vim.api.nvim_get_current_buf() or 0
-          local explorer = Snacks.explorer.reveal({ buf = buf })
-          explorer:set_cwd(LazyVim.root.get({ buf = buf }))
+          local file = vim.api.nvim_buf_get_name(buf)
+          local root = LazyVim.root.get({ buf = buf })
+          -- if root is home, use parent of file
+          if root == vim.env.HOME then
+            root = vim.fs.dirname(file)
+          end
+          local explorer = Snacks.explorer.reveal({ file = file })
+          explorer:set_cwd(root)
           explorer:focus()
         end,
         desc = "Explorer Snacks (root dir)",
@@ -31,9 +53,14 @@ return {
       { "<leader>e", false },
     },
     opts = {
+      explorer = {
+        replace_netrw = false,
+      },
       picker = {
         sources = {
           explorer = {
+            diagnostics = false,
+            git_status = false,
             win = {
               input = {
                 keys = {
@@ -45,15 +72,22 @@ return {
                   ["<Esc>"] = false,
                   ["]c"] = "explorer_git_next",
                   ["[c"] = "explorer_git_prev",
+                  ["y"] = false,
+                  ["yy"] = { "explorer_yank", mode = { "n", "x" } },
+                  ["yn"] = "copy_name",
+                  ["yp"] = "copy_path",
                 },
               },
             },
             layout = { auto_hide = { "input" } },
-
             -- layout = { layout = { position = "right" } },
             -- your explorer picker configuration comes here
             -- or leave it empty to use the default settings
           },
+        },
+        actions = {
+          copy_name = snacks_action_copy_path(false),
+          copy_path = snacks_action_copy_path(true),
         },
       },
     },

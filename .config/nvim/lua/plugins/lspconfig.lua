@@ -21,7 +21,24 @@ return {
     keys[#keys + 1] = { "<leader>cc", false }
     keys[#keys + 1] = { "<leader>cr", false }
     keys[#keys + 1] = { "<leader>cR", false }
-    keys[#keys + 1] = { "<leader>cr", [[<cmd>LspRestart<cr>]], desc = "Restart LSP" }
+    keys[#keys + 1] = { "<leader>cr", function()
+      local clients = vim.lsp.get_clients({ bufnr = 0 })
+      if #clients == 0 then
+        return
+      end
+      local name = clients[1].name
+      if vim.bo.filetype == "templ" then
+        name = "templ"
+      end
+      -- local client_names = {}
+      -- for _, client in ipairs(clients) do
+      --   table.insert(client_names, client.name)
+      -- end
+      -- vim.notify("Restarting LSP for " .. table.concat(client_names, ", "), vim.log.levels.WARN)
+      -- vim.cmd("LspRestart ".. table.concat(client_names, " "))
+      vim.notify("Restarting LSP for " .. name, vim.log.levels.WARN)
+      vim.cmd("LspRestart ".. name)
+    end, desc = "Restart LSP" }
     keys[#keys + 1] = { "<leader>rn", vim.lsp.buf.rename, desc = "Rename" }
     keys[#keys + 1] = { "<leader>rN", function() Snacks.rename.rename_file() end, desc = "Rename File", mode = { "n" }, has = { "workspace/didRenameFiles", "workspace/willRenameFiles" } }
     keys[#keys + 1] =

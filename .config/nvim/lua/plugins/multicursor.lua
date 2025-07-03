@@ -8,6 +8,7 @@ return {
       { "<M-N>",           function() require("multicursor-nvim").matchAddCursor(-1) end,   desc = "Multi find under reverse", mode = { "n", "v" } },
       { "<C-Down>",        function() require("multicursor-nvim").lineAddCursor(1) end,     desc = "Multi down" },
       { "<C-Up>",          function() require("multicursor-nvim").lineAddCursor(-1) end,    desc = "Multi up" },
+
       { "<leader>gv",      function() require("multicursor-nvim").restoreCursors() end,     desc = "Multi reselect" },
       { "<A-leftmouse>",   function() require("multicursor-nvim").handleMouse() end,        desc = "Multi mouse" },
       { "<A-leftdrag>",    function() require("multicursor-nvim").handleMouseDrag() end,    desc = "Multi mouse" },
@@ -27,7 +28,7 @@ return {
       mc.addKeymapLayer(function(map)
         -- Delete the main cursor.
         map({ "n", "x" }, "Q", mc.deleteCursor)
-        map({ "n", "x" }, "q", function()
+        map({ "n", "x" }, "<M-q>", function()
           mc.matchSkipCursor(1)
         end)
 

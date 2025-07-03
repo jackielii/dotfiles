@@ -37,4 +37,7 @@ vim.g.ai_cmp = false
 vim.lsp.set_log_level("off")
 
 -- vim.lsp.set_log_level(vim.lsp.log_levels.DEBUG)
+-- vim.lsp.set_log_level(vim.lsp.log_levels.INFO)
+-- vim.lsp.set_log_level(vim.lsp.log_levels.WARN)
+-- vim.lsp.set_log_level(vim.lsp.log_levels.ERROR)
 -- require("vim.lsp.log").set_format_func(vim.inspect)

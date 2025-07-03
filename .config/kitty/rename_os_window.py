@@ -6,9 +6,10 @@ from kitty.fast_data_types import (
 
 
 def main(args):
-    return input("Input OS window title> ")
+    return input("Input OS window title> ") or "main"
 
 
 def handle_result(args, answer, target_window_id, boss):
     os_window_id = current_focused_os_window_id() or last_focused_os_window_id()
-    set_os_window_title(os_window_id, answer)
+    if answer:
+        set_os_window_title(os_window_id, answer)

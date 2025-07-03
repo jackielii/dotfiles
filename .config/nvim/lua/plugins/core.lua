@@ -40,28 +40,28 @@ return {
     end,
   },
 
-  -- {
-  --   "tpope/vim-fugitive",
-  --   dependencies = { { "tpope/vim-rhubarb" } },
-  --   event = "VeryLazy",
-  --   cmd = { "GBrowse" },
-  --   keys = {
-  --     { "<leader>g<space>", [[:Git ]], desc = "Git" },
-  --     { "<leader>g<cr>", [[<cmd>tab Git<cr>]], desc = "Git" },
-  --     { "<leader>ge", [[<cmd>Gedit<cr>]], desc = "Gedit" },
-  --     { "<leader>gb", [[<cmd>Git blame<cr>]], desc = "Git blame" },
-  --     { "<leader>gc", [[<cmd>Git commit<cr>]], desc = "Git commit" },
-  --     { "<leader>gd", desc = "+Git diff" },
-  --     { "<leader>gds", [[<cmd>tab Git diff --staged<cr>]], desc = "Git diff staged" },
-  --     { "<leader>gda", [[<cmd>tab Git diff<cr>]], desc = "Git diff" },
-  --     { "<leader>gdd", [[<cmd>tab Git diff %<cr>]], desc = "Git diff current" },
-  --     { "<leader>gp", [[<cmd>Git pull<cr>]], desc = "Git pull" },
-  --     { "<leader>gP", [[<cmd>Git push<cr>]], desc = "Git push" },
-  --     { "<leader>gl0", [[:tabnew % <bar> 0Gclog<cr>]], desc = "Fugitive Git log file" },
-  --     { "<leader>gla", [[:tabnew % <bar> Git log<cr>]], desc = "Fugitive Git history" },
-  --     { "<leader>ga", [[<cmd>Git add --all<cr>]], desc = "Git add" },
-  --   },
-  -- },
+  {
+    "tpope/vim-fugitive",
+    -- dependencies = { { "tpope/vim-rhubarb" } },
+    -- event = "VeryLazy",
+    cmd = { "GBrowse", "Git", "Gclog" },
+    keys = {
+      { "<leader>g<space>", [[:Git ]], desc = "Git" },
+      { "<leader>g<cr>", [[<cmd>tab Git<cr>]], desc = "Git" },
+      { "<leader>ge", [[<cmd>Gedit<cr>]], desc = "Gedit" },
+      { "<leader>gb", [[<cmd>Git blame<cr>]], desc = "Git blame" },
+      { "<leader>gc", [[<cmd>Git commit<cr>]], desc = "Git commit" },
+      { "<leader>gd", desc = "+Git diff" },
+      { "<leader>gds", [[<cmd>tab Git diff --staged<cr>]], desc = "Git diff staged" },
+      { "<leader>gda", [[<cmd>tab Git diff<cr>]], desc = "Git diff" },
+      { "<leader>gdd", [[<cmd>tab Git diff %<cr>]], desc = "Git diff current" },
+      { "<leader>gp", [[<cmd>Git pull<cr>]], desc = "Git pull" },
+      { "<leader>gP", [[<cmd>Git push<cr>]], desc = "Git push" },
+      { "<leader>gl0", [[:tabnew % <bar> 0Gclog<cr>]], desc = "Fugitive Git log file" },
+      { "<leader>gla", [[:tabnew % <bar> Git log<cr>]], desc = "Fugitive Git history" },
+      { "<leader>ga", [[<cmd>Git add --all<cr>]], desc = "Git add" },
+    },
+  },
 
   {
     "tpope/vim-abolish",
@@ -101,7 +101,7 @@ return {
       },
     },
     opts = {
-      preset = "modern",
+      preset = "helix",
       filter = function(mapping)
         -- triggers_blacklist = {
         --   -- list of mode / prefixes that should never be hooked by WhichKey
@@ -270,9 +270,9 @@ return {
         pattern = "*",
         callback = function()
           vim.cmd([[
-          hi! Search guifg=#c8d3f5 guibg=#3e68d7
-          hi! IncSearch guifg=#1b1d2b guibg=#ff966c
-          hi! link CurSearch IncSearch
+          " hi! Search guifg=#c8d3f5 guibg=#3e68d7
+          " hi! IncSearch guifg=#1b1d2b guibg=#ff966c
+          " hi! link CurSearch IncSearch
           hi! link TSNamespace Normal
           hi! link TSVariable Normal
           hi! link TSParameterReference Identifier
@@ -606,11 +606,14 @@ return {
       return {
         highlight = {
           groups = {
-            InclineNormal = { guibg = vim.g.base16_gui06, guifg = vim.g.base16_gui00 },
-            -- InclineNormalNC = { guifg = colors.base, guibg = colors.base03 },
+            InclineNormal = { guibg = vim.g.base16_gui09, guifg = vim.g.base16_gui00 },
+            InclineNormalNC = { guibg = vim.g.base16_gui06, guifg = vim.g.base16_gui00 },
           },
         },
-        window = { margin = { vertical = 0, horizontal = 0 } },
+        window = {
+          placement = { horizontal = "right", vertical = "bottom", },
+          -- margin = { vertical = 0, horizontal = 0 },
+        },
         hide = { cursorline = true },
         render = function(props)
           local icons = require("nvim-web-devicons")
@@ -649,6 +652,7 @@ return {
     "folke/snacks.nvim",
     opts = {
       dashboard = {
+        -- enabled = false,
         preset = {
           header = [[
    ███████╗██████╗  █████╗  ██████╗███████╗ ██████╗██████╗  █████╗ ███████╗████████╗
@@ -921,10 +925,7 @@ return {
       {
         "<F6>",
         "<cmd>FloatermNew --title=lazygit lazygit<cr>",
-        mode = {
-          "n",
-          "i",
-        },
+        mode = { "n", "i" },
       },
       -- o is mapped to open file in lf, so here we want it to use system open
       {
@@ -1045,6 +1046,14 @@ return {
       { "[t",         function() require("todo-comments").jump_prev() end, desc = "Previous todo comment" },
       { "<leader>xt", "<cmd>TodoTrouble<cr>",                              desc = "Todo (Trouble)" },
       { "<leader>xT", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>",      desc = "Todo/Fix/Fixme (Trouble)" },
+    },
+  },
+
+  {
+    "folke/trouble.nvim",
+    keys = {
+      { "<C-.>", "]q", desc = "Next Trouble/Quickfix Item", remap = true },
+      { "<C-,>", "[q", desc = "Previous Trouble/Quickfix Item", remap = true },
     },
   },
 
@@ -1250,13 +1259,13 @@ return {
 
   {
     "jackielii/gorun-mod",
-    build = "go install",
+    -- build = "go install",
     ft = { "go" },
-    keys = {
-      { "<leader>kgs", "<cmd>call GorunSave()<cr>", desc = "Gorun Save" },
-      { "<leader>kge", "<cmd>call GorunReset()<cr>", desc = "Gorun Reset" },
-      { "<leader>kgg", "<cmd>$read !gorun-mod %<cr>", desc = "Gorun insert gomod" },
-    },
+    -- keys = {
+    --   { "<leader>kgs", "<cmd>call GorunSave()<cr>", desc = "Gorun Save" },
+    --   { "<leader>kge", "<cmd>call GorunReset()<cr>", desc = "Gorun Reset" },
+    --   { "<leader>kgg", "<cmd>$read !gorun-mod %<cr>", desc = "Gorun insert gomod" },
+    -- },
   },
 
   {
@@ -1291,18 +1300,19 @@ return {
   --   end,
   -- },
 
-  -- {
-  --   "HakonHarnes/img-clip.nvim",
-  --   event = "VeryLazy",
-  --   opts = {
-  --     -- add options here
-  --     -- or leave it empty to use the default settings
-  --   },
-  --   keys = {
-  --     -- suggested keymap
-  --     -- { "<leader>p", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },
-  --   },
-  -- },
+  {
+    "HakonHarnes/img-clip.nvim",
+    -- event = "VeryLazy",
+    opts = {
+      -- add options here
+      -- or leave it empty to use the default settings
+    },
+    keys = {
+      -- suggested keymap
+      -- { "<leader>p", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },
+    },
+    cmd = "PasteImage",
+  },
   {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
@@ -1414,7 +1424,7 @@ return {
       cmd = { "CopilotChat" },
       keys = {
         -- { "<C-S-/>", "<cmd>CopilotChatToggle<cr>", desc = "Copilot Chat", mode = { "n", "v" } },
-        { "<D-d>", "<cmd>CopilotChatToggle<cr>", desc = "Copilot Chat", mode = { "n", "v" } },
+        { "<D-d>", "<cmd>CopilotChatToggle<cr>", desc = "Copilot Chat", mode = { "n", "v", "i" } },
       },
       build = "make tiktoken", -- Only on MacOS or Linux
       dependencies = {
@@ -1661,6 +1671,11 @@ return {
     },
     config = function(_, opts)
       require("noice").setup(opts)
+      LazyVim.cmp.actions.cmp_hide_signature = function()
+        if vim.b.cmp_active then
+          return require("noice.lsp.completion").hide()
+        end
+      end
       vim.api.nvim_set_hl(0, "LspSignatureActiveParameter", { link = "@type.builtin", default = true })
       vim.api.nvim_set_hl(0, "NoiceVirtualText", { fg = "#c8d3f5", bg = "#3e68d7", italic = true })
     end,

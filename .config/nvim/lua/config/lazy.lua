@@ -41,6 +41,7 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.linting.eslint" },
     { import = "lazyvim.plugins.extras.formatting.prettier" },
 
+    { import = "lazyvim.plugins.extras.lang.go" },
     { import = "lazyvim.plugins.extras.lang.json" },
     { import = "lazyvim.plugins.extras.lang.typescript" },
     { import = "lazyvim.plugins.extras.lang.tailwind" },
@@ -48,22 +49,11 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.lang.python" },
     { import = "lazyvim.plugins.extras.lang.rust" },
     { import = "lazyvim.plugins.extras.lang.toml" },
-
-    -- { import = "lsp.extras.lang.python" },
-    { import = "lsp.extras.lang.go" },
-    { import = "lsp.extras.lang.zig" },
-    { import = "lsp.extras.lang.sql" },
-    { import = "lsp.extras.lang.htmx_html_templ" },
-    { import = "lsp.extras.lang.tex" },
-    -- { import = "lsp.extras.lang.tailwind" },
-    { import = "lsp.extras.lang.clangd" },
-    { import = "lsp.extras.lang.proto" },
-    -- { import = "lsp.extras.lang.lua" },
-    { import = "lsp.extras.lang.xml" },
-    { import = "lsp.extras.lang.typst" },
+    { import = "lazyvim.plugins.extras.lang.clangd" },
 
     -- import/override with your plugins
     { import = "plugins" },
+    { import = "lang" },
   },
   defaults = {
     -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.
@@ -76,7 +66,7 @@ require("lazy").setup({
   },
   install = { colorscheme = { "habamax" } },
   checker = {
-    enabled = true, -- check for plugin updates periodically
+    enabled = false, -- check for plugin updates periodically
     notify = false, -- notify on update
   }, -- automatically check for plugin updates
   performance = {

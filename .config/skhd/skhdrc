@@ -77,10 +77,10 @@ cmd + ctrl - 0x32 : yabai -m space --toggle mission-control && cliclick -r w:150
 # }}}
 
 # move window cmd + shift - ? {{{
-cmd + shift - h : yabai -m window --swap west || begin; yabai -m window --display west ; yabai -m display --focus west; end
-cmd + shift - j : yabai -m window --swap south || begin; yabai -m window --display south ; yabai -m display --focus south; end
-cmd + shift - k : yabai -m window --swap north || begin; yabai -m window --display north ; yabai -m display --focus north; end
-cmd + shift - l : yabai -m window --swap east || begin; yabai -m window --display east ; yabai -m display --focus east; end
+cmd + shift - h : yabai -m window --swap west || ( yabai -m window --display west ; yabai -m display --focus west )
+cmd + shift - j : yabai -m window --swap south || ( yabai -m window --display south ; yabai -m display --focus south )
+cmd + shift - k : yabai -m window --swap north || ( yabai -m window --display north ; yabai -m display --focus north )
+cmd + shift - l : yabai -m window --swap east || ( yabai -m window --display east ; yabai -m display --focus east )
 
 cmd + shift - 1 : yabai -m window --space 1
 cmd + shift - 2 : yabai -m window --space 2
@@ -113,13 +113,52 @@ cmd + ctrl + shift - l: yabai -m window --resize right:10:0 || yabai -m window w
 
 # warp & stack {{{
 
-# warp window with alt
+# Define window management mode for warp/stack operations
+# use anybar to indicate the mode: https://github.com/tonsky/AnyBar
+:: winmode @ : echo -n "red" | nc -4u -w0 localhost 1738
+:: default : echo -n "hollow" | nc -4u -w0 localhost 1738
+
+# Enter window mode with meh + m
+meh - m ; winmode
+winmode < escape ; default
+winmode < meh - m ; default
+
+# Focus operations - basic hjkl for focus
+winmode < h : yabai -m window --focus west || yabai -m display --focus west || yabai -m display --focus recent
+winmode < j : yabai -m window --focus stack.next || yabai -m window --focus south || yabai -m display --focus south || yabai -m window --focus stack.first
+winmode < k : yabai -m window --focus stack.prev || yabai -m window --focus north || yabai -m display --focus north || yabai -m window --focus stack.last
+winmode < l : yabai -m window --focus east || yabai -m display --focus east || yabai -m display --focus mouse
+
+# Move operations - shift + hjkl for moving
+winmode < shift - h : yabai -m window --move rel:-80:0
+winmode < shift - j : yabai -m window --move rel:0:80
+winmode < shift - k : yabai -m window --move rel:0:-80
+winmode < shift - l : yabai -m window --move rel:80:0
+
+# Warp operations - alt + shift + hjkl for warping
+winmode < alt + shift - h : yabai -m window --warp west
+winmode < alt + shift - j : yabai -m window --warp south
+winmode < alt + shift - k : yabai -m window --warp north
+winmode < alt + shift - l : yabai -m window --warp east
+
+# Stack operations - ctrl + shift + hjkl for stacking
+winmode < ctrl + shift - h : yabai -m window --stack west
+winmode < ctrl + shift - j : yabai -m window --stack south
+winmode < ctrl + shift - k : yabai -m window --stack north
+winmode < ctrl + shift - l : yabai -m window --stack east
+
+# Stack management shortcuts
+winmode < s : yabai -m window --insert stack  # Toggle stack mode
+winmode < u : yabai -m window --toggle float; yabai -m window --toggle float  # Unstack window
+winmode < n : yabai -m window --focus stack.next  # Navigate stack next
+winmode < p : yabai -m window --focus stack.prev  # Navigate stack prev
+
+# Original keybindings kept as alternatives
 alt + cmd + shift - k : yabai -m window --warp north
 alt + cmd + shift - j : yabai -m window --warp south
 alt + cmd + shift - h : yabai -m window --warp west
 alt + cmd + shift - l : yabai -m window --warp east
 
-# stack similar to warp, add ctrl
 alt + ctrl + shift - k: yabai -m window --stack north
 alt + ctrl + shift - j: yabai -m window --stack south
 alt + ctrl + shift - h: yabai -m window --stack west
@@ -148,28 +187,7 @@ cmd + shift - 0x18 : yabai -m space --balance y-axis
 cmd + shift - 0x1B : yabai -m space --balance x-axis
 # }}}
 
-# ctrl + number forward as cmd + number to applications {{{
-# _HACK_ to send ctrl + number as cmd + number to applications skipping existing mappings:
-# 1. define default & capture mode
-:: default
-:: tabmode @
-
-# 2. define an impossible key to switch to capture mode
-# hyper - 0x80 ; tabmode
-# tabmode < hyper - 0x80 ; default
-# cmd - x ; tabmode
-# tabmode < cmd - x ; default
-
-# 3. define ctrl + number to send mode switch key, send cmd + number, switch back
-# ctrl - 1 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 1" ; skhd -k "hyper - 0x80"
-# ctrl - 2 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 2" ; skhd -k "hyper - 0x80"
-# ctrl - 3 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 3" ; skhd -k "hyper - 0x80"
-# ctrl - 4 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 4" ; skhd -k "hyper - 0x80"
-# ctrl - 5 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 5" ; skhd -k "hyper - 0x80"
-# ctrl - 6 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 6" ; skhd -k "hyper - 0x80"
-# ctrl - 7 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 7" ; skhd -k "hyper - 0x80"
-# ctrl - 8 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 8" ; skhd -k "hyper - 0x80"
-# ctrl - 9 : skhd -k "hyper - 0x80" ; skhd -k "cmd - 9" ; skhd -k "hyper - 0x80"
+# common ctr - number to cmd - number {{{
 ctrl - 1 | cmd - 1
 ctrl - 2 | cmd - 2
 ctrl - 3 | cmd - 3

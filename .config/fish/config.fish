@@ -109,6 +109,8 @@ if status is-interactive
     end
 
     fish_add_path /Library/TeX/texbin
+
+    alias pg $PAGER
 end
 
 # vim:set et sts=4 sw=4 ts=4:

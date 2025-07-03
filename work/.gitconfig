@@ -14,3 +14,5 @@
 	prompt = false
 ; [url "https://x-access-token:@github.com/"]
 ; 	insteadOf = https://github.com/
+[url "https://gitlab-ci-token:eS1LzgtiLn8ah1vP3NLz@gitlab.com/"]
+	insteadOf = https://gitlab.com/

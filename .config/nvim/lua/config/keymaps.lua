@@ -2,41 +2,47 @@ local map = vim.keymap.set
 local del = vim.keymap.del
 
 del("n", "<leader><space>")
+del("n", "grn")
+del("n", "gri")
+del("n", "grr")
+del("n", "gra")
+del("v", ">")
+del("v", "<")
 
-map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
-map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true })
+map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true })
 
-map("i", "II", "<Esc>I", { silent = true })
-map("i", "Ii", "<Esc>i", { silent = true })
-map("i", "AA", "<Esc>A", { silent = true })
-map("i", "OO", "<Esc>O", { silent = true })
-map("i", "UU", "<C-o>u", { silent = true })
-map("i", "Pp", "<Esc>P", { silent = true })
-map("i", "PP", "<Esc>pa", { silent = true })
-map("i", "CC", "<Esc>cc", { silent = true })
-map("i", "CD", "<C-o>c$", { silent = true })
+map("i", "II", "<Esc>I")
+map("i", "Ii", "<Esc>i")
+map("i", "AA", "<Esc>A")
+map("i", "OO", "<Esc>O")
+map("i", "UU", "<C-o>u")
+map("i", "Pp", "<Esc>P")
+map("i", "PP", "<Esc>pa")
+map("i", "CC", "<Esc>cc")
+map("i", "CD", "<C-o>c$")
 map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit all" })
 map("n", "<leader>QQ", "<cmd>qa!<cr>", { desc = "Quit all" })
 
 -- move lines up and down
-map("x", "<A-j>", ":m '>+1<cr>gv", { silent = true })
-map("x", "<A-k>", ":m '<-2<cr>gv", { silent = true })
-map("n", "<A-j>", ":m +1<cr>", { silent = true })
-map("n", "<A-k>", ":m -2<cr>", { silent = true })
+map("x", "<A-j>", ":m '>+1<cr>gv")
+map("x", "<A-k>", ":m '<-2<cr>gv")
+map("n", "<A-j>", ":m +1<cr>")
+map("n", "<A-k>", ":m -2<cr>")
 
--- map('n', '<M-a>', 'ggVG', { silent = true })
-map("n", "<D-a>", "ggVG", { silent = true })
-map("i", "<D-a>", "<esc>ggVG", { silent = true })
+-- map('n', '<M-a>', 'ggVG')
+map("n", "<D-a>", "ggVG")
+map("i", "<D-a>", "<esc>ggVG")
 -- vmap P doesn't change the register :help v_P
-map("x", "p", "P", { silent = true })
+map("x", "p", "P")
 
-map({ "n", "i" }, "<Esc>", "<Esc><cmd>nohl<cr>", { silent = true, noremap = true })
+map({ "n", "i" }, "<Esc>", "<Esc><cmd>nohl<cr>")
 for _, key in ipairs({ "<C-s>", "<M-s>", "<D-s>" }) do
-  map({ "n", "v", "i", "s" }, key, "<Esc><cmd>update<cr><cmd>nohl<cr>", { silent = true, noremap = true })
+  map({ "n", "v", "i", "s" }, key, "<Esc><cmd>update<cr><cmd>nohl<cr><cmd>LuaSnipClear<cr>")
 end
-map({ "n", "i", "x", "v" }, "<C-s><C-s>", "<Esc><cmd>wa<cr>", { silent = true, noremap = true })
+-- map({ "n", "i", "x", "v" }, "<C-s><C-s>", "<Esc><cmd>wa<cr>")
 
-map({ "v" }, "<D-c>", '"+y', { silent = true, noremap = true })
+map({ "v" }, "<D-c>", '"+y')
 map({ "n" }, "<D-c>", function()
   local reg = vim.fn.getreg('"')
   if reg == "" then
@@ -44,37 +50,37 @@ map({ "n" }, "<D-c>", function()
   else
     vim.fn.setreg("+", reg)
   end
-end, { silent = true, noremap = true })
-map({ "v" }, "<D-v>", '"+p', { silent = true, noremap = true })
-map({ "n" }, "<D-v>", function()
-  vim.schedule(function()
-    local vstart = vim.fn.getpos("'<")
-    local vend = vim.fn.getpos("'>")
-    if vstart[2] == vend[2] and vstart[3] == vend[3] then
-      vim.cmd.normal('"+p')
-    else
-      vim.cmd.normal('gv"+P')
-    end
-  end)
-end, { silent = true, noremap = true, expr = true })
-map({ "i" }, "<D-v>", "<c-r>+", { silent = true, noremap = true })
+end)
+map({ "n", "v" }, "<D-y>", '"+y', { remap = true })
+map("n", "<D-Y>", '"+Y', { remap = true })
+map({ "n", "v" }, "<D-p>", '"+P', { remap = true })
 
--- for _, key in ipairs({ "n", "N", "*", "#", "g*", "g#" }) do
---   map("n", key, key .. "zz", { silent = true })
--- end
+map("n", "<leader><tab>", "<C-^>", { nowait = true })
+map({ "n", "i" }, "<M-q>", "<Esc><C-^>")
+map({ "n", "i" }, "<M-tab>", "<Esc><C-^>")
 
-map("n", "<leader><tab>", "<C-^>", { silent = true, nowait = true })
-map({ "n", "i" }, "<M-q>", "<Esc><C-^>", { silent = true })
-map({ "n", "i" }, "<M-tab>", "<Esc><C-^>", { silent = true })
+_G.change_word = function(key)
+  return function()
+    local cword = vim.fn.expand("<cword>")
+    P(cword)
+    local escaped = vim.fn.escape(cword, "\\/.*'$^~[]")
+    vim.fn.setreg("/", escaped)
+    vim.schedule(function()
+      vim.api.nvim_feedkeys("cg" .. key, "n", false)
+    end)
+  end
+end
 
-map("n", "c*", [[:let @/=expand("<cword>")<cr>cgn]], { silent = true, noremap = true })
-map("n", "c#", [[:let @/=expand("<cword>")<cr>cgN]], { silent = true, noremap = true })
-map("n", "y/", [[:let @/=expand("<cword>")<cr>]], { silent = true, noremap = true })
+-- map("n", "c*", [[:let @/=expand("<cword>")<cr>cgn]])
+-- map("n", "c#", [[:let @/=expand("<cword>")<cr>cgN]])
+map("n", "c*", change_word("n"))
+map("n", "c#", change_word("N"))
+map("n", "y/", [[:let @/=expand("<cword>")<cr>]])
 
-map("x", "//", [["vy/\V<C-r>=escape(@v,'/\')<cr><cr>N]], { silent = true, noremap = true })
-map("x", "<M-/>", "<Esc>/\\%V", { silent = true, noremap = true })
-map("x", "<D-/>", "<Esc>/\\%V", { silent = true, noremap = true })
-map("x", "$", "g_", { silent = true, noremap = true })
+map("x", "//", [["vy/\V<C-r>=escape(@v,'/\')<cr><cr>N]])
+map("x", "<M-/>", "<Esc>/\\%V")
+map("x", "<D-/>", "<Esc>/\\%V")
+map("x", "$", "g_")
 map("n", "yoq", function()
   if vim.fn.getqflist({ winid = 0 }).winid ~= 0 then
     vim.cmd.cclose()
@@ -100,33 +106,44 @@ endfunction
 command! -register CopyMatches call CopyMatches(<q-reg>)
 ]])
 
-map("n", "<M-H>", "2<C-w><", { silent = true })
-map("n", "<M-J>", "2<C-w>+", { silent = true })
-map("n", "<M-K>", "2<C-w>-", { silent = true })
-map("n", "<M-L>", "2<C-w>>", { silent = true })
+map("n", "<M-H>", "2<C-w><")
+map("n", "<M-J>", "2<C-w>+")
+map("n", "<M-K>", "2<C-w>-")
+map("n", "<M-L>", "2<C-w>>")
 
 map("n", "<leader><leader>5", function()
-  -- local cmd = [[:let @+=expand("%:p")<cr>:echom "copied: " . expand("%:p")<cr>]]
-  local print_path = function()
-    local path = vim.api.nvim_buf_get_name(0)
-    vim.fn.setreg("+", path)
-    print("copied: " .. path)
-  end
-  local ok, noice = pcall(require, "noice")
-  if ok then
-    noice.redirect(print_path)
-  else
-    print_path()
-  end
-end, { silent = true })
+  local filepath = vim.fn.expand("%:p")
+  vim.fn.setreg("+", filepath)
+  vim.notify("copied: " .. filepath, vim.log.levels.INFO)
+end, { desc = "Copy File Path" })
+
+map("n", "<leader><leader>6", function()
+  local basename = vim.fn.expand("%:t")
+  vim.fn.setreg("+", basename)
+  vim.notify("copied: " .. basename, vim.log.levels.INFO)
+end, { desc = "Copy File basename" })
+
+map("n", "<leader><leader>7", function()
+  local root = LazyVim.root()
+  local filename = vim.fn.expand("%:p")
+  local relative_path = filename:sub(#root + 2)
+  vim.fn.setreg("+", relative_path)
+  vim.notify("copied: " .. relative_path, vim.log.levels.INFO)
+end, { desc = "Copy File Name without extension" })
+
+map("n", "<leader><leader>8", function()
+  local dirname = vim.fn.expand("%:p:h")
+  vim.fn.setreg("+", dirname)
+  vim.notify("copied: " .. dirname, vim.log.levels.INFO)
+end, { desc = "Copy File Dirname" })
 
 -- break undo on common chars
 for _, key in ipairs({ " ", ".", ",", "!", "?", "<", "#", "/" }) do
-  map("i", key, key .. "<C-g>u", { silent = true, noremap = true })
+  map("i", key, key .. "<C-g>u")
 end
 
 -- nnoremap <leader><leader>x :so % <bar> silent Sleuth<cr>
-map("n", "<leader><leader>x", "<cmd>so %<cr>", { silent = true })
+map("n", "<leader><leader>x", "<cmd>so %<cr>")
 
 vim.cmd([[ function! MoveByWord(flag)
   if mode() == 'v' | execute "norm! gv" | endif
@@ -135,8 +152,8 @@ vim.cmd([[ function! MoveByWord(flag)
   endfor
 endfunction ]])
 
-map({ "n", "v" }, "H", '<cmd>call MoveByWord("b")<cr>', { silent = true })
-map({ "n", "n" }, "L", '<cmd>call MoveByWord("")<cr>', { silent = true })
+map({ "n", "v" }, "H", '<cmd>call MoveByWord("b")<cr>')
+map({ "n", "n" }, "L", '<cmd>call MoveByWord("")<cr>')
 
 vim.cmd([[ function! ToggleMovement(firstOp, thenOp)
   if mode() == 'v' | execute "norm! gv" | endif
@@ -147,25 +164,25 @@ vim.cmd([[ function! ToggleMovement(firstOp, thenOp)
     execute "normal! " . c . a:thenOp
   endif
 endfunction ]])
-map({ "n" }, "0", [[<cmd>call ToggleMovement("^", "0")<cr>]], { silent = true })
-map({ "n" }, "^", [[<cmd>call ToggleMovement("^", "0")<cr>]], { silent = true })
+map({ "n" }, "0", [[<cmd>call ToggleMovement("^", "0")<cr>]])
+map({ "n" }, "^", [[<cmd>call ToggleMovement("^", "0")<cr>]])
 
--- map("n", "[[", [[<cmd>eval search('{', 'b')<cr>w99[{]], { silent = true, noremap = true })
--- map("n", "][", [[<cmd>eval search('}')<cr>b99]}]], { silent = true, noremap = true })
--- map("n", "]]", [[j0[[%:silent! eval search('{')<cr>]], { silent = true, noremap = true })
--- map("n", "[]", [[k$][%:silent! eval search('}', 'b')<cr>]], { silent = true, noremap = true })
+-- map("n", "[[", [[<cmd>eval search('{', 'b')<cr>w99[{]])
+-- map("n", "][", [[<cmd>eval search('}')<cr>b99]}]])
+-- map("n", "]]", [[j0[[%:silent! eval search('{')<cr>]])
+-- map("n", "[]", [[k$][%:silent! eval search('}', 'b')<cr>]])
 
--- map("n", "<leader>bd", "<cmd>bd<cr>", { silent = true })
+-- map("n", "<leader>bd", "<cmd>bd<cr>")
 -- stylua: ignore start
 map("n", "<leader>bd", function() Snacks.bufdelete() end, { desc = "Delete Buffer" })
 map("n", "<leader>bD", function() Snacks.bufdelete({force=true}) end, { desc = "Delete Buffer!" })
 map("n", "<leader>bw", function() Snacks.bufdelete({wipe=true}) end, { desc = "Wipeout Buffer" })
 map("n", "<leader>bW", function() Snacks.bufdelete({wipe=true, force=true}) end, { desc = "Wipeout Buffer!" })
 map("n", "<leader>bo", function() Snacks.bufdelete.other() end, { desc = "Delete Other Buffers" })
-map("n", "<leader>kn", "<cmd>enew<cr>", { silent = true })
+map("n", "<leader>kn", "<cmd>enew<cr>")
 
-map("n", "<leader>tw", "<cmd>tabclose!<cr>", { silent = true })
-map("n", "<leader>tq", "<cmd>tabclose<cr>", { silent = true })
+map("n", "<leader>tw", "<cmd>tabclose!<cr>")
+map("n", "<leader>tq", "<cmd>tabclose<cr>")
 
 map("c", "<M-b>", [[<cmd>call feedkeys("<C-Left>")<cr>]])
 map("c", "<M-f>", [[<cmd>call feedkeys("<C-Right>")<cr>]])
@@ -188,7 +205,7 @@ function! ClearWhitespace()
   call winrestview(winview)
 endfunctio
 ]])
-map("n", "<leader>cw", "<cmd>call ClearWhitespace()<cr>", { silent = true })
+map("n", "<leader>cw", "<cmd>call ClearWhitespace()<cr>")
 
 vim.cmd([[
 command! -nargs=? -complete=dir -bang CloseNonProjectBuffers :call CloseNonProjectBuffers('<args>', '<bang>')
@@ -256,7 +273,7 @@ map("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
 -- stylua: ignore start
 -- lazygit
 if vim.fn.executable("lazygit") == 1 then
-  map("n", "<F6>", function() Snacks.lazygit({ cwd = LazyVim.root.git() }) end,                           { desc = "Lazygit (Root Dir)" })
+  -- map("n", "<F6>", function() Snacks.lazygit({ cwd = LazyVim.root.git() }) end,                           { desc = "Lazygit (Root Dir)" })
   map("n", "<leader>gg", function() Snacks.lazygit( { cwd = LazyVim.root.git() }) end, { desc = "Lazygit (Root Dir)" })
   map("n", "<leader>gG", function() Snacks.lazygit() end, { desc = "Lazygit (cwd)" })
   map("n", "<leader>gb", function() Snacks.git.blame_line() end, { desc = "Git Blame Line" })
@@ -305,24 +322,25 @@ map("n", "<D-i>", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
 -- map("n", "]w", diagnostic_goto(true, "WARN"), { desc = "Next Warning" })
 -- map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
 
-map({ "n", "i", "x" }, "<F7>", function()
+local function close_all_float()
   local nldocs = require("noice.lsp.docs")
   local message = nldocs.get("signature")
   nldocs.hide(message)
   vim.cmd([[NoiceDismiss]])
-end, { desc = "Close all floating windows" })
+end
+map({ "n", "i", "x" }, "<F7>", close_all_float, { desc = "Close all floating windows" })
 
 map("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Lazy" })
 
 -- picker mappings
 --
 map("n", "<C-p>", function() LazyVim.pick("smart", { multi = { "files" }, cwd = vim.fn.getcwd() })() end, { desc = "File Files" })
-map("n", "<leader>e", LazyVim.pick("buffers"), { desc = "File Buffers" })
-map("n", "<leader>ds", LazyVim.pick("lsp_symbols"), {desc = "LSP Document Symbols" })
-map("n", "<leader>dS", LazyVim.pick("lsp_workspace_symbols"), {desc = "LSP Workspace Symbols" })
-map("n", "<leader>dl", LazyVim.pick("lsp_workspace_symbols"), {desc = "LSP Workspace Symbols" })
-map("n", "<leader>da", LazyVim.pick("diagnostics_buffer"), {desc = "Diagnostics Buffer" })
-map("n", "<leader>dA", LazyVim.pick("diagnostics"), {desc = "Diagnostics All" })
+map("n", "<leader>e", LazyVim.pick("buffers", {current=false}), { desc = "File Buffers" })
+map("n", "<leader>ds", function() Snacks.picker.lsp_symbols({ filter = LazyVim.config.kind_filter }) end, {desc = "LSP Document Symbols" })
+map("n", "<leader>dS", function() Snacks.picker.lsp_workspace_symbols({ filter = LazyVim.config.kind_filter }) end, {desc = "LSP Workspace Symbols" })
+map("n", "<leader>dl", function() Snacks.picker.lsp_workspace_symbols({ filter = LazyVim.config.kind_filter }) end, {desc = "LSP Workspace Symbols" })
+map("n", "<leader>da", LazyVim.pick("diagnostics"), {desc = "Diagnostics All" })
+map("n", "<leader>dA", LazyVim.pick("diagnostics_buffer"), {desc = "Diagnostics Buffer" })
 map("n", "<leader>zg", LazyVim.pick("git_files"), {desc = "Git File" })
 map("n", "<leader>zf", function() LazyVim.pick("files", {dirs={vim.fn.expand("%:p:h")}})() end, {desc = "" })
 -- map("n", "<leader>zh", LazyVim.pick(), {desc = "" })
@@ -340,7 +358,13 @@ map("n", "<leader>O", LazyVim.pick("recent"), {desc = "Recent Files (All)" })
 map("n", "<leader>k:", LazyVim.pick("command_history"), {desc = "Command history" })
 map("n", "<leader>k/", LazyVim.pick("search_history"), {desc = "Search history" })
 -- map("n", "<leader>ci", LazyVim.pick("grep"), {desc = "" })
-map("n", "<leader>/", LazyVim.pick("grep"), {desc = "Live Grep" })
+map("n", "<leader>/", function()
+  local root = LazyVim.root()
+  if root == vim.env.HOME then
+    root = vim.fn.getcwd()
+  end
+  LazyVim.pick("grep", {cwd = root, title = "Grep " .. pretty_path(root) })()
+end, {desc = "Live Grep" })
 map("n", "<leader>?", function()
   local dir = vim.fn.expand("%:p:h")
   LazyVim.pick("grep", { cwd=dir, title="Grep " .. pretty_path(dir) })()
@@ -361,35 +385,42 @@ _G.__picker_grep_operator = function(type)
 end
 map("n", "<leader>dg", "<Esc><cmd>set operatorfunc=v:lua.__picker_grep_operator<CR>g@", { desc = "Grep Operator" })
 
-map("i", "<tab>", function()
-  return LazyVim.cmp.actions.ai_accept() or "<tab>"
+-- completion mappings
+map("i", "<C-e>", function()
+  return LazyVim.cmp.actions.cmp_hide() or LazyVim.cmp.actions.ai_accept() or "<C-e>"
+end, { expr = true, desc = "Close Completion" })
+map({ "i", "s" }, "<Tab>", function()
+  return LazyVim.cmp.actions.ai_accept() or LazyVim.cmp.actions.snippet_forward() or "<Tab>"
 end, { expr = true, desc = "Accept Copilot" })
-map("i", "<C-h>", function()
-  LazyVim.cmp.actions.cmp_disable()
-  LazyVim.cmp.actions.ai_disable()
-end, { desc = "Disable Completion & Copilot" })
+map({ "i", "s" }, "<S-Tab>", function()
+  return LazyVim.cmp.actions.snippet_backward() or "<S-Tab>"
+end, { expr = true, desc = "Accept Copilot" })
+map({ "i", "s" }, "<C-h>", function()
+  return LazyVim.cmp.actions.cmp_disable() or LazyVim.cmp.actions.ai_disable() or close_all_float() or ""
+end, { expr = true, desc = "Disable Completion & Copilot" })
 map("i", "<C-l>", function()
-  if
-    LazyVim.cmp.actions.snippet_change_choice()
+  return LazyVim.cmp.actions.snippet_change_choice()
     or LazyVim.cmp.actions.snippet_expand()
     or LazyVim.cmp.actions.cmp_insert_next()
-  then
-    return
-  end
-  LazyVim.cmp.actions.cmp_enable()
-  LazyVim.cmp.actions.ai_enable()
-end, { desc = "Enable Completion & Copilot" })
+    or LazyVim.cmp.actions.ai_enable()
+    or LazyVim.cmp.actions.cmp_enable()
+    or ""
+end, { expr = true, desc = "Enable Completion & Copilot" })
 map("x", "<C-l>", function()
   return LazyVim.cmp.actions.snippet_expand_visual()
 end, { expr = true })
+map("i", "<C-Space>", function()
+  LazyVim.cmp.actions.cmp_enable()
+  LazyVim.cmp.actions.cmp_show()
+end, { expr = true, desc = "Trigger Completion" })
 
 map({ "i", "s" }, "<C-j>", function()
   return LazyVim.cmp.actions.cmp_select_next()
     or LazyVim.cmp.actions.snippet_forward()
     or LazyVim.cmp.actions.ai_next()
     or LazyVim.cmp.actions.cmp_show()
-    or ""
-end, { expr = true, desc = "Select Next Completion" })
+    or "<C-j>"
+end, { expr = true, desc = "Select Next Completion", remap = true })
 
 map({ "i", "s" }, "<C-k>", function()
   return LazyVim.cmp.actions.cmp_select_prev()
@@ -421,3 +452,16 @@ Snacks.toggle
     end,
   })
   :map("<leader>uC")
+Snacks.toggle
+  .new({
+    name = "Tailwind Fold",
+    get = function()
+      return require("tailwind-fold.config").state.enabled
+    end,
+    set = function(state)
+      require("tailwind-fold.conceal").toggle()
+    end,
+  })
+  :map("<leader>uw")
+
+map("n", "<F5>", "<leader>tl", { remap = true })

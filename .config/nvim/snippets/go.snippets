@@ -14,6 +14,12 @@ snippet test "test function"
 		${0:${VISUAL}}
 	}
 
+snippet example "example function"
+	func Example${1:name}() {
+		${0:${VISUAL}}
+	}
+	
+
 snippet testt "table test function"
 	func Test${1:name}(t *testing.T) {
 		tests := []struct {
@@ -70,3 +76,8 @@ snippet notimpl "not implemented"
 
 snippet req "require no err"
 	require.NoError(t, err)
+
+snippet f "func(){}()"
+	func() {
+		${0:${VISUAL}}
+	}()

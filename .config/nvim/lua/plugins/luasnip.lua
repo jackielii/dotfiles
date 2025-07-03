@@ -1,7 +1,8 @@
 return {
   {
     "L3MON4D3/LuaSnip",
-    lazy = true,
+    optional = true,
+    -- enabled = false,
     opts = function()
       vim.api.nvim_create_user_command("LuaSnipEdit", function()
         require("luasnip.loaders").edit_snippet_files({
@@ -55,11 +56,13 @@ return {
         end
       end
       LazyVim.cmp.actions.snippet_expand_visual = function()
+        LazyVim.cmp.actions.cmp_hide()
         return require("luasnip").select_keys
       end
       LazyVim.cmp.actions.snippet_expand = function()
         if require("luasnip").expandable() then
           vim.schedule(function()
+            LazyVim.cmp.actions.cmp_hide()
             require("luasnip").expand()
           end)
           return true -- don't execute next command

@@ -1,37 +1,31 @@
-local function toggle_dir(up)
+---@param dir 'cwd' | 'parent' | 'current'
+---@return function
+local function toggle_dir(dir)
   return function(picker, item)
     local path = picker:cwd()
-    if not up then
+    if not dir or dir == "current" then
       path = picker:dir()
-    else
+    elseif dir == "cwd" then
+      path = vim.uv.cwd()
+    elseif dir == "parent" then
       path = vim.fs.dirname(path)
+    else
+      vim.notify("Invalid dir: " .. dir, vim.log.levels.WARN)
     end
-    picker.title = pretty_path(path)
+    local title = picker.title
+    local parts = vim.split(title, " ")
+    if #parts > 1 then
+      title = parts[1] .. " " .. pretty_path(path)
+    else
+      title = pretty_path(path)
+    end
+    picker.title = title
     picker:set_cwd(path)
     picker.input.filter.paths = { [path] = true }
     picker:find({ refresh = true })
-    vim.api.nvim_buf_set_lines(picker.input.win.buf, 0, -1, false, { "" })
-
-    -- picker.input.filter.search = ""
-    -- picker.input.filter.all = false
-    -- picker:update({ force = true })
-    -- picker.list.update()
-    -- picker.input:update()
-    -- picker.input = picker.input.new(picker)
-    -- P(picker.input.set("", ""))
-    -- picker.input.set("", "")
-    -- picker.list.update()
-
-    -- local path = picker:dir()
-    -- -- require("snacks.picker").files({
-    -- local ref = picker:ref()
-    -- ref.new({
-    --   cwd = path,
-    --   -- pattern = picker:filter().pattern,
-    --   filter = { paths = { [path] = true } },
-    -- })
   end
 end
+
 return {
   {
     "folke/snacks.nvim",
@@ -40,6 +34,7 @@ return {
     },
     ---@type snacks.Config
     opts = {
+
       picker = {
         formatters = {
           file = {
@@ -54,26 +49,79 @@ return {
               ["<Esc>"] = { "close", mode = { "n", "i" } },
               ["<C-o>"] = { "toggle_focus", mode = "i" },
               ["<C-u>"] = false,
+              ["<C-f>"] = { "list_scroll_down", mode = { "i", "n" } },
+              ["<C-b>"] = { "list_scroll_up", mode = { "i", "n" } },
+              ["<C-Up>"] = { "preview_scroll_up", mode = { "i", "n" } },
+              ["<C-Down>"] = { "preview_scroll_down", mode = { "i", "n" } },
+              ["<C-Left>"] = { "preview_scroll_left", mode = { "i", "n" } },
+              ["<C-Right>"] = { "preview_scroll_right", mode = { "i", "n" } },
 
+              -- custom
               ["<C-l>"] = { "toggle_dir_in", mode = "i" },
               ["<C-h>"] = { "toggle_dir_up", mode = "i" },
+              ["<C-BS>"] = { "toggle_dir_up", mode = "i" },
+              ["<C-Space>"] = { "toggle_dir_cwd", mode = "i" },
             },
           },
           list = {
             keys = {
               ["<c-j>"] = false,
-              ["<C-e>"] = "list_down",
-              ["<C-y>"] = "list_up",
               ["<c-k>"] = false,
               ["<c-p>"] = false,
+              ["<C-e>"] = "list_down",
+              ["<C-y>"] = "list_up",
+              ["<C-Up>"] = "preview_scroll_up",
+              ["<C-Down>"] = "preview_scroll_down",
+              ["<C-Left>"] = "preview_scroll_left",
+              ["<C-Right>"] = "preview_scroll_right",
+              ["<C-Space>"] = "toggle_dir_cwd",
             },
           },
         },
         actions = {
-          toggle_dir_in = toggle_dir(false),
-          toggle_dir_up = toggle_dir(true),
+          toggle_dir_in = toggle_dir("current"),
+          toggle_dir_up = toggle_dir("parent"),
+          toggle_dir_cwd = toggle_dir("cwd"),
         },
         sources = {
+          grep = {
+            case_sensitive = false, -- New! Define custom variable
+            toggles = {
+              case_sensitive = "s",
+            },
+            ---@class snacks.Picker
+            ---@field [string] unknown
+            ---@class snacks.picker.Config
+            ---@field [string] unknown
+
+            finder = function(opts, ctx)
+              local args_extend = { "--case-sensitive" }
+              opts.args = vim
+                .iter(opts.args or {})
+                :filter(function(val)
+                  return not vim.list_contains(args_extend, val)
+                end)
+                :totable()
+              if opts.case_sensitive then
+                opts.args = vim.list_extend(opts.args, args_extend)
+              end
+              -- vim.print(opts.args) -- Debug
+              return require("snacks.picker.source.grep").grep(opts, ctx)
+            end,
+            actions = {
+              toggle_live_case_sensitive = function(picker) -- [[Override]]
+                picker.opts.case_sensitive = not picker.opts.case_sensitive
+                picker:find()
+              end,
+            },
+            win = {
+              input = {
+                keys = {
+                  ["<M-s>"] = { "toggle_live_case_sensitive", mode = { "i", "n" } },
+                },
+              },
+            },
+          },
           filetypes = {
             name = "filetypes",
             format = "text",

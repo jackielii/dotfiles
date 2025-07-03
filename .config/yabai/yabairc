@@ -54,6 +54,7 @@ yabai -m config window_gap                   8
 
 # pinned apps to space
 yabai -m rule --add app='^Microsoft Teams$' space=3
+yabai -m rule --add app='^MSTeams$' space=3
 
 # float system preferences
 yabai -m rule --add app='^System Information$' manage=off

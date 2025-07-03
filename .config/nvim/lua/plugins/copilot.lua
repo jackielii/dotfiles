@@ -24,6 +24,9 @@ return {
         end
       end
       LazyVim.cmp.actions.ai_disable = function()
+        if vim.b.copilot_suggestion_auto_trigger == false then
+          return
+        end
         local copilot = require("copilot.suggestion")
         if copilot.is_visible() then
           copilot.dismiss()
@@ -32,6 +35,9 @@ return {
         require("copilot.command").detach()
       end
       LazyVim.cmp.actions.ai_enable = function()
+        if vim.b.copilot_suggestion_auto_trigger then
+          return
+        end
         vim.b.copilot_suggestion_auto_trigger = true
         require("copilot.command").attach()
         require("copilot.suggestion").next()
@@ -41,6 +47,7 @@ return {
         return vim.b.copilot_suggestion_auto_trigger
       end
       return {
+        copilot_node_command = vim.fn.expand("$HOME/.nvm/versions/node/v20.10.0/bin/node"),
         suggestion = {
           enabled = true,
           auto_trigger = true,
@@ -57,7 +64,7 @@ return {
         panel = { enabled = false },
         filetypes = {
           markdown = true,
-          help = true,
+          -- help = true,
         },
       }
     end,

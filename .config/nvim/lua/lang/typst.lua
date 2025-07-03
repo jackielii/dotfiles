@@ -1,14 +1,6 @@
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "typst",
-  callback = function()
-    vim.bo.commentstring = "// %s"
-    vim.b.autoformat = true
-  end,
-})
-
 return {
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = {
       ensure_installed = {
         "tinymist",
@@ -17,10 +9,6 @@ return {
   },
   {
     "neovim/nvim-lspconfig",
-    dependencies = {
-      "mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
-    },
     opts = {
       servers = {
         tinymist = {
