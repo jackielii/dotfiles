@@ -50,8 +50,8 @@ if OS.mac?
 
     tap "koekeishiya/formulae"
     # see https://github.com/koekeishiya/yabai for installation steps on mac
-    brew "koekeishiya/formulae/yabai", restart_service: :changed # window manager
-    brew "koekeishiya/formulae/skhd", restart_service: :changed # shortcuts
+    brew "koekeishiya/formulae/yabai",
+    brew "koekeishiya/jackielii/skhd-zig",
     cask "mouse-fix" # mouse scrolling fix & button remap
     brew "bash" # need newest bash for some program like extracto
     cask "google-chrome" # TODO: check if installed
@@ -60,10 +60,10 @@ if OS.mac?
     cask "homebrew/cask-fonts/font-symbols-only-nerd-font"
     # cask "karabiner-elements"
     cask "maccy" # clipboard manager
-    cask "intellij-idea-ce"
-    cask "xbar"
-    brew "cliclick" # automate mouse clicks
-    cask "gimp"
+    # cask "intellij-idea-ce"
+    # cask "xbar"
+    # brew "cliclick" # automate mouse clicks
+    # cask "gimp"
     cask "drawio"
     cask "alt-tab"
 else
