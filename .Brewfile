@@ -49,6 +49,7 @@ if OS.mac?
 # }}}
 
     tap "koekeishiya/formulae"
+    tap "jackielii/tap"
     # see https://github.com/koekeishiya/yabai for installation steps on mac
     brew "koekeishiya/formulae/yabai",
     brew "koekeishiya/jackielii/skhd-zig",
