@@ -121,6 +121,8 @@ echo "\n# Now clone encrypt notes:"
 echo
 echo "gpg --import gpg-priv-jackie-space.key"
 echo
+echo "The private key should be stored safely in a external USB."
+echo
 echo "yadm decrypt # this requirees the gpg key to be imported"
 
 if [[ -f ~/.gitconfig && -d ~/.ssh/id_rsa ]] ; then

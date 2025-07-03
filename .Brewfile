@@ -49,8 +49,8 @@ if OS.mac?
     tap "koekeishiya/formulae"
     tap "jackielii/tap"
     # see https://github.com/koekeishiya/yabai for installation steps on mac
-    brew "koekeishiya/formulae/yabai",
-    brew "koekeishiya/jackielii/skhd-zig",
+    brew "koekeishiya/formulae/yabai"
+    brew "jackielii/tap/skhd-zig"
     cask "mouse-fix" # mouse scrolling fix & button remap
     brew "bash" # need newest bash for some program like extracto
     cask "google-chrome" # TODO: check if installed
