@@ -108,8 +108,6 @@ if status is-interactive
         abbr ks "kitten ssh"
     end
 
-    fish_add_path /Library/TeX/texbin
-
     alias pg $PAGER
 end
 
@@ -117,4 +115,7 @@ end
 
 # Added by OrbStack: command-line tools and integration
 # This won't be added again if you remove it.
-source ~/.orbstack/shell/init2.fish 2>/dev/null || :
+# source ~/.orbstack/shell/init2.fish 2>/dev/null || :
+
+# The next line updates PATH for the Google Cloud SDK.
+# if [ -f '/Users/jackieli/.local/share/google-cloud-sdk/path.fish.inc' ]; . '/Users/jackieli/.local/share/google-cloud-sdk/path.fish.inc'; end

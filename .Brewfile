@@ -34,6 +34,8 @@ brew "zigup"
 brew "fzf"
 brew "lf"
 brew "bat"
+brew "watch"
+brew "ripgrep"
 # }}}
 
 # Mac {{{

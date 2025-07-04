@@ -77,4 +77,6 @@ echo "# Also checkout yabai wiki to disable SIP"
 echo "# https://github.com/koekeishiya/yabai/wiki/"
 
 echo Check list
-echo 
+echo - zigup default 0.14.0
+echo - rustup default stable
+echo - nvm via nvim.sh or brew install nvm

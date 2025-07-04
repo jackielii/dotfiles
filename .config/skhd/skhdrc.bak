@@ -3,58 +3,16 @@
 
 .SHELL "/bin/dash"
 
-# Command definitions {{{
-# Focus operations with placeholders
-.define focus_direction : yabai -m window --focus {{1}} || yabai -m display --focus {{1}} || yabai -m display --focus {{2}}
-.define focus_stack_or_direction : yabai -m window --focus stack.{{1}} || yabai -m window --focus {{2}} || yabai -m display --focus {{2}} || yabai -m window --focus stack.{{3}}
-
-# Space focus operations
-.define focus_space : yabai -m space --focus {{1}}
-
-# Window movement operations
-.define swap_or_display : yabai -m window --swap {{1}} || ( yabai -m window --display {{1}} ; yabai -m display --focus {{1}} )
-.define move_to_space : yabai -m window --space {{1}}
-.define move_window_rel : yabai -m window --move rel:{{1}}:{{2}}
-
-# Window resize operations
-.define resize_window : yabai -m window --resize {{1}}:{{2}}:{{3}} || yabai -m window {{4}} --resize {{1}}:{{2}}:{{3}}
-
-# Warp and stack operations
-.define warp_window : yabai -m window --warp {{1}}
-.define stack_window : yabai -m window --stack {{1}}
-
-# Layout operations
-.define toggle_layout : [ $(yabai -m query --spaces --space | jq -re '.type') = 'bsp' ] && yabai -m space --layout stack || yabai -m space --layout bsp
-.define toggle_float_grid : yabai -m window --toggle float; yabai -m window --grid 8:8:1:1:6:6
-
-# Window toggle operations
-.define toggle_scratchpad : yabai -m window --toggle {{1}} || open -a "{{2}}"
-
-# Focus cycling operations
-.define cycle_windows_forward : yabai -m window --focus $(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" and .scratchpad == "" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id')
-.define cycle_windows_backward : yabai -m window --focus $(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" and .scratchpad == "" )) | sort_by(.id) | .[map(."has-focus") | index(true)-1].id')
-
-# AnyBar indicator
-.define anybar_color : echo -n "{{1}}" | nc -4u -w0 localhost 1738
-
-# App launch operations
-.define fish : fish -c "{{1}}"
-# }}}
-
-# Process groups {{{
-.define native_apps ["kitty", "WezTerm"]
-# }}}
-
 # focus cmd - ? {{{
-lcmd - h : @focus_direction("west", "recent")
-lcmd - j : @focus_stack_or_direction("next", "south", "first")
-lcmd - k : @focus_stack_or_direction("prev", "north", "last")
-lcmd - l : @focus_direction("east", "mouse")
+lcmd - h : yabai -m window --focus west || yabai -m display --focus west || yabai -m display --focus recent
+lcmd - j : yabai -m window --focus stack.next || yabai -m window --focus south || yabai -m display --focus south || yabai -m window --focus stack.first
+lcmd - k : yabai -m window --focus stack.prev || yabai -m window --focus north || yabai -m display --focus north || yabai -m window --focus stack.last
+lcmd - l : yabai -m window --focus east || yabai -m display --focus east || yabai -m display --focus mouse
 
-cmd + ctrl - h : @focus_space("prev")
+cmd + ctrl - h : yabai -m space --focus prev
 # cmd + ctrl - j : yabai -m window --insert south
 # cmd + ctrl - k : yabai -m window --insert north
-cmd + ctrl - l : @focus_space("next")
+cmd + ctrl - l : yabai -m space --focus next
 
 # cmd - h : yabai -m window --focus west \
 #     || yabai -m display --focus west \
@@ -68,15 +26,15 @@ cmd + ctrl - l : @focus_space("next")
 #             | jq -re '.[] | select(."is-visible" == true)."first-window"')
 
 # cmd + number is used in many applications. I have to get used to using ctrl
-lcmd - 1 : @focus_space("1")
-lcmd - 2 : @focus_space("2")
-lcmd - 3 : @focus_space("3")
-lcmd - 4 : @focus_space("4")
-lcmd - 5 : @focus_space("5")
-lcmd - 6 : @focus_space("6")
-lcmd - 7 : @focus_space("7")
-lcmd - 8 : @focus_space("8")
-lcmd - 9 : @focus_space("9")
+lcmd - 1 : yabai -m space --focus 1
+lcmd - 2 : yabai -m space --focus 2
+lcmd - 3 : yabai -m space --focus 3
+lcmd - 4 : yabai -m space --focus 4
+lcmd - 5 : yabai -m space --focus 5
+lcmd - 6 : yabai -m space --focus 6
+lcmd - 7 : yabai -m space --focus 7
+lcmd - 8 : yabai -m space --focus 8
+lcmd - 9 : yabai -m space --focus 9
 
 # cmd + ctrl - 1 : yabai -m space --focus 1
 # cmd + ctrl - 2 : yabai -m space --focus 2
@@ -102,12 +60,12 @@ f16: yabai -m space --toggle padding
 cmd - f14 : yabai -m window --focus recent || yabai -m space --focus recent
 f15 : yabai -m space --focus recent
 # cycle through all windows in current space
-cmd + ctrl - tab : @cycle_windows_forward
+cmd + ctrl - tab :  yabai -m window --focus $(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" and .scratchpad == "" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id')
 # reverse cycle through all windows in current space
-cmd + ctrl + shift - tab : @cycle_windows_backward
+cmd + ctrl + shift - tab :  yabai -m window --focus $(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" and .scratchpad == "" )) | sort_by(.id) | .[map(."has-focus") | index(true)-1].id')
 
 ## ctrl+pause to cycle through windows on the same spaces
-ctrl - f14 : @cycle_windows_forward
+ctrl - f14 :  yabai -m window --focus $(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" and .scratchpad == "" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id')
 
 ## f15 is pause, f14 is screenlock
 # lalt - tab : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
@@ -119,21 +77,21 @@ cmd + ctrl - 0x32 : yabai -m space --toggle mission-control && cliclick -r w:150
 # }}}
 
 # move window cmd + shift - ? {{{
-cmd + shift - h : @swap_or_display("west")
-cmd + shift - j : @swap_or_display("south")
-cmd + shift - k : @swap_or_display("north")
-cmd + shift - l : @swap_or_display("east")
+cmd + shift - h : yabai -m window --swap west || ( yabai -m window --display west ; yabai -m display --focus west )
+cmd + shift - j : yabai -m window --swap south || ( yabai -m window --display south ; yabai -m display --focus south )
+cmd + shift - k : yabai -m window --swap north || ( yabai -m window --display north ; yabai -m display --focus north )
+cmd + shift - l : yabai -m window --swap east || ( yabai -m window --display east ; yabai -m display --focus east )
 
-cmd + shift - 1 : @move_to_space("1")
-cmd + shift - 2 : @move_to_space("2")
-cmd + shift - 3 : @move_to_space("3")
-cmd + shift - 4 : @move_to_space("4")
-cmd + shift - 5 : @move_to_space("5")
-cmd + shift - 6 : @move_to_space("6")
-cmd + shift - 7 : @move_to_space("7")
-cmd + shift - 8 : @move_to_space("8")
-cmd + shift - 9 : @move_to_space("9")
-cmd + shift - 0 : @move_to_space("10")
+cmd + shift - 1 : yabai -m window --space 1
+cmd + shift - 2 : yabai -m window --space 2
+cmd + shift - 3 : yabai -m window --space 3
+cmd + shift - 4 : yabai -m window --space 4
+cmd + shift - 5 : yabai -m window --space 5
+cmd + shift - 6 : yabai -m window --space 6
+cmd + shift - 7 : yabai -m window --space 7
+cmd + shift - 8 : yabai -m window --space 8
+cmd + shift - 9 : yabai -m window --space 9
+cmd + shift - 0 : yabai -m window --space 10
 
 # cmd + ctrl + shift - 1 : yabai -m window --space 11
 # cmd + ctrl + shift - 2 : yabai -m window --space 12
@@ -147,18 +105,18 @@ cmd + shift - 0 : @move_to_space("10")
 # cmd + ctrl + shift - 0 : yabai -m window --space 10
 
 ## resize
-cmd + ctrl + shift - k: @resize_window("top", "0", "-10", "south")
-cmd + ctrl + shift - j: @resize_window("bottom", "0", "10", "north")
-cmd + ctrl + shift - h: @resize_window("left", "-10", "0", "east")
-cmd + ctrl + shift - l: @resize_window("right", "10", "0", "west")
+cmd + ctrl + shift - k: yabai -m window --resize top:0:-10 || yabai -m window south --resize top:0:-10
+cmd + ctrl + shift - j: yabai -m window --resize bottom:0:10 || yabai -m window north --resize bottom:0:10
+cmd + ctrl + shift - h: yabai -m window --resize left:-10:0 || yabai -m window east --resize left:-10:0
+cmd + ctrl + shift - l: yabai -m window --resize right:10:0 || yabai -m window west --resize right:10:0
 # }}}
 
 # warp & stack {{{
 
 # Define window management mode for warp/stack operations
 # use anybar to indicate the mode: https://github.com/tonsky/AnyBar
-:: winmode @ : @anybar_color("red")
-:: default : @anybar_color("hollow")
+:: winmode @ : echo -n "red" | nc -4u -w0 localhost 1738
+:: default : echo -n "hollow" | nc -4u -w0 localhost 1738
 
 # Enter window mode with meh + m
 meh - m ; winmode
@@ -166,56 +124,51 @@ winmode < escape ; default
 winmode < meh - m ; default
 
 # Focus operations - basic hjkl for focus
-winmode < h : @focus_direction("west", "recent")
-winmode < j : @focus_stack_or_direction("next", "south", "first")
-winmode < k : @focus_stack_or_direction("prev", "north", "last")
-winmode < l : @focus_direction("east", "mouse")
+winmode < h : yabai -m window --focus west || yabai -m display --focus west || yabai -m display --focus recent
+winmode < j : yabai -m window --focus stack.next || yabai -m window --focus south || yabai -m display --focus south || yabai -m window --focus stack.first
+winmode < k : yabai -m window --focus stack.prev || yabai -m window --focus north || yabai -m display --focus north || yabai -m window --focus stack.last
+winmode < l : yabai -m window --focus east || yabai -m display --focus east || yabai -m display --focus mouse
 
 # Move operations - shift + hjkl for moving
-winmode < shift - h : @swap_or_display("west")
-winmode < shift - j : @swap_or_display("south")
-winmode < shift - k : @swap_or_display("north")
-winmode < shift - l : @swap_or_display("east")
+winmode < shift - h : yabai -m window --move rel:-80:0
+winmode < shift - j : yabai -m window --move rel:0:80
+winmode < shift - k : yabai -m window --move rel:0:-80
+winmode < shift - l : yabai -m window --move rel:80:0
 
 # Warp operations - alt + shift + hjkl for warping
-winmode < alt + shift - h : @warp_window("west")
-winmode < alt + shift - j : @warp_window("south")
-winmode < alt + shift - k : @warp_window("north")
-winmode < alt + shift - l : @warp_window("east")
+winmode < alt + shift - h : yabai -m window --warp west
+winmode < alt + shift - j : yabai -m window --warp south
+winmode < alt + shift - k : yabai -m window --warp north
+winmode < alt + shift - l : yabai -m window --warp east
 
 # Stack operations - ctrl + shift + hjkl for stacking
-winmode < ctrl + shift - h : @stack_window("west")
-winmode < ctrl + shift - j : @stack_window("south")
-winmode < ctrl + shift - k : @stack_window("north")
-winmode < ctrl + shift - l : @stack_window("east")
+winmode < ctrl + shift - h : yabai -m window --stack west
+winmode < ctrl + shift - j : yabai -m window --stack south
+winmode < ctrl + shift - k : yabai -m window --stack north
+winmode < ctrl + shift - l : yabai -m window --stack east
 
 # Stack management shortcuts
-.define insert_window : yabai -m window --insert {{1}}
-winmode < left : @insert_window("west")
-winmode < down : @insert_window("south")
-winmode < up : @insert_window("north")
-winmode < right : @insert_window("east")
-winmode < s : @insert_window("stack")
-
+winmode < s : yabai -m window --insert stack  # Toggle stack mode
+winmode < u : yabai -m window --toggle float; yabai -m window --toggle float  # Unstack window
 winmode < n : yabai -m window --focus stack.next  # Navigate stack next
 winmode < p : yabai -m window --focus stack.prev  # Navigate stack prev
 
 # Original keybindings kept as alternatives
-alt + cmd + shift - k : @warp_window("north")
-alt + cmd + shift - j : @warp_window("south")
-alt + cmd + shift - h : @warp_window("west")
-alt + cmd + shift - l : @warp_window("east")
+alt + cmd + shift - k : yabai -m window --warp north
+alt + cmd + shift - j : yabai -m window --warp south
+alt + cmd + shift - h : yabai -m window --warp west
+alt + cmd + shift - l : yabai -m window --warp east
 
-alt + ctrl + shift - k: @stack_window("north")
-alt + ctrl + shift - j: @stack_window("south")
-alt + ctrl + shift - h: @stack_window("west")
-alt + ctrl + shift - l: @stack_window("east")
+alt + ctrl + shift - k: yabai -m window --stack north
+alt + ctrl + shift - j: yabai -m window --stack south
+alt + ctrl + shift - h: yabai -m window --stack west
+alt + ctrl + shift - l: yabai -m window --stack east
 # }}}
 
 # layout {{{
 #cmd - s : yabai -m space --layout stack
-lcmd - e : @toggle_layout
-cmd + shift - space : @toggle_float_grid
+lcmd - e : [ $(yabai -m query --spaces --space | jq -re '.type') = 'bsp' ] && yabai -m space --layout stack || yabai -m space --layout bsp
+cmd + shift - space : yabai -m window --toggle float; yabai -m window --grid 8:8:1:1:6:6
 cmd + ctrl + shift - space : yabai -m window --toggle topmost
 
 ## fullscreen
@@ -234,6 +187,18 @@ cmd + shift - 0x18 : yabai -m space --balance y-axis
 cmd + shift - 0x1B : yabai -m space --balance x-axis
 # }}}
 
+# common ctr - number to cmd - number {{{
+ctrl - 1 | cmd - 1
+ctrl - 2 | cmd - 2
+ctrl - 3 | cmd - 3
+ctrl - 4 | cmd - 4
+ctrl - 5 | cmd - 5
+ctrl - 6 | cmd - 6
+ctrl - 7 | cmd - 7
+ctrl - 8 | cmd - 8
+ctrl - 9 | cmd - 9
+# }}}
+
 # some common shortcuts conflicts with current mappings {{{
 # ctrl + cmd - k : skhd -k "hyper - 0x80" ; skhd -k "cmd - k" ; skhd -k "hyper - 0x80"
 ctrl + cmd - k | cmd - k
@@ -242,15 +207,15 @@ ctrl + cmd - k | cmd - k
 # launch common apps {{{
 
 cmd + ralt - r : yabai -m window --scratchpad recover
-ralt - 0x32 : @toggle_scratchpad("music", "YouTube Music")
+ralt - 0x32 : yabai -m window --toggle music || open -a "YouTube Music"
 # alt - return: yabai -m window --toggle tt || fish -c "kitty -o tab_bar_min_tabs=3 -o hide_window_decorations=false -d ~ -T 'T_T'"
-ralt - return: @fish("kitten quick-access-terminal -o os_window_title=main")
-lalt - c: @toggle_scratchpad("wechat", "WeChat")
-alt - a: @toggle_scratchpad("whatsapp", "WhatsApp")
+ralt - return: fish -c "kitten quick-access-terminal -o os_window_title=main"
+lalt - c: yabai -m window --toggle wechat || open -a "WeChat"
+alt - a: yabai -m window --toggle whatsapp || open -a "WhatsApp"
 alt - d: yabai -m window --toggle finder || open ~/Downloads
-ralt - n: @toggle_scratchpad("notes", "Notes")
-lalt - t: @toggle_scratchpad("chatgpt", "ChatGPT")
-ralt - p: @toggle_scratchpad("skype", "Skype")
+ralt - n: yabai -m window --toggle notes || open -a "Notes"
+lalt - t: yabai -m window --toggle chatgpt || open -a "ChatGPT"
+ralt - p: yabai -m window --toggle skype || open -a "Skype"
 
 # switch to main first tmux listening to socket, if none, launch new one
 ralt - t : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
@@ -260,7 +225,7 @@ ralt - t : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
         # zsh -c "source ~/.base16_theme; tmux new-session -A -s main"
 # alt - f : kitty -d ~ --title 'MY-|-Filer' lf
 # -1 option makes it very fast but makes -o option not work
-ralt - f : @fish("kitty -1 -d ~ -T 'MY-|-Filer' lf")
+ralt - f : fish -c "kitty -1 -d ~ -T 'MY-|-Filer' lf"
 # ralt - f : fish -c "kitty -1 --instance-group lf -d ~ -T 'MY-|-Filer' -o tab_bar_min_tabs=2 lf"
 
 cmd + shift - return : kitty -1 -d ~
@@ -276,19 +241,15 @@ ralt - m : open -a "Microsoft Outlook.app"
 # for this mac: need to be more like linux {{{
 cmd + shift - x : yabai -m window --close
 
-# common ctr - number to cmd - number {{{
-ctrl - 1 | cmd - 1
-ctrl - 2 | cmd - 2
-ctrl - 3 | cmd - 3
-ctrl - 4 | cmd - 4
-ctrl - 5 | cmd - 5
-ctrl - 6 | cmd - 6
-ctrl - 7 | cmd - 7
-ctrl - 8 | cmd - 8
-ctrl - 9 | cmd - 9
+# uk keyboard § to `
+# 0x0A : skhd -t "`"
+# shift - 0x0A : skhd -t "~"
 # }}}
 
 # editing remaps: more like linux {{{
+
+# Process groups for better organization
+.define native_apps ["kitty", "WezTerm"]
 
 # delete word
 ctrl - backspace [
