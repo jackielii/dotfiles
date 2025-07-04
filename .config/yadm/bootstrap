@@ -36,81 +36,12 @@ fi
 
 [ -z "${HOMEBREW_PREFIX}" ] && eval "$(brew shellenv)"
 
-# Zsh {{{ commented out - using git submodules instead - more reliable
-# if [ ! -d "$HOME/.oh-my-zsh/.git" ]; then
-# 	echo "\nInstalling oh-my-zsh\n"
-# 	# https://ohmyz.sh/#install
-# 	sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-# 	source "$HOME/.zshrc"
-# fi
-
-# typeset -A MY_ZSH_PLUGINS
-# MY_ZSH_PLUGINS=(
-# 	you-should-use https://github.com/MichaelAquilina/zsh-you-should-use.git
-# 	zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions.git
-# )
-
-# for NAME ("${(@k)MY_ZSH_PLUGINS}"); do
-# 	DIR=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/${NAME}
-# 	GIT_REPO=$MY_ZSH_PLUGINS[$NAME]
-# 	if [ ! -d ${DIR} ]; then
-# 		echo "\nInstalling ohmyzsh plugin ${NAME}\n"
-# 		git clone ${GIT_REPO} ${DIR}
-# 	fi
-# done
-
-# if [ ! -d $HOME/.config/base16-shell ]; then
-# 	echo "\nInstalling base16 shell\n"
-# 	git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell
-# fi
+if [ ! -d $HOME/.config/base16-shell ]; then
+	echo "\nInstalling base16 shell\n"
+	git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell
+fi
 
 # }}}
-
-# # Tmux {{{ already in .tmux.conf
-# if [ ! -d $HOME/.tmux/plugins/tpm ]; then
-# 	echo "\nBootstrapping tmux\n"
-# 	git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
-# 	tmux new-session -d "tmux source-file $HOME/.tmux.conf && tmux kill-server"
-# 	$HOME/.tmux/plugins/tpm/bin/install_plugins
-# fi
-# # }}}
-
-
-# if ! command -v node >/dev/null 2>&1; then
-# 	# TODO: need to be the same as ~/.Brewfile:13
-# 	echo "\nLinking brew node to a version\n"
-# 	brew link node@14
-# fi
-
-# coc.nvim dependencies {{{
-# This happens before Neovim setup:
-# 1. this only installs coc extensions in the nodejs system
-# 2. this should reduce the errors
-# echo "\nBootstrapping coc.nvim\n"
-#
-# ${HOMEBREW_PREFIX}/bin/pip3 install pynvim # coc snippet requirement
-# pushd ~/.config/coc/extensions && yarn -s && popd # coc extensions
-
-# lsp servers
-# }}}
-
-# Neovim {{{
-# if command -v nvim >/dev/null 2>&1; then
-# 	echo "\nBootstrapping Neovim\n"
-# 	PLUG_VIM="${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim
-# 	[ ! -f "${PLUG_VIM}" ] && curl -fLo "${PLUG_VIM}" --create-dirs \
-#        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-# 	nvim -e -u $HOME/.config/nvim/init.vim \
-# 		-c "redir! > /tmp/nvim-plug-install.log" \
-# 		-c "PlugInstall --sync" -c "qa"
-# fi
-
-# # fzf theme using base16. FZF is installed via nvim plugin
-# if [ ! -d "$HOME/.config/base16-fzf/" ]; then
-# 	echo "\nInstalling base16-fzf\n"
-# 	git clone https://github.com/fnune/base16-fzf.git $HOME/.config/base16-fzf/
-# fi
-# # }}}
 
 if [ "${OS}" = "Darwin" ]; then
 	echo "\nSetting MacOS defaults\n"
@@ -144,3 +75,6 @@ echo "brew services restart skhd"
 echo
 echo "# Also checkout yabai wiki to disable SIP"
 echo "# https://github.com/koekeishiya/yabai/wiki/"
+
+echo Check list
+echo 
