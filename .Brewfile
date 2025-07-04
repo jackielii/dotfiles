@@ -33,6 +33,7 @@ brew "p7zip"
 brew "zigup"
 brew "fzf"
 brew "lf"
+brew "bat"
 # }}}
 
 # Mac {{{
