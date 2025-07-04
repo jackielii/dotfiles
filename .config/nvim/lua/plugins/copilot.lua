@@ -47,7 +47,7 @@ return {
         return vim.b.copilot_suggestion_auto_trigger
       end
       return {
-        copilot_node_command = vim.fn.expand("$HOME/.nvm/versions/node/v20.10.0/bin/node"),
+        -- copilot_node_command = vim.fn.expand("$HOME/.nvm/versions/node/v20.10.0/bin/node"),
         suggestion = {
           enabled = true,
           auto_trigger = true,

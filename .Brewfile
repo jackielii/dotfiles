@@ -1,6 +1,8 @@
 # Brew file for linux and mac
 
 # Basics {{{
+brew "fish"
+brew "fisher"
 cask "kitty"
 brew "tmux"
 brew "neovim"
@@ -24,13 +26,13 @@ brew "envoy"
 brew "tig"
 brew "imagemagick"
 brew "bufbuild/buf/buf"
-# brew "tctl"
 brew "kubectx"
 brew "git-lfs"
 brew "libpq"
 brew "p7zip"
-
-brew "ccls" # C/C++/Objective-C language server
+brew "zigup"
+brew "fzf"
+brew "lf"
 # }}}
 
 # Mac {{{
@@ -46,6 +48,13 @@ if OS.mac?
     brew "gawk"
 # }}}
 
+
+    cask "tailscale-app"
+    brew "wechat"
+    brew "microsoft-teams"
+    brew "whatsapp"
+    brew "orbstack"
+
     tap "koekeishiya/formulae"
     tap "jackielii/tap"
     # see https://github.com/koekeishiya/yabai for installation steps on mac
@@ -54,9 +63,9 @@ if OS.mac?
     cask "mouse-fix" # mouse scrolling fix & button remap
     brew "bash" # need newest bash for some program like extracto
     cask "google-chrome" # TODO: check if installed
-    cask "homebrew/cask-fonts/font-fira-code-nerd-font"
-    cask "homebrew/cask-fonts/font-cascadia-code"
-    cask "homebrew/cask-fonts/font-symbols-only-nerd-font"
+    cask "font-fira-code"
+    cask "font-cascadia-code"
+    cask "font-symbols-only-nerd-font"
     # cask "karabiner-elements"
     cask "maccy" # clipboard manager
     # cask "intellij-idea-ce"
@@ -64,7 +73,7 @@ if OS.mac?
     # brew "cliclick" # automate mouse clicks
     # cask "gimp"
     cask "drawio"
-    cask "alt-tab"
+    # cask "alt-tab"
 else
     # linux ones
 end

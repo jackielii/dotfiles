@@ -8,19 +8,19 @@ return {
     end,
   },
 
-  {
-    "jackielii/zigutils.nvim",
-    dir = "~/personal/zigutils.nvim",
-    lazy = true,
-    keys = {
-      {
-        "<leader>kgt",
-        "<cmd>lua require('zigutils').tests_in_file()<CR>",
-        desc = "Debug tests in file (picker)",
-        ft = { "zig" },
-      },
-    },
-  },
+  -- {
+  --   "jackielii/zigutils.nvim",
+  --   dir = "~/personal/zigutils.nvim",
+  --   lazy = true,
+  --   keys = {
+  --     {
+  --       "<leader>kgt",
+  --       "<cmd>lua require('zigutils').tests_in_file()<CR>",
+  --       desc = "Debug tests in file (picker)",
+  --       ft = { "zig" },
+  --     },
+  --   },
+  -- },
 
   {
     "neovim/nvim-lspconfig",
