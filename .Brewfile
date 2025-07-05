@@ -52,11 +52,13 @@ if OS.mac?
 # }}}
 
 
+    brew "iproute2mac"
+
     cask "tailscale-app"
-    brew "wechat"
-    brew "microsoft-teams"
-    brew "whatsapp"
-    brew "orbstack"
+    cask "wechat"
+    cask "microsoft-teams"
+    cask "whatsapp"
+    cask "orbstack"
 
     tap "koekeishiya/formulae"
     tap "jackielii/tap"
