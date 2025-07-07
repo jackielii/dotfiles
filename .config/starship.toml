@@ -147,11 +147,23 @@ symbol = " "
 [scala]
 symbol = " "
 
-[custom.direnv]
-symbol = " "
-shell = "dash"
-when = """ test -n "$DIRENV_DIR" """
-format = "env [$symbol($output)]($style) "
+[direnv]
+disabled = false
+format = '[$symbol$loaded$allowed]($style) '
+symbol = "env "
+# unloaded_msg = " "
+unloaded_msg = "not loaded "
+loaded_msg = " "
+not_allowed_msg = ""
+allowed_msg = "[✓]"
+# allowed_msg = "󰔓 "
+denied_msg = "[✗]"
+
+# [custom.direnv]
+# symbol = " "
+# shell = "dash"
+# when = """ test -n "$DIRENV_DIR" """
+# format = "env [$symbol($output)]($style) "
 
 [custom.work]
 command = """if [ "$GITHUB_TOKEN" = "$TES_GITHUB_API_TOKEN" ]; then echo Tes; else echo JL; fi"""

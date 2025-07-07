@@ -34,31 +34,18 @@ vim.api.nvim_create_autocmd("FocusGained", {
   command = "checktime"
 })
 
--- somehow in lazyvim, the BufReadPost is not triggered for the first file opened
-local initialBufReadPost = false
-vim.api.nvim_create_autocmd("BufReadPost", {
-  pattern = "*",
-  callback = function(args)
-    if initialBufReadPost then
-      return
-    end
-    vim.schedule(function()
-      initialBufReadPost = true
-      -- vim.cmd.doautocmd("BufReadPost")
-      vim.cmd.windo("e")
-    end)
-  end,
-})
--- local initialBufReadPre = false
--- vim.api.nvim_create_autocmd("BufReadPre", {
+-- -- somehow in lazyvim, the BufReadPost is not triggered for the first file opened
+-- local initialBufReadPost = false
+-- vim.api.nvim_create_autocmd("BufReadPost", {
 --   pattern = "*",
 --   callback = function(args)
---     if initialBufReadPre then
+--     if initialBufReadPost then
 --       return
 --     end
 --     vim.schedule(function()
---       initialBufReadPre = true
---       vim.cmd.doautocmd("BufReadPre")
+--       initialBufReadPost = true
+--       -- vim.cmd.doautocmd("BufReadPost")
+--       vim.cmd.windo("e")
 --     end)
 --   end,
 -- })

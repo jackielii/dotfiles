@@ -4,18 +4,20 @@
 
 /opt/homebrew/bin/brew shellenv | source
 
+fish_add_path "/Users/jackieli/.bun/bin"
+fish_add_path -m ~/.local/bin
+fish_add_path -m ~/bin ~/pycode
+
+# Go
+set -Ux GOPATH ~/go
+fish_add_path -m $GOPATH/bin
+
 set -Ux EDITOR (which nvim)
 set -Ux VISUAL $EDITOR
 set -Ux SUDO_EDITOR $EDITOR
 set -Ux LESSKEYIN ~/.config/lesskey
 # pager is set in ~/.config/kitty/kitty.conf
 set -Ux PAGER less
-
-fish_add_path ~/bin ~/pycode
-
-# Go
-set -Ux GOPATH ~/go
-fish_add_path $GOPATH/bin
 
 source ~/.secrets
 
@@ -70,6 +72,7 @@ if status is-interactive
     # oh-my-posh init fish | source
     zoxide init fish | source
     direnv hook fish | source
+
 
     bind \cx\ce edit_command_buffer # ctrl+x ctrl+e to edit command buffer
     bind \cH backward-kill-path-component # ctrl+backspace to delete path component
