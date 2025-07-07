@@ -33,6 +33,8 @@ vim.g.lazyvim_picker = "snacks"
 vim.g.snacks_animate = false
 vim.g.ai_cmp = false
 
+vim.o.autoread = true -- Automatically read file when changed outside of Neovim
+
 -- vim.lsp.set_log_level("info")
 vim.lsp.set_log_level("off")
 
