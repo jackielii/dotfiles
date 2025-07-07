@@ -8,6 +8,7 @@ set -Ux EDITOR (which nvim)
 set -Ux VISUAL $EDITOR
 set -Ux SUDO_EDITOR $EDITOR
 set -Ux LESSKEYIN ~/.config/lesskey
+# pager is set in ~/.config/kitty/kitty.conf
 set -Ux PAGER less
 
 fish_add_path ~/bin ~/pycode
@@ -44,7 +45,7 @@ if status is-interactive
     abbr dc docker-compose
     abbr ns kubens
     abbr ctx kubectx
-    abbr gs gst
+    abbr gs git status
     abbr lg lazygit
     abbr l lf
     abbr gci git commit
@@ -109,13 +110,10 @@ if status is-interactive
     end
 
     alias pg $PAGER
+    alias claude="~/.claude/local/claude"
+    if [ -f ~/.local/share/google-cloud-sdk/path.fish.inc ]
+        . ~/.local/share/google-cloud-sdk/path.fish.inc
+    end
 end
 
 # vim:set et sts=4 sw=4 ts=4:
-
-# Added by OrbStack: command-line tools and integration
-# This won't be added again if you remove it.
-# source ~/.orbstack/shell/init2.fish 2>/dev/null || :
-
-# The next line updates PATH for the Google Cloud SDK.
-# if [ -f '/Users/jackieli/.local/share/google-cloud-sdk/path.fish.inc' ]; . '/Users/jackieli/.local/share/google-cloud-sdk/path.fish.inc'; end

@@ -389,9 +389,9 @@ map("n", "<leader>dg", "<Esc><cmd>set operatorfunc=v:lua.__picker_grep_operator<
 map("i", "<C-e>", function()
   return LazyVim.cmp.actions.cmp_hide() or LazyVim.cmp.actions.ai_accept() or "<C-e>"
 end, { expr = true, desc = "Close Completion" })
-map({ "i", "s" }, "<Tab>", function()
-  return LazyVim.cmp.actions.ai_accept() or LazyVim.cmp.actions.snippet_forward() or "<Tab>"
-end, { expr = true, desc = "Accept Copilot" })
+-- map({ "i", "s" }, "<Tab>", function()
+--   return LazyVim.cmp.actions.ai_accept() or LazyVim.cmp.actions.snippet_forward() or "<Tab>"
+-- end, { expr = true, desc = "Accept Copilot" })
 map({ "i", "s" }, "<S-Tab>", function()
   return LazyVim.cmp.actions.snippet_backward() or "<S-Tab>"
 end, { expr = true, desc = "Accept Copilot" })
