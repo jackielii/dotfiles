@@ -389,12 +389,16 @@ map("n", "<leader>dg", "<Esc><cmd>set operatorfunc=v:lua.__picker_grep_operator<
 map("i", "<C-e>", function()
   return LazyVim.cmp.actions.cmp_hide() or LazyVim.cmp.actions.ai_accept() or "<C-e>"
 end, { expr = true, desc = "Close Completion" })
+-- <C-i> is mapped to <F20> in ~/.config/kitty/kitty.conf
+map({ "i", "s" }, "<F20>", function()
+  return LazyVim.cmp.actions.ai_accept()
+end, { expr = true, desc = "Accept Copilot" })
 -- map({ "i", "s" }, "<Tab>", function()
 --   return LazyVim.cmp.actions.ai_accept() or LazyVim.cmp.actions.snippet_forward() or "<Tab>"
 -- end, { expr = true, desc = "Accept Copilot" })
-map({ "i", "s" }, "<S-Tab>", function()
-  return LazyVim.cmp.actions.snippet_backward() or "<S-Tab>"
-end, { expr = true, desc = "Accept Copilot" })
+-- map({ "i", "s" }, "<S-Tab>", function()
+--   return LazyVim.cmp.actions.snippet_backward() or "<S-Tab>"
+-- end, { expr = true, desc = "Accept Copilot" })
 map({ "i", "s" }, "<C-h>", function()
   return LazyVim.cmp.actions.cmp_disable() or LazyVim.cmp.actions.ai_disable() or close_all_float() or ""
 end, { expr = true, desc = "Disable Completion & Copilot" })

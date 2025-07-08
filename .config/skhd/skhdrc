@@ -17,7 +17,7 @@
 .define move_window_rel : yabai -m window --move rel:{{1}}:{{2}}
 
 # Window resize operations
-.define resize_window : yabai -m window --resize {{1}}:{{2}}:{{3}} || yabai -m window {{4}} --resize {{1}}:{{2}}:{{3}}
+.define resize_window : yabai -m window --resize {{1}}:{{2}}:{{3}}
 
 # Warp and stack operations
 .define warp_window : yabai -m window --warp {{1}}
@@ -147,10 +147,16 @@ cmd + shift - 0 : @move_to_space("10")
 # cmd + ctrl + shift - 0 : yabai -m window --space 10
 
 ## resize
-cmd + ctrl + shift - k: @resize_window("top", "0", "-10", "south")
-cmd + ctrl + shift - j: @resize_window("bottom", "0", "10", "north")
-cmd + ctrl + shift - h: @resize_window("left", "-10", "0", "east")
-cmd + ctrl + shift - l: @resize_window("right", "10", "0", "west")
+cmd + ctrl + shift - h: @resize_window("right", "-50", "0")
+cmd + ctrl + shift - j: @resize_window("bottom", "0", "50")
+cmd + ctrl + shift - k: @resize_window("bottom", "0", "-50")
+cmd + ctrl + shift - l: @resize_window("right", "50", "0")
+
+## move window
+alt + ctrl + shift - h : @move_window_rel("-50", "0")
+alt + ctrl + shift - j : @move_window_rel("0", "50")
+alt + ctrl + shift - k : @move_window_rel("0", "-50")
+alt + ctrl + shift - l : @move_window_rel("50", "0")
 # }}}
 
 # warp & stack {{{
@@ -163,7 +169,9 @@ cmd + ctrl + shift - l: @resize_window("right", "10", "0", "west")
 # Enter window mode with meh + m
 meh - m ; winmode
 winmode < escape ; default
+winmode < return ; default
 winmode < meh - m ; default
+winmode < cmd - tab ~
 
 # Focus operations - basic hjkl for focus
 winmode < h : @focus_direction("west", "recent")
@@ -171,7 +179,27 @@ winmode < j : @focus_stack_or_direction("next", "south", "first")
 winmode < k : @focus_stack_or_direction("prev", "north", "last")
 winmode < l : @focus_direction("east", "mouse")
 
-# Move operations - shift + hjkl for moving
+# move
+winmode < left : @move_window_rel("-50", "0")
+winmode < down : @move_window_rel("0", "50")
+winmode < up : @move_window_rel("0", "-50")
+winmode < right : @move_window_rel("50", "0")
+winmode < alt - left : @move_window_rel("-10", "0")
+winmode < alt - down : @move_window_rel("0", "10")
+winmode < alt - up : @move_window_rel("0", "-10")
+winmode < alt - right : @move_window_rel("10", "0")
+
+# resize
+winmode < shift - left : @resize_window("right", "-50", "0")
+winmode < shift - down : @resize_window("bottom", "0", "50")
+winmode < shift - up : @resize_window("bottom", "0", "-50")
+winmode < shift - right : @resize_window("right", "50", "0")
+winmode < alt + shift - left : @resize_window("right", "-10", "0")
+winmode < alt + shift - down : @resize_window("bottom", "0", "10")
+winmode < alt + shift - up : @resize_window("bottom", "0", "-10")
+winmode < alt + shift - right : @resize_window("right", "10", "0")
+
+# swap operations - shift + hjkl
 winmode < shift - h : @swap_or_display("west")
 winmode < shift - j : @swap_or_display("south")
 winmode < shift - k : @swap_or_display("north")
@@ -190,26 +218,15 @@ winmode < ctrl + shift - k : @stack_window("north")
 winmode < ctrl + shift - l : @stack_window("east")
 
 # Stack management shortcuts
-.define insert_window : yabai -m window --insert {{1}}
-winmode < left : @insert_window("west")
-winmode < down : @insert_window("south")
-winmode < up : @insert_window("north")
-winmode < right : @insert_window("east")
-winmode < s : @insert_window("stack")
+# .define insert_window : yabai -m window --insert {{1}}
+# winmode < left : @insert_window("west")
+# winmode < down : @insert_window("south")
+# winmode < up : @insert_window("north")
+# winmode < right : @insert_window("east")
+# winmode < s : @insert_window("stack")
 
 winmode < n : yabai -m window --focus stack.next  # Navigate stack next
 winmode < p : yabai -m window --focus stack.prev  # Navigate stack prev
-
-# Original keybindings kept as alternatives
-alt + cmd + shift - k : @warp_window("north")
-alt + cmd + shift - j : @warp_window("south")
-alt + cmd + shift - h : @warp_window("west")
-alt + cmd + shift - l : @warp_window("east")
-
-alt + ctrl + shift - k: @stack_window("north")
-alt + ctrl + shift - j: @stack_window("south")
-alt + ctrl + shift - h: @stack_window("west")
-alt + ctrl + shift - l: @stack_window("east")
 # }}}
 
 # layout {{{
