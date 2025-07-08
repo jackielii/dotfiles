@@ -1,0 +1,26 @@
+snippet fum "method"
+	func (${1} ${2:type}) ${3:method}(${4}) ${5:error} {
+		${0:${VISUAL}}
+	}
+
+snippet args "args"
+	func (${1} ${2:type}) ${3:Args}(${4:r *http.Request}) (${5:args}, ${6:error}) {
+		${0:${VISUAL}}
+	}
+
+snippet fumh "http handler function on receiver"
+	func (${1} ${2:type}) ${3:funcName}(${4:w} http.ResponseWriter, ${5:r} *http.Request) {
+		${0:${VISUAL}}
+	}
+
+snippet tum "templ method"
+	templ (${1} ${2:type}) ${3:Page}(${4}) {
+		${5}
+	}
+	${0}
+
+snippet tumh "templ http handler function on receiver"
+	func (${1} ${2:type}) ${3:ServeHTTP}(${4:w} http.ResponseWriter, ${5:r} *http.Request) ${6:error} {
+		${0:${VISUAL}}
+	}
+
