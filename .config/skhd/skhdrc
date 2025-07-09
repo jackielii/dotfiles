@@ -288,10 +288,9 @@ cmd + ctrl + shift - return : open ~
 # alt - f : open ~
 ralt - m : open -a "Microsoft Outlook.app"
 # cmd + ctrl + shift - return : kitty -1 -d ~ zsh -c "source ~/.base16_theme; ranger"
+cmd + shift - x : yabai -m window --close
 # }}}
 
-# for this mac: need to be more like linux {{{
-cmd + shift - x : yabai -m window --close
 
 # common ctr - number to cmd - number {{{
 ctrl - 1 | cmd - 1
