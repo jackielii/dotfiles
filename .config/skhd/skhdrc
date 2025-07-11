@@ -38,7 +38,7 @@
 .define anybar_color : echo -n "{{1}}" | nc -4u -w0 localhost 1738
 
 # App launch operations
-.define fish : fish -c "{{1}}"
+.define fish : fish -c '{{1}}'
 # }}}
 
 # Process groups {{{
@@ -261,7 +261,7 @@ ctrl + cmd - k | cmd - k
 cmd + ralt - r : yabai -m window --scratchpad recover
 ralt - 0x32 : @toggle_scratchpad("music", "YouTube Music")
 # alt - return: yabai -m window --toggle tt || fish -c "kitty -o tab_bar_min_tabs=3 -o hide_window_decorations=false -d ~ -T 'T_T'"
-ralt - return: @fish("kitten quick-access-terminal -o os_window_title=main")
+ralt - return: @fish("cd ~ && kitten quick-access-terminal -o os_window_title=main -o lines=35")
 lalt - c: @toggle_scratchpad("wechat", "WeChat")
 alt - g: @toggle_scratchpad("ghostty", "ghostty")
 alt - a: @toggle_scratchpad("whatsapp", "WhatsApp")
@@ -278,7 +278,7 @@ ralt - t : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
         # zsh -c "source ~/.base16_theme; tmux new-session -A -s main"
 # alt - f : kitty -d ~ --title 'MY-|-Filer' lf
 # -1 option makes it very fast but makes -o option not work
-ralt - f : @fish("kitty -1 -d ~ -T 'MY-|-Filer' lf")
+ralt - f : @fish("kitty -1 -d ~ -T \"MY-|-Filer\" lf")
 # ralt - f : fish -c "kitty -1 --instance-group lf -d ~ -T 'MY-|-Filer' -o tab_bar_min_tabs=2 lf"
 
 cmd + shift - return : kitty -1 -d ~
@@ -287,7 +287,7 @@ cmd + shift - return : kitty -1 -d ~
 cmd + ctrl + shift - return : open ~
 # ralt - w : open -a "Google Chrome.app"
 # alt - f : open ~
-ralt - m : open -a "Microsoft Outlook.app"
+# ralt - m : open -a "Microsoft Outlook.app"
 # cmd + ctrl + shift - return : kitty -1 -d ~ zsh -c "source ~/.base16_theme; ranger"
 cmd + shift - x : yabai -m window --close
 # }}}
