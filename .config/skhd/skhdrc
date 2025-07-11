@@ -263,6 +263,7 @@ ralt - 0x32 : @toggle_scratchpad("music", "YouTube Music")
 # alt - return: yabai -m window --toggle tt || fish -c "kitty -o tab_bar_min_tabs=3 -o hide_window_decorations=false -d ~ -T 'T_T'"
 ralt - return: @fish("kitten quick-access-terminal -o os_window_title=main")
 lalt - c: @toggle_scratchpad("wechat", "WeChat")
+alt - g: @toggle_scratchpad("ghostty", "ghostty")
 alt - a: @toggle_scratchpad("whatsapp", "WhatsApp")
 alt - d: yabai -m window --toggle finder || open ~/Downloads
 ralt - n: @toggle_scratchpad("notes", "Notes")

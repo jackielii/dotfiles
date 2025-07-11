@@ -62,13 +62,10 @@ map({ "n", "i" }, "<M-tab>", "<Esc><C-^>")
 _G.change_word = function(key)
   return function()
     local cword = vim.fn.expand("<cword>")
-    P(cword)
     local escaped = vim.fn.escape(cword, "\\/.*'$^~[]")
     vim.fn.setreg("/", "\\<" .. escaped .. "\\>")
     vim.cmd("set hlsearch")
-    vim.schedule(function()
-      vim.api.nvim_feedkeys("cg" .. key, "n", false)
-    end)
+    vim.api.nvim_feedkeys("cg" .. key, "n", false)
   end
 end
 
@@ -391,6 +388,7 @@ map("i", "<C-e>", function()
   return LazyVim.cmp.actions.cmp_hide() or LazyVim.cmp.actions.ai_accept() or "<C-e>"
 end, { expr = true, desc = "Close Completion" })
 -- <C-i> is mapped to <F20> in ~/.config/kitty/kitty.conf
+map("n", "<F20>", "<tab>")
 map({ "i", "s" }, "<F20>", function()
   return LazyVim.cmp.actions.ai_accept()
 end, { expr = true, desc = "Accept Copilot" })
