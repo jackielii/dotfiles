@@ -23,7 +23,8 @@ yabai -m config window_placement             second_child
 # yabai -m config window_topmost               off
 
 yabai -m config window_opacity               on
-yabai -m config window_opacity_duration      0.0
+yabai -m config window_opacity_duration      0.15
+yabai -m config normal_window_opacity        0.95
 # modify window shadows (default: on, options: on, off, float)
 # example: show shadows only for floating windows
 yabai -m config window_shadow                float
@@ -105,4 +106,6 @@ yabai -m signal --add event=window_resized action='echo "refresh windows" | nc -
 yabai -m signal --add event=window_minimized action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
 yabai -m signal --add event=window_deminimized action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
 
+# borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0 &
+borders active_color=0xffebcb8b inactive_color=0xff494d64 width=10.0 &
 echo "yabai configuration loaded.."

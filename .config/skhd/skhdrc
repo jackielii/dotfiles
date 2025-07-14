@@ -7,17 +7,27 @@
 # Focus operations with placeholders
 .define focus_direction : yabai -m window --focus {{1}} || yabai -m display --focus {{1}} || yabai -m display --focus {{2}}
 .define focus_stack_or_direction : yabai -m window --focus stack.{{1}} || yabai -m window --focus {{2}} || yabai -m display --focus {{2}} || yabai -m window --focus stack.{{3}}
+.define cycle_visible: yabai -m window --focus "$(yabai -m query --windows | jq -re "sort_by(.display, .frame.x, .frame.y, .id) | map(select(.\"is-visible\" == true and .role != \"AXUnknown\")) | reverse | nth(index(map(select(.\"has-focus\" == true))) - 1).id")"
 
 # Space focus operations
 .define focus_space : yabai -m space --focus {{1}}
+
+#
 
 # Window movement operations
 .define swap_or_display : yabai -m window --swap {{1}} || ( yabai -m window --display {{1}} ; yabai -m display --focus {{1}} )
 .define move_to_space : yabai -m window --space {{1}}
 .define move_window_rel : yabai -m window --move rel:{{1}}:{{2}}
+.define move_window_left : yabai -m window --move abs:0:$(yabai -m query --windows --window | jq '.frame.y')  # Move to left edge
+.define move_window_bot : yabai -m window --move abs:$(yabai -m query --windows --window | jq '.frame.x'):$(echo "$(yabai -m query --displays --display | jq '.frame.h') - $(yabai -m query --windows --window | jq '.frame.h')" | bc)  # Move to bottom edge
+.define move_window_top : yabai -m window --move abs:$(yabai -m query --windows --window | jq '.frame.x'):0  # Move to top edge
+.define move_window_right : yabai -m window --move abs:$(echo "$(yabai -m query --displays --display | jq '.frame.w') - $(yabai -m query --windows --window | jq '.frame.w')" | bc):$(yabai -m query --windows --window | jq '.frame.y')  # Move to right edge
 
 # Window resize operations
 .define resize_window : yabai -m window --resize {{1}}:{{2}}:{{3}}
+.define resize_window_horizontal : yabai -m window --resize right:{{1}}:0 || yabai -m window --resize left:{{1}}:0
+# .define resize_window_vertical : n={{1}}; nn={{1}}; [ $nn -le 0 ] && nn=$((-nn)); \
+.define resize_window_vertical : yabai -m window --resize bottom:0:{{1}} || yabai -m window --resize top:0:{{1}}
 
 # Warp and stack operations
 .define warp_window : yabai -m window --warp {{1}}
@@ -25,7 +35,7 @@
 
 # Layout operations
 .define toggle_layout : [ $(yabai -m query --spaces --space | jq -re '.type') = 'bsp' ] && yabai -m space --layout stack || yabai -m space --layout bsp
-.define toggle_float_grid : yabai -m window --toggle float; yabai -m window --grid 8:8:1:1:6:6
+.define toggle_float : yabai -m window --toggle float; yabai -m window --grid 8:8:1:1:6:6
 
 # Window toggle operations
 .define toggle_scratchpad : yabai -m window --toggle {{1}} || open -a "{{2}}"
@@ -147,10 +157,10 @@ cmd + shift - 0 : @move_to_space("10")
 # cmd + ctrl + shift - 0 : yabai -m window --space 10
 
 ## resize
-cmd + ctrl + shift - h: @resize_window("right", "-50", "0")
-cmd + ctrl + shift - j: @resize_window("bottom", "0", "50")
-cmd + ctrl + shift - k: @resize_window("bottom", "0", "-50")
-cmd + ctrl + shift - l: @resize_window("right", "50", "0")
+cmd + ctrl + shift - h: @resize_window_horizontal("-50")
+cmd + ctrl + shift - j: @resize_window_vertical("50")
+cmd + ctrl + shift - k: @resize_window_vertical("-50")
+cmd + ctrl + shift - l: @resize_window_horizontal("50")
 
 ## move window
 alt + ctrl + shift - h : @move_window_rel("-50", "0")
@@ -168,54 +178,66 @@ alt + ctrl + shift - l : @move_window_rel("50", "0")
 
 # Enter window mode with meh + m
 meh - m ; winmode
+lalt - m ; winmode
 winmode < escape ; default
 winmode < return ; default
 winmode < meh - m ; default
+winmode < lalt - m ; default
 winmode < cmd - tab ~
 
 # Focus operations - basic hjkl for focus
-winmode < h : @focus_direction("west", "recent")
-winmode < j : @focus_stack_or_direction("next", "south", "first")
-winmode < k : @focus_stack_or_direction("prev", "north", "last")
-winmode < l : @focus_direction("east", "mouse")
+winmode < left : @focus_direction("west", "recent")
+winmode < down : @focus_stack_or_direction("next", "south", "first")
+winmode < up : @focus_stack_or_direction("prev", "north", "last")
+winmode < right : @focus_direction("east", "mouse")
 
 # move
-winmode < left : @move_window_rel("-50", "0")
-winmode < down : @move_window_rel("0", "50")
-winmode < up : @move_window_rel("0", "-50")
-winmode < right : @move_window_rel("50", "0")
-winmode < alt - left : @move_window_rel("-10", "0")
-winmode < alt - down : @move_window_rel("0", "10")
-winmode < alt - up : @move_window_rel("0", "-10")
-winmode < alt - right : @move_window_rel("10", "0")
+winmode < h : @move_window_rel("-50", "0")
+winmode < j : @move_window_rel("0", "50")
+winmode < k : @move_window_rel("0", "-50")
+winmode < l : @move_window_rel("50", "0")
+winmode < alt - h : @move_window_rel("-10", "0")
+winmode < alt - j : @move_window_rel("0", "10")
+winmode < alt - k : @move_window_rel("0", "-10")
+winmode < alt - l : @move_window_rel("10", "0")
+
+# Move window to edges - ctrl + arrow keys
+# winmode < ctrl - left : @move_window_left
+# winmode < ctrl - down : @move_window_bot
+# winmode < ctrl - up : @move_window_top
+# winmode < ctrl - right : @move_window_right
+winmode < ctrl - h : @move_window_left
+winmode < ctrl - j : @move_window_bot
+winmode < ctrl - k : @move_window_top
+winmode < ctrl - l : @move_window_right
 
 # resize
-winmode < shift - left : @resize_window("right", "-50", "0")
-winmode < shift - down : @resize_window("bottom", "0", "50")
-winmode < shift - up : @resize_window("bottom", "0", "-50")
-winmode < shift - right : @resize_window("right", "50", "0")
-winmode < alt + shift - left : @resize_window("right", "-10", "0")
-winmode < alt + shift - down : @resize_window("bottom", "0", "10")
-winmode < alt + shift - up : @resize_window("bottom", "0", "-10")
-winmode < alt + shift - right : @resize_window("right", "10", "0")
+winmode < shift - h : @resize_window_horizontal("-50")
+winmode < shift - j : @resize_window_vertical("50")
+winmode < shift - k : @resize_window_vertical("-50")
+winmode < shift - l : @resize_window_horizontal("50")
+winmode < alt + shift - h : @resize_window_horizontal("-10")
+winmode < alt + shift - j : @resize_window_vertical("10")
+winmode < alt + shift - k : @resize_window_vertical("-10")
+winmode < alt + shift - l : @resize_window_horizontal("10")
 
 # swap operations - shift + hjkl
-winmode < shift - h : @swap_or_display("west")
-winmode < shift - j : @swap_or_display("south")
-winmode < shift - k : @swap_or_display("north")
-winmode < shift - l : @swap_or_display("east")
+# winmode < shift - h : @swap_or_display("west")
+# winmode < shift - j : @swap_or_display("south")
+# winmode < shift - k : @swap_or_display("north")
+# winmode < shift - l : @swap_or_display("east")
 
 # Warp operations - alt + shift + hjkl for warping
-winmode < alt + shift - h : @warp_window("west")
-winmode < alt + shift - j : @warp_window("south")
-winmode < alt + shift - k : @warp_window("north")
-winmode < alt + shift - l : @warp_window("east")
+# winmode < alt + shift - h : @warp_window("west")
+# winmode < alt + shift - j : @warp_window("south")
+# winmode < alt + shift - k : @warp_window("north")
+# winmode < alt + shift - l : @warp_window("east")
 
 # Stack operations - ctrl + shift + hjkl for stacking
-winmode < ctrl + shift - h : @stack_window("west")
-winmode < ctrl + shift - j : @stack_window("south")
-winmode < ctrl + shift - k : @stack_window("north")
-winmode < ctrl + shift - l : @stack_window("east")
+# winmode < ctrl + shift - h : @stack_window("west")
+# winmode < ctrl + shift - j : @stack_window("south")
+# winmode < ctrl + shift - k : @stack_window("north")
+# winmode < ctrl + shift - l : @stack_window("east")
 
 # Stack management shortcuts
 # .define insert_window : yabai -m window --insert {{1}}
@@ -223,17 +245,18 @@ winmode < ctrl + shift - l : @stack_window("east")
 # winmode < down : @insert_window("south")
 # winmode < up : @insert_window("north")
 # winmode < right : @insert_window("east")
-# winmode < s : @insert_window("stack")
+winmode < space : @toggle_float
 
 winmode < n : yabai -m window --focus stack.next  # Navigate stack next
 winmode < p : yabai -m window --focus stack.prev  # Navigate stack prev
+
 # }}}
 
 # layout {{{
 #cmd - s : yabai -m space --layout stack
 lcmd - e : @toggle_layout
-cmd + shift - space : @toggle_float_grid
-cmd + ctrl + shift - space : yabai -m window --toggle topmost
+cmd + shift - space : @toggle_float
+# cmd + ctrl + shift - space : yabai -m window --toggle topmost
 
 ## fullscreen
 cmd - f11 : yabai -m window --toggle native-fullscreen
@@ -249,6 +272,19 @@ ctrl + cmd - f : yabai -m window --toggle native-fullscreen
 ## 0x18 is = ; 0x1B is -
 cmd + shift - 0x18 : yabai -m space --balance y-axis
 cmd + shift - 0x1B : yabai -m space --balance x-axis
+
+# # cycle all windows on space backwards by coordinate
+# meh - m : yabai -m window --focus "$(yabai -m query --windows --space | jq -re "[sort_by(.id, .frame) | reverse | .[] | select(.role == \"AXWindow\" and .subrole == \"AXStandardWindow\") | .id] | nth(index($(yabai -m query --windows --window | jq -re ".id")) - 1)")"
+#
+# # cycle all windows on space backwards by coordinate
+# meh - n : yabai -m window --focus "$(yabai -m query --windows --space | jq -re "[sort_by(.id, .frame) | .[] | select(.role == \"AXWindow\" and .subrole == \"AXStandardWindow\") | .id] | nth(index($(yabai -m query --windows --window | jq -re ".id")) - 1)")"
+#
+# # cycle through all windows sorted by: coordinates -> space index -> display index
+# meh - v : yabai -m window --focus "$(yabai -m query --windows | jq -re "sort_by(.display, .space, .frame.x, .frame.y, .id) | map(select(.\"is-visible\" == true and .role != \"AXUnknown\")) | reverse | nth(index(map(select(.\"has-focus\" == true))) - 1).id")"
+# cycle through all visible windows sorted by: coordinates -> display index
+# cmd + ctrl - space : @cycle_visible
+cmd - space : @cycle_visible
+
 # }}}
 
 # some common shortcuts conflicts with current mappings {{{
@@ -383,7 +419,7 @@ fn - space : ~/.local/bin/fntoggle
 
 # reload yabai
 # ctrl + shift + cmd - r : launchctl kickstart -k "gui/${UID}/homebrew.mxcl.yabai"
-ctrl + shift + cmd - r : yabai --reload-service
+ctrl + shift + cmd - r : yabai --restart-service
 
 # mac built-in keyboard {{{
 # § -> ` and shift - § -> ~

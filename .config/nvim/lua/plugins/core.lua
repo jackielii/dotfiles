@@ -57,6 +57,7 @@ return {
       { "<leader>gdd", [[<cmd>tab Git diff %<cr>]], desc = "Git diff current" },
       { "<leader>gp", [[<cmd>Git pull<cr>]], desc = "Git pull" },
       { "<leader>gP", [[<cmd>Git push<cr>]], desc = "Git push" },
+      { "<leader>gl", desc = "+Git log" },
       { "<leader>gl0", [[:tabnew % <bar> 0Gclog<cr>]], desc = "Fugitive Git log file" },
       { "<leader>gla", [[:tabnew % <bar> Git log<cr>]], desc = "Fugitive Git history" },
       { "<leader>ga", [[<cmd>Git add --all<cr>]], desc = "Git add" },
@@ -611,7 +612,7 @@ return {
           },
         },
         window = {
-          placement = { horizontal = "right", vertical = "bottom", },
+          placement = { horizontal = "right", vertical = "bottom" },
           -- margin = { vertical = 0, horizontal = 0 },
         },
         hide = { cursorline = true },
