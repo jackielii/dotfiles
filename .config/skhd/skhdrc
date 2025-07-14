@@ -284,6 +284,7 @@ cmd + shift - 0x1B : yabai -m space --balance x-axis
 # cycle through all visible windows sorted by: coordinates -> display index
 # cmd + ctrl - space : @cycle_visible
 cmd - space : @cycle_visible
+cmd - g : @cycle_visible
 
 # }}}
 
