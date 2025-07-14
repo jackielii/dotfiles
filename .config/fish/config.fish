@@ -38,6 +38,8 @@ if [ -z "$BASE16_THEME" ] && [ -e ~/.base16_theme ]
     set -gx BASE16_THEME (string match 'base16-*' $SCRIPT_NAME  | string sub -s (string length 'base16-*'))
 end
 
+set -Ux XDG_CONFIG_HOME "$HOME/.config"
+
 if status is-interactive
     set -g fish_greeting
 
