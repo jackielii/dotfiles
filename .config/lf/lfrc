@@ -149,7 +149,7 @@ cmd lfopen ${{
     fi
 }}
 
-cmd trash $trash -F $fx # trash installed via brew install trash
+cmd trash $trash $fx
 
 cmd delete ${{
     set -f

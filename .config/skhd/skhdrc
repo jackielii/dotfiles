@@ -157,16 +157,16 @@ cmd + shift - 0 : @move_to_space("10")
 # cmd + ctrl + shift - 0 : yabai -m window --space 10
 
 ## resize
-cmd + ctrl + shift - h: @resize_window_horizontal("-50")
-cmd + ctrl + shift - j: @resize_window_vertical("50")
-cmd + ctrl + shift - k: @resize_window_vertical("-50")
-cmd + ctrl + shift - l: @resize_window_horizontal("50")
+alt + ctrl + shift - h: @resize_window_horizontal("-50")
+alt + ctrl + shift - j: @resize_window_vertical("50")
+alt + ctrl + shift - k: @resize_window_vertical("-50")
+alt + ctrl + shift - l: @resize_window_horizontal("50")
 
 ## move window
-alt + ctrl + shift - h : @move_window_rel("-50", "0")
-alt + ctrl + shift - j : @move_window_rel("0", "50")
-alt + ctrl + shift - k : @move_window_rel("0", "-50")
-alt + ctrl + shift - l : @move_window_rel("50", "0")
+cmd + ctrl + shift - h : @move_window_rel("-50", "0")
+cmd + ctrl + shift - j : @move_window_rel("0", "50")
+cmd + ctrl + shift - k : @move_window_rel("0", "-50")
+cmd + ctrl + shift - l : @move_window_rel("50", "0")
 # }}}
 
 # warp & stack {{{
@@ -184,6 +184,7 @@ winmode < return ; default
 winmode < meh - m ; default
 winmode < lalt - m ; default
 winmode < cmd - tab ~
+# winmode < q ; default : @move_window_left
 
 # Focus operations - basic hjkl for focus
 winmode < left : @focus_direction("west", "recent")

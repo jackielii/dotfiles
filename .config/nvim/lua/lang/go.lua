@@ -8,9 +8,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
         diagnostics = {},
       },
       filter = function(action)
-        if vim.bo.modified then
-          vim.cmd("silent! noa write")
-        end
+        vim.cmd("silent! noa write")
         return true
       end,
     })
