@@ -25,6 +25,8 @@ source ~/.secrets
 set -Ux NODE_VERSION_PREFIX
 set -Ux NODE_VERSIONS ~/.nvm/versions/node
 
+set -Ux GITHUB_TOKEN $MY_GITHUB_API_TOKEN
+
 # here we disable the loading of base16-shell. To change the theme:
 # 1. load_base16_helper
 # 2. base16-decaf
