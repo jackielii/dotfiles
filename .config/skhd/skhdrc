@@ -5,7 +5,7 @@
 
 # Command definitions {{{
 # Focus operations with placeholders
-.define focus_direction : yabai -m window --focus {{1}} || yabai -m display --focus {{1}} || yabai -m display --focus {{2}}
+.define focus_direction : yabai -m window --focus {{1}} || yabai -m display --focus {{1}}
 .define focus_stack_or_direction : yabai -m window --focus stack.{{1}} || yabai -m window --focus {{2}} || yabai -m display --focus {{2}} || yabai -m window --focus stack.{{3}}
 .define cycle_visible: yabai -m window --focus "$(yabai -m query --windows | jq -re "sort_by(.display, .frame.x, .frame.y, .id) | map(select(.\"is-visible\" == true and .role != \"AXUnknown\")) | reverse | nth(index(map(select(.\"has-focus\" == true))) - 1).id")"
 
@@ -56,10 +56,10 @@
 # }}}
 
 # focus cmd - ? {{{
-lcmd - h : @focus_direction("west", "recent")
+lcmd - h : @focus_direction("west")
 lcmd - j : @focus_stack_or_direction("next", "south", "first")
 lcmd - k : @focus_stack_or_direction("prev", "north", "last")
-lcmd - l : @focus_direction("east", "mouse")
+lcmd - l : @focus_direction("east")
 
 cmd + ctrl - h : @focus_space("prev")
 # cmd + ctrl - j : yabai -m window --insert south
