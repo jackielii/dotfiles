@@ -1,19 +1,39 @@
-vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = "*.go",
-  callback = function()
-    vim.lsp.buf.code_action({
-      apply = true,
-      context = {
-        only = { "source.organizeImports" },
-        diagnostics = {},
-      },
-      filter = function(action)
-        vim.cmd("silent! noa write")
-        return true
-      end,
-    })
-  end,
-})
+-- vim.api.nvim_create_autocmd("BufWritePre", {
+--   pattern = "*.go",
+--   callback = function()
+--     local bufnr = vim.api.nvim_get_current_buf()
+--
+--     vim.lsp.buf.code_action({
+--       apply = false, -- Don't apply automatically
+--       context = {
+--         only = { "source.organizeImports" },
+--         diagnostics = {},
+--       },
+--       filter = function(action)
+--         if action.kind == "source.organizeImports" and action.edit then
+--           -- Apply the edit ourselves
+--           local clients = vim.lsp.get_clients({ bufnr = bufnr })
+--           for _, client in ipairs(clients) do
+--             if client and client.name == "gopls" then
+--               -- We found the gopls client, apply the edit
+--               vim.lsp.util.apply_workspace_edit(action.edit, client.offset_encoding)
+--             end
+--           end
+--
+--           -- Schedule the write after the edit is applied
+--           vim.schedule(function()
+--             if vim.api.nvim_buf_is_valid(bufnr) then
+--               vim.api.nvim_buf_call(bufnr, function()
+--                 vim.cmd("silent! noa write")
+--               end)
+--             end
+--           end)
+--         end
+--         return false -- Don't let the default handler apply it
+--       end,
+--     })
+--   end,
+-- })
 
 return {
   {
@@ -63,8 +83,8 @@ return {
     optional = true,
     opts = {
       formatters_by_ft = {
-        -- go = { "goimports", "gofumpt" },
-        go = {}, -- use gopls for formatting, disable others
+        go = { "goimports", "gofumpt" },
+        -- go = {}, -- use gopls for formatting, disable others
       },
     },
   },

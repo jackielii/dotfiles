@@ -79,6 +79,10 @@ return {
       { "<C-j>", [[<cmd>NavigatorDown<cr>]], desc = "NavigatorDown" },
       { "<C-k>", [[<cmd>NavigatorUp<cr>]], desc = "NavigatorUp" },
       { "<C-l>", [[<cmd>NavigatorRight<cr>]], desc = "NavigatorRight" },
+      { mode = "t", "<c-h>", "<C-w><cmd>NavigatorLeft<cr>" },
+      { mode = "t", "<c-j>", "<C-w><cmd>NavigatorDown<cr>" },
+      { mode = "t", "<c-k>", "<C-w><cmd>NavigatorUp<cr>" },
+      { mode = "t", "<c-l>", "<C-w><cmd>NavigatorRight<cr>" },
     },
     opts = {},
   },
@@ -240,7 +244,7 @@ return {
   -- },
 
   -- {
-  --   "echasnovski/mini.comment",
+  --   "nvim-mini/mini.comment",
   --   event = "VeryLazy",
   --   opts = {
   --     options = {
@@ -885,6 +889,33 @@ return {
     end,
   },
 
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    keys = {
+      { "]f", false },
+      { "[f", false },
+      { "]F", false },
+      { "[F", false },
+      { "]c", false },
+      { "[c", false },
+      { "]C", false },
+      { "[C", false },
+    },
+    opts = {
+      move = {
+        enable = true,
+        set_jumps = true, -- whether to set jumps in the jumplist
+        -- LazyVim extention to create buffer-local keymaps
+        keys = {
+          goto_next_start = { ["]a"] = "@parameter.inner" },
+          goto_next_end = { ["]A"] = "@parameter.inner" },
+          goto_previous_start = { ["[a"] = "@parameter.inner" },
+          goto_previous_end = { ["[A"] = "@parameter.inner" },
+        },
+      },
+    },
+  },
+
   -- {
   --   "github/copilot.vim",
   --   event = { "BufReadPost", "BufNewFile" },
@@ -918,11 +949,11 @@ return {
         "<cmd>FloatermToggle<cr>",
         mode = { "n", "t", "i" },
       },
-      {
-        "<C-/>",
-        "<cmd>FloatermToggle<cr>",
-        mode = { "n", "t", "i", "t" },
-      },
+      -- {
+      --   "<C-/>",
+      --   "<cmd>FloatermToggle<cr>",
+      --   mode = { "n", "t", "i", "t" },
+      -- },
       {
         "<F6>",
         "<cmd>FloatermNew --title=lazygit lazygit<cr>",
@@ -1077,7 +1108,7 @@ return {
   { "fladson/vim-kitty", ft = { "kitty", "kitty-session" } },
 
   {
-    "echasnovski/mini.ai",
+    "nvim-mini/mini.ai",
     -- enabled = false,
     -- keys = {
     --   { "a", mode = { "x", "o" } },
@@ -1529,7 +1560,7 @@ return {
   -- },
 
   {
-    "echasnovski/mini.pairs",
+    "nvim-mini/mini.pairs",
     event = "VeryLazy",
     opts = {
       modes = { insert = true, command = false, terminal = false },
@@ -1537,8 +1568,17 @@ return {
   },
 
   {
-    "echasnovski/mini.indentscope",
+    "nvim-mini/mini.indentscope",
     opts = function(_, opts)
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = {
+          "sidekick_terminal",
+        },
+        callback = function()
+          vim.b.miniindentscope_disable = true
+        end,
+      })
+
       opts.draw = {
         delay = 100,
         animation = function()
@@ -1697,6 +1737,22 @@ return {
         end
 
         -- stylua: ignore start
+        map("n", "]h", function()
+          if vim.wo.diff then
+            vim.cmd.normal({ "]c", bang = true })
+          else
+            gs.nav_hunk("next")
+          end
+        end, "Next Hunk")
+        map("n", "[h", function()
+          if vim.wo.diff then
+            vim.cmd.normal({ "[c", bang = true })
+          else
+            gs.nav_hunk("prev")
+          end
+        end, "Prev Hunk")
+        map("n", "]H", function() gs.nav_hunk("last") end, "Last Hunk")
+        map("n", "[H", function() gs.nav_hunk("first") end, "First Hunk")
         map("n", "]c", gs.next_hunk, "Next Hunk")
         map("n", "[c", gs.prev_hunk, "Prev Hunk")
         map({ "n", "v" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
@@ -1713,5 +1769,45 @@ return {
         map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
       end,
     },
+  },
+
+  -- {
+  --   "declancm/maximize.nvim",
+  --   keys = {
+  --     { "<C-w>z", "<cmd>Maximize<cr>", desc = "Maximize Window", mode = { "n", "t" } },
+  --   },
+  --   opts = {},
+  -- },
+
+  {
+    "stevearc/oil.nvim",
+    ---@module 'oil'
+    ---@type oil.SetupOpts
+    opts = {
+      columns = {
+        "icon",
+        "permissions",
+        "size",
+        "mtime",
+      },
+      keymaps = {
+        ["<C-s>"] = { "actions.select", opts = { horizontal = true } },
+        ["<C-v>"] = { "actions.select", opts = { vertical = true } },
+        ["<M-p>"] = "actions.preview",
+        ["~"] = false,
+        ["<C-p>"] = false,
+        ["<C-c>"] = false,
+        ["<C-h>"] = false,
+        ["<C-l>"] = false,
+      },
+      view_options = {
+        show_hidden = true,
+      },
+    },
+    -- Optional dependencies
+    dependencies = { { "nvim-mini/mini.icons", opts = {} } },
+    -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
+    -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
+    lazy = false,
   },
 }

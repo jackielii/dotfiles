@@ -26,6 +26,7 @@ set -Ux NODE_VERSION_PREFIX
 set -Ux NODE_VERSIONS ~/.nvm/versions/node
 
 set -Ux GITHUB_TOKEN $MY_GITHUB_API_TOKEN
+# set -Ux GITHUB_COPILOT_TOKEN $MY_GITHUB_API_TOKEN
 
 # here we disable the loading of base16-shell. To change the theme:
 # 1. load_base16_helper
@@ -41,6 +42,9 @@ if [ -z "$BASE16_THEME" ] && [ -e ~/.base16_theme ]
 end
 
 set -Ux XDG_CONFIG_HOME "$HOME/.config"
+
+fish_add_path ~/.fzf/bin
+fish_add_path ~/.cargo/bin
 
 if status is-interactive
     set -g fish_greeting
@@ -83,7 +87,6 @@ if status is-interactive
     bind \cw backward-kill-bigword # ctrl+w to delete big word
     bind \e\[3\;5~ kill-word # ctrl+delete to delete forward word
 
-    fish_add_path ~/.fzf/bin
     set -Ux FZF_DEFAULT_COMMAND 'fd --type f --hidden --follow --exclude .git'
     set -Ux FZF_DEFAULT_OPTS "--history=$HOME/.fzf_history --bind='ctrl-e:preview-down,ctrl-y:preview-up,ctrl-o:toggle-preview'"
     # if [ -n "$BASE16_THEME" ] && [ -f ~/.config/base16-fzf/fish/base16-$BASE16_THEME.fish ] && not string match -qe -- --color $FZF_DEFAULT_OPTS
@@ -117,7 +120,6 @@ if status is-interactive
     end
 
     alias pg $PAGER
-    alias claude="~/.claude/local/claude"
     if [ -f ~/.local/share/google-cloud-sdk/path.fish.inc ]
         . ~/.local/share/google-cloud-sdk/path.fish.inc
     end

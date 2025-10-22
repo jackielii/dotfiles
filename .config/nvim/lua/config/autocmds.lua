@@ -34,6 +34,9 @@ vim.api.nvim_create_autocmd("FocusGained", {
   command = "checktime"
 })
 
+-- vim.api.nvim_create_autocmd("InsertEnter", { command = [[set norelativenumber]] })
+-- vim.api.nvim_create_autocmd("InsertLeave", { command = [[set relativenumber]] })
+
 -- -- somehow in lazyvim, the BufReadPost is not triggered for the first file opened
 -- local initialBufReadPost = false
 -- vim.api.nvim_create_autocmd("BufReadPost", {

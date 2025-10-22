@@ -265,8 +265,10 @@ map("n", "<F4>", "<cmd>CloseNonProjectBuffers<cr>")
 -- map("t", "<C-j>", "<cmd>wincmd j<cr>", { desc = "Go to Lower Window" })
 -- map("t", "<C-k>", "<cmd>wincmd k<cr>", { desc = "Go to Upper Window" })
 -- map("t", "<C-l>", "<cmd>wincmd l<cr>", { desc = "Go to Right Window" })
-map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
-map("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
+-- Removed: conflicts with sidekick terminal and other terminal tools
+-- Use sidekick's built-in hide keys instead: <c-z>, <c-.>, <c-q>
+-- map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
+-- map("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
 
 -- -- stylua: ignore start
 -- -- lazygit

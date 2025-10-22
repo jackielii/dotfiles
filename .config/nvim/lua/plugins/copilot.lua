@@ -1,6 +1,7 @@
 return {
   -- copilot
   {
+    -- enabled = false,
     "zbirenbaum/copilot.lua",
     keys = {
       { "<leader>ua", "<cmd>Copilot toggle<cr>", desc = "Copilot toggle" },

@@ -36,6 +36,9 @@ return {
     opts = {
 
       picker = {
+        layout = {
+          cycle = false,
+        },
         formatters = {
           file = {
             filename_first = true,

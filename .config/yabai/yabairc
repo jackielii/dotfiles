@@ -18,11 +18,12 @@ sudo yabai --load-sa
 yabai -m config mouse_follows_focus          true
 yabai -m config focus_follows_mouse          off
 yabai -m config window_placement             second_child
+yabai -m config mouse_drop_action stack
 
 # floating windows are always on top (default: off)
 # yabai -m config window_topmost               off
 
-yabai -m config window_opacity               on
+yabai -m config window_opacity               off
 yabai -m config window_opacity_duration      0.15
 yabai -m config normal_window_opacity        0.96
 # modify window shadows (default: on, options: on, off, float)
@@ -88,7 +89,7 @@ yabai -m rule --add app="^WeChat$" scratchpad=wechat grid=11:11:1:1:9:9
 yabai -m rule --add app='WhatsApp$' scratchpad=whatsapp grid=11:11:1:1:9:9
 yabai -m rule --add app="^Finder$" scratchpad=finder grid=11:11:1:1:9:9
 yabai -m rule --add app="^Notes$" scratchpad=notes grid=11:11:1:1:9:9
-yabai -m rule --add app="^ChatGPT$" scratchpad=chatgpt grid=11:11:1:1:9:9
+yabai -m rule --add app="^Claude$" scratchpad=claude grid=11:11:1:1:9:9
 yabai -m rule --add app="^Skype$" scratchpad=skype grid=11:11:1:1:9:9
 
 #SPACEBAR_HEIGHT=$(spacebar -m config height)

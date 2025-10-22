@@ -8,23 +8,23 @@ return {
       })
     end,
   },
-  {
-    "vrischmann/tree-sitter-templ",
-    dir = "~/personal/tree-sitter-templ",
-    config = function()
-      -- For debugging the Templ parser
-      local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()
-      parser_configs.templ = {
-        install_info = {
-          url = "/Users/jackieli/personal/tree-sitter-templ",
-          files = {
-            "src/parser.c",
-            "src/scanner.c",
-          },
-        },
-      }
-    end,
-  },
+  -- {
+  --   "vrischmann/tree-sitter-templ",
+  --   dir = "~/personal/tree-sitter-templ",
+  --   config = function()
+  --     -- For debugging the Templ parser
+  --     local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()
+  --     parser_configs.templ = {
+  --       install_info = {
+  --         url = "/Users/jackieli/personal/tree-sitter-templ",
+  --         files = {
+  --           "src/parser.c",
+  --           "src/scanner.c",
+  --         },
+  --       },
+  --     }
+  --   end,
+  -- },
 
   -- {
   --   "stevearc/conform.nvim",

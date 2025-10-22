@@ -124,6 +124,11 @@ func previewImage(opts previewOpts) bool {
 	}
 
 	cache := fmt.Sprintf("%s/.cache/lf/%s.jpg", os.Getenv("HOME"), fileStatHash(opts))
+	if err := os.MkdirAll(filepath.Dir(cache), 0o755); err != nil {
+		log.Printf("failed to create cache directory: %v\n", err)
+		return false
+	}
+
 	var img string
 	if _, err := os.Stat(cache); err == nil {
 		img = cache

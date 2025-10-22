@@ -36,6 +36,7 @@
 # Layout operations
 .define toggle_layout : [ $(yabai -m query --spaces --space | jq -re '.type') = 'bsp' ] && yabai -m space --layout stack || yabai -m space --layout bsp
 .define toggle_float : yabai -m window --toggle float; yabai -m window --grid 8:8:1:1:6:6
+.define switch_float_focus : [ $(yabai -m query --windows --window | jq -r '.["is-floating"]') = 'true' ] && yabai -m window --focus "$(yabai -m query --windows --space | jq -r 'map(select(.["is-floating"] == false and .["is-visible"] == true)) | first | .id')" || yabai -m window --focus "$(yabai -m query --windows --space | jq -r 'map(select(.["is-floating"] == true and .["is-visible"] == true)) | first | .id')"
 
 # Window toggle operations
 .define toggle_scratchpad : yabai -m window --toggle {{1}} || open -a "{{2}}"
@@ -187,10 +188,10 @@ winmode < cmd - tab ~
 # winmode < q ; default : @move_window_left
 
 # Focus operations - basic hjkl for focus
-winmode < left : @focus_direction("west", "recent")
+winmode < left : @focus_direction("west")
 winmode < down : @focus_stack_or_direction("next", "south", "first")
 winmode < up : @focus_stack_or_direction("prev", "north", "last")
-winmode < right : @focus_direction("east", "mouse")
+winmode < right : @focus_direction("east")
 
 # move
 winmode < h : @move_window_rel("-50", "0")
@@ -223,22 +224,22 @@ winmode < alt + shift - k : @resize_window_vertical("-10")
 winmode < alt + shift - l : @resize_window_horizontal("10")
 
 # swap operations - shift + hjkl
-# winmode < shift - h : @swap_or_display("west")
-# winmode < shift - j : @swap_or_display("south")
-# winmode < shift - k : @swap_or_display("north")
-# winmode < shift - l : @swap_or_display("east")
+winmode < shift - left : @swap_or_display("west")
+winmode < shift - down : @swap_or_display("south")
+winmode < shift - up : @swap_or_display("north")
+winmode < shift - right : @swap_or_display("east")
 
 # Warp operations - alt + shift + hjkl for warping
-# winmode < alt + shift - h : @warp_window("west")
-# winmode < alt + shift - j : @warp_window("south")
-# winmode < alt + shift - k : @warp_window("north")
-# winmode < alt + shift - l : @warp_window("east")
+winmode < ctrl - left : @warp_window("west")
+winmode < ctrl - down : @warp_window("south")
+winmode < ctrl - up : @warp_window("north")
+winmode < ctrl - right : @warp_window("east")
 
 # Stack operations - ctrl + shift + hjkl for stacking
-# winmode < ctrl + shift - h : @stack_window("west")
-# winmode < ctrl + shift - j : @stack_window("south")
-# winmode < ctrl + shift - k : @stack_window("north")
-# winmode < ctrl + shift - l : @stack_window("east")
+winmode < ctrl + shift - left : @stack_window("west")
+winmode < ctrl + shift - down : @stack_window("south")
+winmode < ctrl + shift - up : @stack_window("north")
+winmode < ctrl + shift - right : @stack_window("east")
 
 # Stack management shortcuts
 # .define insert_window : yabai -m window --insert {{1}}
@@ -247,6 +248,7 @@ winmode < alt + shift - l : @resize_window_horizontal("10")
 # winmode < up : @insert_window("north")
 # winmode < right : @insert_window("east")
 winmode < space : @toggle_float
+winmode < s : yabai -m window --insert stack
 
 winmode < n : yabai -m window --focus stack.next  # Navigate stack next
 winmode < p : yabai -m window --focus stack.prev  # Navigate stack prev
@@ -261,7 +263,8 @@ cmd + shift - space : @toggle_float
 
 ## fullscreen
 cmd - f11 : yabai -m window --toggle native-fullscreen
-ctrl + cmd - f : yabai -m window --toggle native-fullscreen
+ctrl + cmd - f : yabai -m window --toggle zoom-fullscreen
+ctrl + shift + cmd - f : yabai -m window --toggle native-fullscreen
 
 # ## flash window border for active window
 # cmd + ctrl + shift - w : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
@@ -284,7 +287,8 @@ cmd + shift - 0x1B : yabai -m space --balance x-axis
 # meh - v : yabai -m window --focus "$(yabai -m query --windows | jq -re "sort_by(.display, .space, .frame.x, .frame.y, .id) | map(select(.\"is-visible\" == true and .role != \"AXUnknown\")) | reverse | nth(index(map(select(.\"has-focus\" == true))) - 1).id")"
 # cycle through all visible windows sorted by: coordinates -> display index
 # cmd + ctrl - space : @cycle_visible
-cmd - space : @cycle_visible
+# cmd - space : @cycle_visible
+cmd - space : @switch_float_focus
 cmd - g : @cycle_visible
 
 # }}}
@@ -305,18 +309,18 @@ alt - g: @toggle_scratchpad("ghostty", "ghostty")
 alt - a: @toggle_scratchpad("whatsapp", "WhatsApp")
 alt - d: yabai -m window --toggle finder || open ~/Downloads
 ralt - n: @toggle_scratchpad("notes", "Notes")
-lalt - t: @toggle_scratchpad("chatgpt", "ChatGPT")
+lalt - t: @toggle_scratchpad("claude", "Claude")
 ralt - p: @toggle_scratchpad("skype", "Skype")
 
 # switch to main first tmux listening to socket, if none, launch new one
 ralt - t : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
-    fish -c "kitty -1 --listen-on=unix:/tmp/mykitty -d ~ -o os_window_title=main"
+    fish -c "kitty -1 --listen-on=unix:/tmp/mykitty -d ~"
     # fish -c "~/personal/kitty/kitty/launcher/kitty.app/Contents/MacOS/kitty -1 -d ~"
     # zsh -ci "kitty -1 -d ~"
         # zsh -c "source ~/.base16_theme; tmux new-session -A -s main"
 # alt - f : kitty -d ~ --title 'MY-|-Filer' lf
 # -1 option makes it very fast but makes -o option not work
-ralt - f : @fish("kitty -1 -d ~ -T \"MY-|-Filer\" lf")
+ralt - f : @fish("kitty -1 -d ~ -T \"MY-|-Filer\" -o os_window_name=lf -o os_window_title=lf lf")
 # ralt - f : fish -c "kitty -1 --instance-group lf -d ~ -T 'MY-|-Filer' -o tab_bar_min_tabs=2 lf"
 
 cmd + shift - return : kitty -1 -d ~
@@ -410,6 +414,7 @@ ctrl + shift - end [
 
 .blacklist [
     "dota2"
+    "dota 2"
     "Microsoft Remote Desktop"
 ]
 
@@ -468,3 +473,11 @@ fn + cmd - k | cmd - up
 fn + cmd - h | cmd - left
 fn + cmd - l | cmd - right
 # }}}
+
+# for claude code: 
+shift - return [
+    "kitty" | alt - return
+    "WezTerm" | alt - return
+    "Ghostty" | alt - return
+    *       ~
+]
