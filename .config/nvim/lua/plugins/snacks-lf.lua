@@ -1,7 +1,7 @@
 -- snacks-lf.nvim integration
 return {
   {
-    "jackielii/snacks-lf.nvim",
+    -- "jackielii/snacks-lf.nvim",
     dir = "~/personal/snacks-lf.nvim", -- Optional: use local dev version
     dev = true,
     dependencies = {

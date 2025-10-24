@@ -43,7 +43,7 @@ return {
     keys[#keys + 1] = { "<leader>rN", function() Snacks.rename.rename_file() end, desc = "Rename File", mode = { "n" }, has = { "workspace/didRenameFiles", "workspace/willRenameFiles" } }
     keys[#keys + 1] =
       { "<leader>a", "<Esc><cmd>set operatorfunc=v:lua.__code_action_operator<CR>g@", desc = "Code Action Operator" }
-    keys[#keys + 1] = { "<leader>a", vim.lsp.buf.code_action, desc = "[C]ode [A]ction", mode = { "v" } }
+    -- keys[#keys + 1] = { "<leader>a", vim.lsp.buf.code_action, desc = "[C]ode [A]ction", mode = { "v" } }
     keys[#keys + 1] = { "<leader>ac", vim.lsp.buf.code_action, desc = "[C]ode [A]ction", mode = { "n" } }
     keys[#keys + 1] = { "<F3>", vim.lsp.buf.code_action, desc = "[C]ode [A]ction", mode = { "n", "v" } }
     keys[#keys + 1] = {
