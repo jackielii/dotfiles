@@ -17,6 +17,7 @@ package main
 
 import (
 	"context"
+	"crypto/md5"
 	"fmt"
 	"io"
 	"io/fs"
@@ -33,7 +34,6 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 
-	"github.com/dolmen-go/kittyimg"
 	"github.com/dustin/go-humanize"
 	"github.com/mholt/archives"
 	"golang.org/x/term"
@@ -54,7 +54,7 @@ type previewOpts struct {
 }
 
 func main() {
-	if os.Getenv("DEBUG") != "" || true {
+	if os.Getenv("DEBUG") != "" {
 		f := try1(os.OpenFile("/tmp/lf-preview.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0o644))
 		defer f.Close()
 		log.SetOutput(f)
@@ -75,7 +75,7 @@ func main() {
 
 	var w, h, x, y int
 	var pagerRequired bool
-	if len(args) >= 4 {
+	if len(args) >= 5 {
 		w = try1(strconv.Atoi(args[1]))
 		h = try1(strconv.Atoi(args[2]))
 		x = try1(strconv.Atoi(args[3]))
@@ -128,7 +128,10 @@ func previewImage(opts previewOpts) bool {
 		defer run(`tput cnorm`) // show cursor
 	}
 
-	cache := fmt.Sprintf("%s/.cache/lf/%s.jpg", os.Getenv("HOME"), fileStatHash(opts))
+	hash := fileStatHash(opts)
+	cache := fmt.Sprintf("%s/.cache/lf/%s.jpg", os.Getenv("HOME"), hash)
+	log.Printf("Cache hash: %s, path: %s", hash, cache)
+
 	if err := os.MkdirAll(filepath.Dir(cache), 0o755); err != nil {
 		log.Printf("failed to create cache directory: %v\n", err)
 		return false
@@ -136,13 +139,17 @@ func previewImage(opts previewOpts) bool {
 
 	var img string
 	if _, err := os.Stat(cache); err == nil {
+		log.Printf("Using cached preview: %s", cache)
 		img = cache
 	} else {
+		log.Printf("Cache miss, generating preview: %s", cache)
 		img = generatePreview(cache, opts)
 	}
 	if img == "" {
 		// image preview not possible. Show cursor for text preview to control.
-		run(`tput cnorm`)
+		if opts.pagerRequired {
+			run(`tput cnorm`)
+		}
 		return false
 	}
 
@@ -196,7 +203,13 @@ func generatePreview(cache string, opts previewOpts) string {
 			runOutput(`convert -- "%s" -auto-orient "%s"`, opts.fp, cache)
 			return cache
 		}
-		return opts.fp
+		// No conversion needed, create symlink to cache for future lookups
+		if err := os.Symlink(opts.fp, cache); err != nil {
+			log.Printf("failed to create cache symlink: %v", err)
+			return opts.fp
+		}
+		log.Printf("created cache symlink: %s -> %s", cache, opts.fp)
+		return cache
 	case opts.mime == "application/pdf":
 		runOutput(`pdftoppm -f 1 -l 1 \
 		  -scale-to-x %d              \
@@ -250,13 +263,12 @@ func qlmanagePreview(fp string, dest string) error {
 }
 
 func fileStatHash(opts previewOpts) string {
-	// TODO: use go's md5
-	h := runOutput(`gstat --printf '%%n\0%%i\0%%F\0%%s\0%%W\0%%Y' -- "$(readlink -f "%s")" | md5 -q | awk '{print $1}'`, opts.fp)
-	return strings.TrimSpace(string(h))
-
-	// fi := opts.fi
-	// info := fmt.Sprintf("%s%d%d", fi.Name(), fi.Size(), fi.ModTime().Unix())
-	// return fmt.Sprintf("%x", md5.Sum([]byte(info)))
+	fi := opts.fi
+	// Use file path, size, and modification time to generate hash
+	info := fmt.Sprintf("%s\x00%d\x00%d", opts.fp, fi.Size(), fi.ModTime().Unix())
+	hash := fmt.Sprintf("%x", md5.Sum([]byte(info)))
+	log.Printf("fileStatHash for %s: %q", opts.fp, hash)
+	return hash
 }
 
 func launchKitty(opts previewOpts, imagePath string) {
@@ -277,17 +289,38 @@ func launchKitty(opts previewOpts, imagePath string) {
 }
 
 func displayKittyRaw(opts previewOpts, imagePath string) {
-	f, err := os.Open(imagePath)
-	if err != nil {
-		log.Printf("failed to open image: %v", err)
-		return
-	}
-	defer f.Close()
+	// Neovim's terminal doesn't support kitty graphics protocol yet
+	// Display file information instead
+	displayFileInfo(opts, imagePath)
+}
 
-	// Use kittyimg library to handle kitty graphics protocol
-	if err := kittyimg.Transcode(os.Stdout, f); err != nil {
-		log.Printf("failed to display image: %v", err)
-		return
+func displayFileInfo(opts previewOpts, imagePath string) {
+	// opts.fp is the original file, imagePath is the cached preview
+	originalFile := opts.fp
+
+	if opts.pagerRequired {
+		run(`clear`)
+		run(`tput civis`) // hide cursor
+		defer run(`tput cnorm`) // show cursor
+	}
+
+	fmt.Println("Image Preview (terminal mode)")
+	fmt.Println(strings.Repeat("─", 50))
+	fmt.Printf("File: %s\n", filepath.Base(originalFile))
+	fmt.Printf("Path: %s\n", originalFile)
+	fmt.Printf("Type: %s\n", opts.mime)
+	fmt.Printf("Size: %s\n", humanize.Bytes(uint64(opts.fi.Size())))
+	fmt.Printf("Modified: %s\n", opts.fi.ModTime().Format("2006-01-02 15:04:05"))
+	fmt.Println(strings.Repeat("─", 50))
+	fmt.Println("Note: Image display not supported in neovim terminal yet")
+	fmt.Println("Run outside neovim to view the image")
+
+	if opts.pagerRequired {
+		// Wait for user input
+		oldState := try1(term.MakeRaw(int(os.Stdin.Fd())))
+		defer term.Restore(int(os.Stdin.Fd()), oldState)
+		b := make([]byte, 1)
+		try1(os.Stdin.Read(b))
 	}
 }
 
@@ -295,17 +328,17 @@ func previewText(opts previewOpts) {
 	// 1. text use bat
 	// 2. archives use ?
 	// 3. docs use pandoc markdown
-	// if strings.HasPrefix(opts.mime, "text/") || strings.HasPrefix(opts.mime, "application/json") {
+	// 4. binary files show file info
+
 	switch {
 	case opts.ext == ".tar":
-		// run(`tar -tf "%s" | less`, opts.fp)
 		previewArchive(opts)
 		return
 	case opts.ext == ".7z":
 		previewArchive(opts)
-		// run(`7z l "%s" | less`, opts.fp)
 		return
 	}
+
 	archiveMimes := []string{
 		"application/zip",
 		"application/x-rar",
@@ -314,14 +347,13 @@ func previewText(opts previewOpts) {
 	}
 
 	if slices.Contains(archiveMimes, opts.mime) {
-		// if format, _, err := archives.Identify(context.TODO(), opts.fp, nil); err != nil {
-		// 	_ = format
-		// s := fmt.Sprintf(`pistol -c ~/.config/lf/pistol.conf "%s"`, opts.fp)
-		// if opts.pagerRequired {
-		// 	s += " | less -R"
-		// }
-		// run(s)
 		previewArchive(opts)
+		return
+	}
+
+	// Check if it's a binary file (not text-based)
+	if !isTextFile(opts.mime) {
+		displayBinaryFileInfo(opts)
 		return
 	}
 
@@ -335,6 +367,45 @@ func previewText(opts previewOpts) {
 		run(`pandoc -s -t markdown "%s" | bat %s --color=always -l markdown --file-name "%s"`, opts.fp, paging, opts.fp)
 	default:
 		run(`bat %s --color=always "%s"`, paging, opts.fp)
+	}
+}
+
+func isTextFile(mime string) bool {
+	return strings.HasPrefix(mime, "text/") ||
+		mime == "application/json" ||
+		mime == "application/xml" ||
+		mime == "application/javascript" ||
+		strings.HasSuffix(mime, "+json") ||
+		strings.HasSuffix(mime, "+xml") ||
+		strings.HasSuffix(mime, "wordprocessingml.document") ||
+		mime == "inode/x-empty"
+}
+
+func displayBinaryFileInfo(opts previewOpts) {
+	if opts.pagerRequired {
+		run(`clear`)
+		run(`tput civis`) // hide cursor
+		defer run(`tput cnorm`) // show cursor
+	}
+
+	fmt.Println("Binary File Info")
+	fmt.Println(strings.Repeat("─", 50))
+	fmt.Printf("File: %s\n", filepath.Base(opts.fp))
+	fmt.Printf("Path: %s\n", opts.fp)
+	fmt.Printf("Type: %s\n", opts.mime)
+	fmt.Printf("Size: %s\n", humanize.Bytes(uint64(opts.fi.Size())))
+	fmt.Printf("Modified: %s\n", opts.fi.ModTime().Format("2006-01-02 15:04:05"))
+	fmt.Printf("Permissions: %s\n", opts.fi.Mode().String())
+	fmt.Println(strings.Repeat("─", 50))
+	fmt.Println("Binary file - no preview available")
+
+	if opts.pagerRequired {
+		fmt.Println("\nPress any key to exit...")
+		// Wait for user input
+		oldState := try1(term.MakeRaw(int(os.Stdin.Fd())))
+		defer term.Restore(int(os.Stdin.Fd()), oldState)
+		b := make([]byte, 1)
+		try1(os.Stdin.Read(b))
 	}
 }
 
@@ -426,7 +497,6 @@ func try2[T any, V any](v T, v2 V, err error) (T, V) {
 // module preview
 // go 1.25.0
 // require (
-// 	github.com/dolmen-go/kittyimg v0.0.0-20250610224728-874967bd8ea4
 // 	github.com/dustin/go-humanize v1.0.1
 // 	github.com/mholt/archives v0.1.5
 // 	golang.org/x/term v0.36.0
@@ -491,8 +561,6 @@ func try2[T any, V any](v T, v2 V, err error) (T, V) {
 // github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 // github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 // github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-// github.com/dolmen-go/kittyimg v0.0.0-20250610224728-874967bd8ea4 h1:KGRb+vxMx5pGsfDjDSW2Th+b2OEflb0yC3s0daCmiYU=
-// github.com/dolmen-go/kittyimg v0.0.0-20250610224728-874967bd8ea4/go.mod h1:2vk7ATPVcI7uW4Sh6PrSQvtO+Czmq8509xcg/y8Osd0=
 // github.com/dsnet/compress v0.0.2-0.20230904184137-39efe44ab707 h1:2tV76y6Q9BB+NEBasnqvs7e49aEBFI8ejC89PSnWH+4=
 // github.com/dsnet/compress v0.0.2-0.20230904184137-39efe44ab707/go.mod h1:qssHWj60/X5sZFNxpG4HBPDHVqxNm4DfnCKgrbZOT+s=
 // github.com/dsnet/golib v0.0.0-20171103203638-1ea166775780/go.mod h1:Lj+Z9rebOhdfkVLjJ8T6VcRQv3SXugXy999NBtR9aFY=
