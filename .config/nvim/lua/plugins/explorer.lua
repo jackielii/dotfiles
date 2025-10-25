@@ -30,6 +30,80 @@ _G.snacks_action_copy_path = function(fullpath)
   end
 end
 
+-- Navigate to next/previous file in explorer list order
+_G.snacks_explorer_nav = function(direction)
+  -- Get the explorer picker instance
+  local explorer = Snacks.picker.get({ source = "explorer" })[1]
+  if not explorer or explorer.closed then
+    vim.notify("Explorer is not open", vim.log.levels.WARN)
+    return
+  end
+
+  -- Get all items from the explorer
+  local items = explorer:items()
+  if #items == 0 then
+    vim.notify("No files in explorer", vim.log.levels.WARN)
+    return
+  end
+
+  -- Get current file path
+  local current_file = vim.api.nvim_buf_get_name(0)
+  if current_file == "" then
+    vim.notify("No file in current buffer", vim.log.levels.WARN)
+    return
+  end
+
+  -- Normalize paths for comparison
+  current_file = vim.fn.fnamemodify(current_file, ":p")
+
+  -- Find current file in explorer items (only files, not directories)
+  local current_idx = nil
+  local file_items = {}
+  for i, item in ipairs(items) do
+    if item.file and not item.dir then
+      table.insert(file_items, item)
+      local item_path = vim.fn.fnamemodify(item.file, ":p")
+      if item_path == current_file then
+        current_idx = #file_items
+      end
+    end
+  end
+
+  if #file_items == 0 then
+    vim.notify("No files found in explorer", vim.log.levels.WARN)
+    return
+  end
+
+  -- If current file not in list, start from beginning/end based on direction
+  if not current_idx then
+    current_idx = direction > 0 and 0 or #file_items + 1
+  end
+
+  -- Calculate target index
+  local target_idx = current_idx + direction
+
+  -- Wrap around if needed
+  -- if target_idx > #file_items then
+  --   target_idx = 1
+  -- elseif target_idx < 1 then
+  --   target_idx = #file_items
+  -- end
+
+  -- Get target file
+  local target_item = file_items[target_idx]
+  if not target_item or not target_item.file then
+    vim.notify("Could not find target file", vim.log.levels.WARN)
+    return
+  end
+
+  -- Open the file
+  vim.cmd("edit " .. vim.fn.fnameescape(target_item.file))
+
+  -- Show notification
+  -- local filename = vim.fn.fnamemodify(target_item.file, ":t")
+  -- vim.notify(string.format("[%d/%d] %s", target_idx, #file_items, filename), vim.log.levels.INFO)
+end
+
 return {
   {
     "folke/snacks.nvim",
@@ -51,6 +125,21 @@ return {
         desc = "Explorer Snacks (root dir)",
       },
       { "<leader>e", false },
+      -- Navigate to next/previous file in explorer order
+      {
+        "]<tab>",
+        function()
+          snacks_explorer_nav(1)
+        end,
+        desc = "Next File (Explorer Order)",
+      },
+      {
+        "[<tab>",
+        function()
+          snacks_explorer_nav(-1)
+        end,
+        desc = "Prev File (Explorer Order)",
+      },
     },
     opts = {
       explorer = {

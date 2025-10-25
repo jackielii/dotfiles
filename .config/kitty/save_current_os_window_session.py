@@ -77,12 +77,22 @@ def save_session_for_os_window(boss, session_path, matched_windows, opts):
     # Iterate through tabs in visual order (left to right in tab bar)
     lines = ['# kitty session saved from current OS window only', '', 'new_os_window']
 
-    for tab in tab_manager:
+    # Track which tab is currently active
+    current_active_tab = tab_manager.active_tab
+    active_tab_idx = 0
+
+    for i, tab in enumerate(tab_manager):
+        if tab is current_active_tab:
+            active_tab_idx = i
         lines.extend(tab.serialize_state_as_session(
             session_path,
             matched_windows=matched_windows,
             ser_opts=ser_opts
         ))
+
+    # Add focus_tab command to restore the correct active tab
+    lines.append('')
+    lines.append(f'focus_tab {active_tab_idx}')
 
     # Write the session file
     try:
