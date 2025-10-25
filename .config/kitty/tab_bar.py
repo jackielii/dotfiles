@@ -22,7 +22,10 @@ opts = get_options()
 
 def draw_session_name(draw_data: DrawData, screen: Screen, tab_bar_data: TabBarData, index: int) -> int:
     tab = get_boss().tab_for_id(tab_bar_data.tab_id)
-    session_name: str = ' '+get_os_window_title(tab.os_window_id)+' '
+    # session_name: str = ' '+get_os_window_title(tab.os_window_id)+' '
+    # session_name: str = tab_bar_data.title or tab_bar_data.session_name
+    session_name: str = tab_bar_data.session_name
+    session_name = f" {session_name} "
 
     fg, bg, bold, italic = (
         screen.cursor.fg,
