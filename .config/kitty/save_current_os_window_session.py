@@ -1,0 +1,101 @@
+import os
+from kittens.tui.handler import result_handler
+
+@result_handler(no_ui=True)
+def handle_result(args, answer, target_window_id, boss):
+    """Save a session containing only tabs from the current OS window."""
+
+    # Get the active tab to find which OS window we're in
+    active_tab = boss.active_tab
+    if not active_tab:
+        return
+
+    # Get the TabManager for the current OS window
+    tab_manager = active_tab.tab_manager_ref()
+    if not tab_manager:
+        return
+
+    # Collect all windows from all tabs in the current OS window
+    matched_windows = set()
+    for tab in tab_manager.tabs:
+        for window in tab:
+            matched_windows.add(window)
+
+    # Parse options and get session path
+    from kitty.session import parse_save_as_options_spec_args
+
+    # args[0] is the kitten name, rest are the actual arguments
+    opts, remaining_args = parse_save_as_options_spec_args(list(args[1:]))
+
+    session_path = remaining_args[0] if remaining_args else None
+
+    # Handle the '.' shortcut for current session
+    if session_path == '.':
+        from kitty.session import seen_session_paths
+        sn = boss.active_session
+        session_path = seen_session_paths.get(sn) or ''
+
+    if not session_path:
+        # Prompt for filename
+        boss.get_save_filepath(
+            'Session file name',
+            'session',
+            save_session_callback,
+            (frozenset(matched_windows), opts)
+        )
+    else:
+        # Expand path and save directly
+        session_path = os.path.expandvars(os.path.expanduser(session_path))
+        save_session_for_os_window(boss, session_path, frozenset(matched_windows), opts)
+
+
+def save_session_callback(session_path, data):
+    """Callback for when user provides session path via dialog."""
+    if session_path:
+        from kitty.boss import get_boss
+        matched_windows, opts = data
+        boss = get_boss()
+        save_session_for_os_window(boss, session_path, matched_windows, opts)
+
+
+def save_session_for_os_window(boss, session_path, matched_windows, opts):
+    """Actually save the session with the matched windows."""
+    from kitty.config import atomic_save
+
+    # Use the provided options
+    ser_opts = opts
+
+    # Resolve the path like save_as_session_part2 does
+    session_path = os.path.abspath(os.path.expanduser(session_path))
+
+    # Get the TabManager for serialization
+    active_tab = boss.active_tab
+    if not active_tab:
+        return
+    tab_manager = active_tab.tab_manager_ref()
+    if not tab_manager:
+        return
+
+    # Build session content manually for just this OS window
+    # Iterate through tabs in visual order (not history order)
+    lines = ['# kitty session saved from current OS window only']
+    for tab in tab_manager:
+        lines.extend(tab.serialize_state_as_session(
+            session_path,
+            matched_windows=matched_windows,
+            ser_opts=ser_opts
+        ))
+
+    # Write the session file
+    try:
+        os.makedirs(os.path.dirname(session_path), exist_ok=True)
+        session = '\n'.join(lines)
+        atomic_save(session.encode(), session_path)
+        boss.show_error('Session Saved', f'Session saved to {session_path}')
+    except Exception as e:
+        boss.show_error('Failed to save session', str(e))
+
+
+def main(args):
+    # Arguments will be passed from the mapping
+    pass
