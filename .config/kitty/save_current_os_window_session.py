@@ -78,7 +78,7 @@ def save_session_for_os_window(boss, session_path, matched_windows, opts):
 
     # Build session content manually for just this OS window
     # Iterate through tabs in visual order (not history order)
-    lines = ['# kitty session saved from current OS window only']
+    lines = ['# kitty session saved from current OS window only', '', 'new_os_window']
     for tab in tab_manager:
         lines.extend(tab.serialize_state_as_session(
             session_path,
