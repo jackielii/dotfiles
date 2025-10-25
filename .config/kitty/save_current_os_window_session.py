@@ -36,12 +36,12 @@ def handle_result(args, answer, target_window_id, boss):
         session_path = seen_session_paths.get(sn) or ''
 
     if not session_path:
-        # Prompt for filename
+        # Prompt for filename with default directory
+        from functools import partial
         boss.get_save_filepath(
-            'Session file name',
-            'session',
-            save_session_callback,
-            (frozenset(matched_windows), opts)
+            'Enter the path at which to save the session',
+            partial(save_session_callback, boss=boss, matched_windows=frozenset(matched_windows), opts=opts),
+            initial_value=os.path.expanduser('~/.local/share/kitty/sessions/')
         )
     else:
         # Expand path and save directly
@@ -49,12 +49,9 @@ def handle_result(args, answer, target_window_id, boss):
         save_session_for_os_window(boss, session_path, frozenset(matched_windows), opts)
 
 
-def save_session_callback(session_path, data):
+def save_session_callback(session_path, boss, matched_windows, opts):
     """Callback for when user provides session path via dialog."""
     if session_path:
-        from kitty.boss import get_boss
-        matched_windows, opts = data
-        boss = get_boss()
         save_session_for_os_window(boss, session_path, matched_windows, opts)
 
 
