@@ -30,7 +30,6 @@ return {
     end,
   },
 
-  { "tpope/vim-unimpaired", keys = { { "[" }, { "]" }, { "yo" } } },
   {
     "tpope/vim-sleuth",
     init = function()

@@ -76,6 +76,7 @@
   "trouble.nvim": { "branch": "main", "commit": "c098362fe603d3922095e7db595961e020bdf2d0" },
   "ts-comments.nvim": { "branch": "main", "commit": "217ab9cc137fceb6659b53790bd25e608219abe1" },
   "undotree": { "branch": "master", "commit": "0f1c9816975b5d7f87d5003a19c53c6fd2ff6f7f" },
+  "unimpaired.nvim": { "branch": "main", "commit": "4995cb674cb4c5e442f0cd9d86f6f9c20333a0b8" },
   "venv-selector.nvim": { "branch": "main", "commit": "7fff64b5b1455207b9a9fd2ae8697cf9ac0b2a2d" },
   "vim-abolish": { "branch": "master", "commit": "dcbfe065297d31823561ba787f51056c147aa682" },
   "vim-cue": { "branch": "master", "commit": "ca1a62cc94f329ab0687d01b599dadaee674c3b2" },
