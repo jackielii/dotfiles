@@ -32,21 +32,7 @@ end
 
 -- Navigate to next/previous file in explorer list order
 _G.snacks_explorer_nav = function(direction)
-  -- Get the explorer picker instance
-  local explorer = Snacks.picker.get({ source = "explorer" })[1]
-  if not explorer or explorer.closed then
-    vim.notify("Explorer is not open", vim.log.levels.WARN)
-    return
-  end
-
-  -- Get all items from the explorer
-  local items = explorer:items()
-  if #items == 0 then
-    vim.notify("No files in explorer", vim.log.levels.WARN)
-    return
-  end
-
-  -- Get current file path
+  -- Get current file path first
   local current_file = vim.api.nvim_buf_get_name(0)
   if current_file == "" then
     vim.notify("No file in current buffer", vim.log.levels.WARN)
@@ -56,7 +42,59 @@ _G.snacks_explorer_nav = function(direction)
   -- Normalize paths for comparison
   current_file = vim.fn.fnamemodify(current_file, ":p")
 
-  -- Find current file in explorer items (only files, not directories)
+  -- Determine the directory to explore
+  local explore_dir = vim.fn.fnamemodify(current_file, ":h")
+
+  -- Try to get the open explorer instance first
+  local explorer = Snacks.picker.get({ source = "explorer" })[1]
+  local should_cleanup = false
+  local items = {}
+
+  -- If no explorer is open or closed, create a temporary one
+  if not explorer or explorer.closed then
+    -- Use files picker to get directory contents
+    -- This is more lightweight than the full explorer
+    local ok = pcall(function()
+      -- Get files from current directory using Lua
+      local handle = vim.loop.fs_scandir(explore_dir)
+      if handle then
+        while true do
+          local name, type = vim.loop.fs_scandir_next(handle)
+          if not name then
+            break
+          end
+          -- Only include files (not directories)
+          if type == "file" then
+            local full_path = explore_dir .. "/" .. name
+            table.insert(items, {
+              file = full_path,
+              dir = false,
+            })
+          end
+        end
+      end
+    end)
+
+    if not ok or #items == 0 then
+      vim.notify("Could not read directory", vim.log.levels.WARN)
+      return
+    end
+
+    -- Sort items alphabetically (like explorer does)
+    table.sort(items, function(a, b)
+      return a.file < b.file
+    end)
+  else
+    -- Use existing explorer items
+    items = explorer:items()
+  end
+
+  if #items == 0 then
+    vim.notify("No files in directory", vim.log.levels.WARN)
+    return
+  end
+
+  -- Find current file in items (only files, not directories)
   local current_idx = nil
   local file_items = {}
   for i, item in ipairs(items) do
@@ -70,7 +108,7 @@ _G.snacks_explorer_nav = function(direction)
   end
 
   if #file_items == 0 then
-    vim.notify("No files found in explorer", vim.log.levels.WARN)
+    vim.notify("No files found in directory", vim.log.levels.WARN)
     return
   end
 
@@ -82,7 +120,7 @@ _G.snacks_explorer_nav = function(direction)
   -- Calculate target index
   local target_idx = current_idx + direction
 
-  -- Wrap around if needed
+  -- -- Wrap around if needed
   -- if target_idx > #file_items then
   --   target_idx = 1
   -- elseif target_idx < 1 then
@@ -99,7 +137,7 @@ _G.snacks_explorer_nav = function(direction)
   -- Open the file
   vim.cmd("edit " .. vim.fn.fnameescape(target_item.file))
 
-  -- Show notification
+  -- -- Show notification
   -- local filename = vim.fn.fnamemodify(target_item.file, ":t")
   -- vim.notify(string.format("[%d/%d] %s", target_idx, #file_items, filename), vim.log.levels.INFO)
 end
