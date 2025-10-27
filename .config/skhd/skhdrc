@@ -313,7 +313,7 @@ lalt - t: @toggle_scratchpad("claude", "Claude")
 ralt - p: @toggle_scratchpad("skype", "Skype")
 
 # switch to main first tmux listening to socket, if none, launch new one
-ralt - t : kitty @ --to unix:/tmp/mykitty focus-window -m id:1 || \
+ralt - t : kitty @ --to unix:/tmp/mykitty focus-window -m session:main || \
     fish -c "kitty -1 --listen-on=unix:/tmp/mykitty -d ~ --session=~/.local/share/kitty/sessions/main.session"
     # fish -c "~/personal/kitty/kitty/launcher/kitty.app/Contents/MacOS/kitty -1 -d ~"
     # zsh -ci "kitty -1 -d ~"
