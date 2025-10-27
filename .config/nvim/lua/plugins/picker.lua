@@ -89,8 +89,10 @@ return {
         sources = {
           grep = {
             case_sensitive = false, -- New! Define custom variable
+            fixed_strings = false, -- Toggle for literal string matching
             toggles = {
               case_sensitive = "s",
+              fixed_strings = "f",
             },
             ---@class snacks.Picker
             ---@field [string] unknown
@@ -98,7 +100,7 @@ return {
             ---@field [string] unknown
 
             finder = function(opts, ctx)
-              local args_extend = { "--case-sensitive" }
+              local args_extend = { "--case-sensitive", "--fixed-strings" }
               opts.args = vim
                 .iter(opts.args or {})
                 :filter(function(val)
@@ -106,7 +108,10 @@ return {
                 end)
                 :totable()
               if opts.case_sensitive then
-                opts.args = vim.list_extend(opts.args, args_extend)
+                opts.args = vim.list_extend(opts.args, { "--case-sensitive" })
+              end
+              if opts.fixed_strings then
+                opts.args = vim.list_extend(opts.args, { "--fixed-strings" })
               end
               -- vim.print(opts.args) -- Debug
               return require("snacks.picker.source.grep").grep(opts, ctx)
@@ -116,11 +121,16 @@ return {
                 picker.opts.case_sensitive = not picker.opts.case_sensitive
                 picker:find()
               end,
+              toggle_live_fixed_strings = function(picker)
+                picker.opts.fixed_strings = not picker.opts.fixed_strings
+                picker:find()
+              end,
             },
             win = {
               input = {
                 keys = {
                   ["<M-s>"] = { "toggle_live_case_sensitive", mode = { "i", "n" } },
+                  ["<M-f>"] = { "toggle_live_fixed_strings", mode = { "i", "n" } },
                 },
               },
             },
