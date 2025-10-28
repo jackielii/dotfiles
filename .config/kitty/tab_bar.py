@@ -16,6 +16,7 @@ from kitty.tab_bar import (
     draw_tab_with_separator,
 )
 from kitty.utils import color_as_int
+from kittens.tui.loop import debug
 
 opts = get_options()
 
@@ -24,8 +25,12 @@ def draw_session_name(draw_data: DrawData, screen: Screen, tab_bar_data: TabBarD
     tab = get_boss().tab_for_id(tab_bar_data.tab_id)
     # session_name: str = ' '+get_os_window_title(tab.os_window_id)+' '
     # session_name: str = tab_bar_data.title or tab_bar_data.session_name
-    session_name: str = tab_bar_data.session_name
+    os_window_title = get_os_window_title(tab.os_window_id)
+    session_name: str = tab_bar_data.session_name or os_window_title or 'unknown'
     session_name = f" {session_name} "
+    # debug(f"OS window title: '{os_window_title}' (type: {type(os_window_title)})")
+    # debug(f"tab_bar_data.session_name: '{tab_bar_data.session_name}'")
+    # debug(f"Tab {index} final session_name: '{session_name}'")
 
     fg, bg, bold, italic = (
         screen.cursor.fg,
