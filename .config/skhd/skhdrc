@@ -53,7 +53,7 @@
 # }}}
 
 # Process groups {{{
-.define native_apps ["kitty", "WezTerm"]
+.define native_apps ["kitty", "WezTerm", "ghostty"]
 # }}}
 
 # focus cmd - ? {{{
