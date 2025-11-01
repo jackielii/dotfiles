@@ -5,8 +5,8 @@ return {
     keys = {
       -- nes is also useful in normal mode
       -- { "<tab>", LazyVim.cmp.map({ "ai_nes" }, "<tab>"), mode = { "n" }, expr = true },
-      { "<tab>", false },
-      { "<leader>a", "", desc = "+ai", mode = { "n", "v" } },
+      -- { "<tab>", false },
+      -- { "<leader>a", "", desc = "+ai", mode = { "n", "v" } },
       {
         "<c-.>",
         false,
@@ -16,14 +16,14 @@ return {
         -- desc = "Sidekick Toggle",
         -- mode = { "n", "t", "i", "x" },
       },
-      {
-        "<D-o>",
-        function()
-          require("sidekick.cli").toggle({ filter = { name = "claude" } })
-        end,
-        desc = "Sidekick Toggle",
-        mode = { "n", "t", "i", "x" },
-      },
+      -- {
+      --   "<D-o>",
+      --   function()
+      --     require("sidekick.cli").toggle({ filter = { name = "claude" } })
+      --   end,
+      --   desc = "Sidekick Toggle",
+      --   mode = { "n", "t", "i", "x" },
+      -- },
     },
     opts = function()
       local function nav(key, dir, desc)

@@ -1,7 +1,8 @@
 return {
   {
     "coder/claudecode.nvim",
-    event = "VeryLazy",
+    lazy = false,
+    -- event = "VeryLazy",
     dependencies = { "folke/snacks.nvim" },
     keys = {
       { "<leader>as", "<cmd>ClaudeCodeAdd %<cr>", mode = "n", desc = "Add current buffer" },

@@ -170,14 +170,15 @@ map({ "n" }, "^", [[<cmd>call ToggleMovement("^", "0")<cr>]])
 -- map("n", "]]", [[j0[[%:silent! eval search('{')<cr>]])
 -- map("n", "[]", [[k$][%:silent! eval search('}', 'b')<cr>]])
 
--- map("n", "<leader>bd", "<cmd>bd<cr>")
 -- stylua: ignore start
+-- map("n", "<leader>bd", "<cmd>bd<cr>")
 map("n", "<leader>bd", function() Snacks.bufdelete() end, { desc = "Delete Buffer" })
 map("n", "<leader>bD", function() Snacks.bufdelete({force=true}) end, { desc = "Delete Buffer!" })
 map("n", "<leader>bw", function() Snacks.bufdelete({wipe=true}) end, { desc = "Wipeout Buffer" })
 map("n", "<leader>bW", function() Snacks.bufdelete({wipe=true, force=true}) end, { desc = "Wipeout Buffer!" })
 map("n", "<leader>bo", function() Snacks.bufdelete.other() end, { desc = "Delete Other Buffers" })
 map("n", "<leader>kn", "<cmd>enew<cr>")
+-- stylua: ignore end
 
 map("n", "<leader>tw", "<cmd>tabclose!<cr>")
 map("n", "<leader>tq", "<cmd>tabclose<cr>")
@@ -241,16 +242,22 @@ function! CloseNonProjectBuffers(dir, bang)
 endfunction
 ]])
 
--- stylua: ignore start
-
 vim.g.project_root = vim.fn.getcwd()
 vim.g.project_path = vim.g.project_root
-map("n", "<F1>", [[<cmd>let g:project_path=g:project_root <bar> execute 'lcd '.g:project_path <bar> echo g:project_path<cr>]])
+map(
+  "n",
+  "<F1>",
+  [[<cmd>let g:project_path=g:project_root <bar> execute 'lcd '.g:project_path <bar> echo g:project_path<cr>]]
+)
 map("n", "<F2>", toggle_explorer, { desc = "Toggle Explorer" })
 -- map("n", "<F2>", [[<cmd>Glcd <bar> let g:project_path=getcwd() <bar> echo g:project_path<cr>]])
 -- map("n", "<F3>", [[:execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h') <bar> let g:project_path = expand('%:p:h')<CR>]])
-map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" } )
-map("n", "<F13>", [[:execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h') <bar> let g:project_path = expand('%:p:h')<CR>]])
+map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" })
+map(
+  "n",
+  "<F13>",
+  [[:execute 'lcd '.expand('%:p:h') <bar> echo expand('%:p:h') <bar> let g:project_path = expand('%:p:h')<CR>]]
+)
 
 map("n", "<F4>", "<cmd>CloseNonProjectBuffers<cr>")
 
@@ -270,10 +277,11 @@ map("n", "<F4>", "<cmd>CloseNonProjectBuffers<cr>")
 -- map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
 -- map("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
 
--- -- stylua: ignore start
 -- -- lazygit
 if vim.fn.executable("lazygit") == 1 then
-  map("n", "<F6>", function() Snacks.lazygit({ cwd = LazyVim.root.git() }) end,                           { desc = "Lazygit (Root Dir)" })
+  map("n", "<F6>", function()
+    Snacks.lazygit({ cwd = LazyVim.root.git() })
+  end, { desc = "Lazygit (Root Dir)" })
   -- map("n", "<leader>gg", function() Snacks.lazygit( { cwd = LazyVim.root.git() }) end, { desc = "Lazygit (Root Dir)" })
   -- map("n", "<leader>gG", function() Snacks.lazygit() end, { desc = "Lazygit (cwd)" })
   -- map("n", "<leader>gb", function() Snacks.git.blame_line() end, { desc = "Git Blame Line" })
@@ -282,6 +290,20 @@ if vim.fn.executable("lazygit") == 1 then
   -- map("n", "<leader>gl", function() Snacks.lazygit.log({ cwd = LazyVim.root.git() }) end, { desc = "Lazygit Log" })
   -- map("n", "<leader>gL", function() Snacks.lazygit.log() end, { desc = "Lazygit Log (cwd)" })
 end
+
+map({ "n", "x" }, "<leader>gB", function()
+  Snacks.gitbrowse({
+    open = function(url)
+      local work_env = os.getenv("WORK")
+      local profile = work_env == "tes" and "Profile 1" or "Default"
+      -- vim.fn.system(string.format('open -a "Google Chrome.app" -n --args --profile-directory="%s" "%s"', profile, url))
+      vim.ui.open(
+        url,
+        { cmd = { "open", "-a", "Google Chrome.app", "-n", "--args", "--profile-directory=" .. profile } }
+      )
+    end,
+  })
+end, { desc = "Git Browse" })
 
 -- formatting
 map({ "n", "v" }, "<leader>kf", function()
@@ -334,45 +356,56 @@ map("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Lazy" })
 
 -- picker mappings
 --
-map("n", "<C-p>", function() LazyVim.pick("smart", { multi = { "files" }, cwd = vim.fn.getcwd() })() end, { desc = "File Files" })
-map("n", "<leader>e", LazyVim.pick("buffers", {current=false}), { desc = "File Buffers" })
-map("n", "<leader>ds", function() Snacks.picker.lsp_symbols({ filter = LazyVim.config.kind_filter }) end, {desc = "LSP Document Symbols" })
-map("n", "<leader>dS", function() Snacks.picker.lsp_workspace_symbols({ filter = LazyVim.config.kind_filter }) end, {desc = "LSP Workspace Symbols" })
-map("n", "<leader>dl", function() Snacks.picker.lsp_workspace_symbols({ filter = LazyVim.config.kind_filter }) end, {desc = "LSP Workspace Symbols" })
-map("n", "<leader>da", LazyVim.pick("diagnostics"), {desc = "Diagnostics All" })
-map("n", "<leader>dA", LazyVim.pick("diagnostics_buffer"), {desc = "Diagnostics Buffer" })
-map("n", "<leader>zg", LazyVim.pick("git_files"), {desc = "Git File" })
-map("n", "<leader>zf", function() LazyVim.pick("files", {dirs={vim.fn.expand("%:p:h")}})() end, {desc = "" })
+map("n", "<C-p>", function()
+  LazyVim.pick("smart", { multi = { "files" }, cwd = vim.fn.getcwd() })()
+end, { desc = "File Files" })
+map("n", "<leader>e", LazyVim.pick("buffers", { current = false }), { desc = "File Buffers" })
+map("n", "<leader>ds", function()
+  Snacks.picker.lsp_symbols({ filter = LazyVim.config.kind_filter })
+end, { desc = "LSP Document Symbols" })
+map("n", "<leader>dS", function()
+  Snacks.picker.lsp_workspace_symbols({ filter = LazyVim.config.kind_filter })
+end, { desc = "LSP Workspace Symbols" })
+map("n", "<leader>dl", function()
+  Snacks.picker.lsp_workspace_symbols({ filter = LazyVim.config.kind_filter })
+end, { desc = "LSP Workspace Symbols" })
+map("n", "<leader>da", LazyVim.pick("diagnostics"), { desc = "Diagnostics All" })
+map("n", "<leader>dA", LazyVim.pick("diagnostics_buffer"), { desc = "Diagnostics Buffer" })
+map("n", "<leader>zg", LazyVim.pick("git_files"), { desc = "Git File" })
+map("n", "<leader>zf", function()
+  LazyVim.pick("files", { dirs = { vim.fn.expand("%:p:h") } })()
+end, { desc = "" })
 -- map("n", "<leader>zh", LazyVim.pick(), {desc = "" })
 -- map("n", "<leader>fa", LazyVim.pick(), {desc = "" })
 -- map("n", "<leader>za", LazyVim.pick(), {desc = "" })
-map("n", "<leader>cc", LazyVim.pick("commands"), {desc = "Commands" })
-map("n", "<leader>p", function() Snacks.picker.resume() end, {desc = "Picker resume" })
-map("n", "<leader>;", LazyVim.pick("pickers"), {desc = "Picker sources" })
-map("n", "<leader>km", LazyVim.pick("filetypes"), {desc = "Pick filetypes" })
-map("n", "<leader>kh", LazyVim.pick("help"), {desc = "Help" })
-map("n", "<leader>k'", LazyVim.pick("marks"), {desc = "Marks" })
+map("n", "<leader>cc", LazyVim.pick("commands"), { desc = "Commands" })
+map("n", "<leader>p", function()
+  Snacks.picker.resume()
+end, { desc = "Picker resume" })
+map("n", "<leader>;", LazyVim.pick("pickers"), { desc = "Picker sources" })
+map("n", "<leader>km", LazyVim.pick("filetypes"), { desc = "Pick filetypes" })
+map("n", "<leader>kh", LazyVim.pick("help"), { desc = "Help" })
+map("n", "<leader>k'", LazyVim.pick("marks"), { desc = "Marks" })
 -- map("n", "<leader>k<space>", ":lua", {desc = "" })
-map("n", "<leader>o", LazyVim.pick("recent", {filter={cwd=true}}), {desc = "Recent files" })
-map("n", "<leader>O", LazyVim.pick("recent"), {desc = "Recent Files (All)" })
-map("n", "<leader>k:", LazyVim.pick("command_history"), {desc = "Command history" })
-map("n", "<leader>k/", LazyVim.pick("search_history"), {desc = "Search history" })
+map("n", "<leader>o", LazyVim.pick("recent", { filter = { cwd = true } }), { desc = "Recent files" })
+map("n", "<leader>O", LazyVim.pick("recent"), { desc = "Recent Files (All)" })
+map("n", "<leader>k:", LazyVim.pick("command_history"), { desc = "Command history" })
+map("n", "<leader>k/", LazyVim.pick("search_history"), { desc = "Search history" })
 -- map("n", "<leader>ci", LazyVim.pick("grep"), {desc = "" })
 map("n", "<leader>/", function()
   local root = LazyVim.root()
   if root == vim.env.HOME then
     root = vim.fn.getcwd()
   end
-  LazyVim.pick("grep", {cwd = root, title = "Grep " .. pretty_path(root) })()
-end, {desc = "Live Grep" })
+  LazyVim.pick("grep", { cwd = root, title = "Grep " .. pretty_path(root) })()
+end, { desc = "Live Grep" })
 map("n", "<leader>?", function()
   local dir = vim.fn.expand("%:p:h")
-  LazyVim.pick("grep", { cwd=dir, title="Grep " .. pretty_path(dir) })()
-end, {desc = "Live Grep current file dir" })
+  LazyVim.pick("grep", { cwd = dir, title = "Grep " .. pretty_path(dir) })()
+end, { desc = "Live Grep current file dir" })
 
 map("n", "<leader>dgg", LazyVim.pick("grep_word"), { desc = "Grep word" })
 map("v", "<leader>dg", LazyVim.pick("grep_word"), { desc = "Grep word" })
--- stylua: ignore end
 _G.__picker_grep_operator = function(type)
   local save = vim.fn.getreg("@")
   if type ~= "char" then
