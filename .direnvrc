@@ -15,7 +15,7 @@ export_alias() {
 }
 
 layout_miniconda() {
-  local ACTIVATE="${HOME}/miniconda3/bin/activate"
+  local ACTIVATE="/opt/homebrew/Caskroom/miniconda/base/bin/activate"
 
   if [ -n "$1" ]; then
     # Explicit environment name from layout command.
@@ -61,7 +61,7 @@ use_zig() {
   else
     version="$1"
   fi
-  export ZIG_HOME=$(zigup get-install-dir)
+  export ZIG_HOME=$(zigup get-install-dir)$version/files
   if [ ! -d "$ZIG_HOME" ]; then
     log_status "Zig $version not found at $ZIG_HOME, downloading"
     zigup fetch $version
@@ -70,5 +70,5 @@ use_zig() {
     log_error "Failed to download Zig $version"
     return 1
   fi
-  export PATH="$ZIG_HOME:$PATH"
+  PATH_add "$ZIG_HOME"
 }

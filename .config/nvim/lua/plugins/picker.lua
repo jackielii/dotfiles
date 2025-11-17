@@ -27,6 +27,36 @@ local function toggle_dir(dir)
 end
 
 return {
+  -- Picker items navigation plugin
+  {
+    "jackielii/snacks-picker-items.nvim",
+    dir = "~/personal/snacks-picker-items.nvim",
+    lazy = false, -- Load immediately so on_close is configured before first picker use
+    dependencies = { "folke/snacks.nvim" },
+    opts = {
+      sources = {
+        -- include = { "files", "grep", "git" }, -- whitelist specific sources
+        exclude = {}, -- or exclude specific sources
+      },
+      -- manual_setup = false, -- if true, you must manually add on_close to picker config
+    },
+    keys = {
+      {
+        "]g",
+        function()
+          require("snacks-picker-items").navigate(1)
+        end,
+        desc = "Next picker item",
+      },
+      {
+        "[g",
+        function()
+          require("snacks-picker-items").navigate(-1)
+        end,
+        desc = "Previous picker item",
+      },
+    },
+  },
   {
     "folke/snacks.nvim",
     keys = {

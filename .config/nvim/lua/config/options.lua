@@ -29,7 +29,7 @@ vim.o.formatexpr = ""
 vim.o.conceallevel = 0
 
 vim.g.autoformat = false
-vim.g.minipairs_disable = false
+vim.g.minipairs_disable = true
 
 vim.g.lazyvim_picker = "snacks"
 vim.g.snacks_animate = false

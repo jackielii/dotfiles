@@ -821,7 +821,14 @@ return {
   {
     "nvim-treesitter/nvim-treesitter-context",
     keys = {
-      { "[h", [[<cmd>:lua require("treesitter-context").go_to_context()<CR>]] },
+      {
+        "<C-BS>",
+        function()
+          require("treesitter-context").go_to_context(vim.v.count1)
+        end,
+        mode = {"n", "v"},
+        desc = "Go to context",
+      },
     },
   },
 
@@ -1660,8 +1667,10 @@ return {
         map("n", "]c", gs.next_hunk, "Next Hunk")
         map("n", "[c", gs.prev_hunk, "Prev Hunk")
         map({ "n", "v" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
+        map({ "n", "v" }, "<C-CR>", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
         map({ "n", "v" }, "<leader>ghr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
         map("n", "<leader>ghS", gs.stage_buffer, "Stage Buffer")
+        map("n", "<C-S-CR>", gs.stage_buffer, "Stage Buffer")
         map("n", "<leader>ghu", gs.undo_stage_hunk, "Undo Stage Hunk")
         map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
         map("n", "<leader>ghp", gs.preview_hunk, "Preview Hunk")

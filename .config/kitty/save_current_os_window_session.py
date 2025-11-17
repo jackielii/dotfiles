@@ -75,7 +75,10 @@ def save_session_for_os_window(boss, session_path, matched_windows, opts):
 
     # Build session content manually for just this OS window
     # Iterate through tabs in visual order (left to right in tab bar)
-    lines = ['# kitty session saved from current OS window only', '', 'new_os_window']
+    lines = ['# kitty session saved from current OS window only']
+    # if 'main.session' not in os.path.basename(session_path):
+    lines.append('new_os_window')
+    lines.append('')
 
     # Track which tab is currently active
     current_active_tab = tab_manager.active_tab

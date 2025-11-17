@@ -1,0 +1,398 @@
+// / 2>/dev/null ; gorun "$0" "$@" ; exit $?
+//
+//go:build ignore
+
+package main
+
+import (
+	"bufio"
+	"encoding/json"
+	"fmt"
+	"io"
+	"log"
+	"os"
+	"os/exec"
+	"slices"
+	"strconv"
+	"strings"
+	"sync"
+	"unicode/utf8"
+)
+
+func main() {
+	// Mode 1: Split existing file (called by fzf reload)
+	if len(os.Args) >= 3 && os.Args[1] == "--split" {
+		mode := os.Args[2]
+		filename := os.Args[3]
+		splitAndPrint(filename, mode, os.Stdout)
+		return
+	}
+
+	// Mode 2: Reload with history (called by fzf ctrl-h reload)
+	if len(os.Args) >= 2 && os.Args[1] == "--reload-history" {
+		tmpfile := os.Args[2]
+		reloadWithHistory(tmpfile)
+		return
+	}
+
+	// Mode 3: Fetch window text and stream to fzf
+	includeHistory := false
+	if len(os.Args) > 1 && (os.Args[1] == "all" || os.Args[1] == "--history") {
+		includeHistory = true
+	}
+
+	// Create temp file for fzf reload (still needed)
+	tmpFile := try1(os.CreateTemp("", "kitty-select-word-stream-*"))
+	defer os.Remove(tmpFile.Name())
+
+	// Get window IDs and focused window
+	ids := kittyGetWindowIds()
+	focusedWindowId := kittyGetFocusedWindowId()
+	parentId := kittyGetOverlayParrent()
+
+	// Order: focused first, others, parent last
+	var orderedIds []string
+	if focusedWindowId != "" && slices.Contains(ids, focusedWindowId) {
+		orderedIds = append(orderedIds, focusedWindowId)
+	}
+	for _, id := range ids {
+		if id != focusedWindowId && id != parentId {
+			orderedIds = append(orderedIds, id)
+		}
+	}
+
+	// Setup FZF command
+	script := os.Args[0]
+	reloadSpace := fmt.Sprintf("%s --split space %s", script, tmpFile.Name())
+	reloadSlash := fmt.Sprintf("%s --split slash %s", script, tmpFile.Name())
+	reloadLine := fmt.Sprintf("%s --split line %s", script, tmpFile.Name())
+
+	// History reload: re-fetch with history and update tmpfile
+	reloadHistory := fmt.Sprintf("%s --reload-history %s", script, tmpFile.Name())
+
+	historyStatus := "screen only"
+	if includeHistory {
+		historyStatus = "with history"
+	}
+
+	fzfCmd := exec.Command("fzf",
+		"--tac",
+		"--bind", "ctrl-space:reload("+reloadSpace+")",
+		"--bind", "ctrl-/:reload("+reloadSlash+")",
+		"--bind", "ctrl-l:reload("+reloadLine+")",
+		"--bind", "ctrl-h:reload("+reloadHistory+")",
+		"--bind", "tab:execute-silent(echo -n {} | pbcopy)+abort",
+		"--bind", "enter:execute-silent(echo -n {} | pbcopy; kitty @ send-text --match state:overlay_parent {})+abort",
+		"--header", fmt.Sprintf("Tab: copy; Enter: send; ctrl-h: load history [%s]; ctrl-space/slash/l: change delimiter", historyStatus),
+	)
+
+	// Create pipe to fzf
+	fzfStdin, err := fzfCmd.StdinPipe()
+	try0(err)
+	fzfCmd.Stdout = os.Stdout
+	fzfCmd.Stderr = os.Stderr
+
+	// Start fzf
+	try0(fzfCmd.Start())
+
+	// Stream words to both fzf and temp file
+	var tempFileBuf strings.Builder
+	seen := make(map[string]struct{})
+	var mu sync.Mutex
+
+	streamWords := func(text string, delimiter string) {
+		items := splitByDelimiters(text, delimiter)
+		for _, item := range items {
+			if item == "" {
+				continue
+			}
+			mu.Lock()
+			if _, ok := seen[item]; !ok {
+				seen[item] = struct{}{}
+				fmt.Fprintln(fzfStdin, item)
+				mu.Unlock()
+			} else {
+				mu.Unlock()
+			}
+		}
+	}
+
+	// Fetch and stream windows in order
+	for _, id := range orderedIds {
+		extent := "screen"
+		if includeHistory {
+			extent = "all"
+		}
+		text := kittyGetText(id, extent)
+		tempFileBuf.WriteString(text)
+		streamWords(text, " '\"`")
+	}
+
+	// Fetch and stream parent if exists
+	if parentId != "" {
+		extent := "screen"
+		if includeHistory {
+			extent = "all"
+		}
+		text := kittyGetText(parentId, extent)
+		tempFileBuf.WriteString(text)
+		streamWords(text, " '\"`")
+	}
+
+	// Save to temp file for reload
+	try0(os.WriteFile(tmpFile.Name(), []byte(tempFileBuf.String()), 0644))
+
+	// Close fzf stdin and wait
+	fzfStdin.Close()
+	try0(fzfCmd.Wait())
+}
+
+func reloadWithHistory(tmpfile string) {
+	// Get window IDs and focused window
+	ids := kittyGetWindowIds()
+	focusedWindowId := kittyGetFocusedWindowId()
+	parentId := kittyGetOverlayParrent()
+
+	// Order: focused first, others, parent last
+	var orderedIds []string
+	if focusedWindowId != "" && slices.Contains(ids, focusedWindowId) {
+		orderedIds = append(orderedIds, focusedWindowId)
+	}
+	for _, id := range ids {
+		if id != focusedWindowId && id != parentId {
+			orderedIds = append(orderedIds, id)
+		}
+	}
+
+	// Fetch all windows with history
+	var allText strings.Builder
+	for _, id := range orderedIds {
+		text := kittyGetText(id, "all")
+		allText.WriteString(text)
+	}
+
+	// Fetch parent if exists
+	if parentId != "" {
+		text := kittyGetText(parentId, "all")
+		allText.WriteString(text)
+	}
+
+	// Save to tmpfile for future reloads
+	try0(os.WriteFile(tmpfile, []byte(allText.String()), 0644))
+
+	// Split and output words
+	splitAndPrint(tmpfile, "space", os.Stdout)
+}
+
+func splitAndPrint(filename string, mode string, w io.Writer) {
+	data := try1(os.ReadFile(filename))
+	text := string(data)
+
+	var items []string
+	switch mode {
+	case "space":
+		items = splitByDelimiters(text, " '\"`")
+	case "slash":
+		items = splitByDelimiters(text, "/-")
+	case "line":
+		items = splitByLines(text)
+	default:
+		log.Fatalf("unknown mode: %s", mode)
+	}
+
+	// Deduplicate
+	seen := make(map[string]struct{})
+	for _, item := range items {
+		if item == "" {
+			continue
+		}
+		if _, ok := seen[item]; ok {
+			continue
+		}
+		seen[item] = struct{}{}
+		fmt.Fprintln(w, item)
+	}
+}
+
+func splitByLines(text string) []string {
+	var lines []string
+	scanner := bufio.NewScanner(strings.NewReader(text))
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line != "" {
+			lines = append(lines, line)
+		}
+	}
+	return lines
+}
+
+func splitByDelimiters(text string, sep string) []string {
+	isDelim := func(r rune) bool {
+		if r <= '\u00FF' {
+			if strings.ContainsRune(sep, r) {
+				return true
+			}
+			// Obvious ASCII ones: \t through \r plus space. Plus two Latin-1 oddballs.
+			switch r {
+			case '\t', '\n', '\v', '\f', '\r':
+				return true
+			case '\u0085', '\u00A0':
+				return true
+			}
+			return false
+		}
+		// High-valued ones.
+		if '\u2000' <= r && r <= '\u200a' {
+			return true
+		}
+		switch r {
+		case '\u1680', '\u2028', '\u2029', '\u202f', '\u205f', '\u3000':
+			return true
+		}
+		return false
+	}
+
+	var words []string
+	scanner := bufio.NewScanner(strings.NewReader(text))
+	scanner.Split(func(data []byte, atEOF bool) (advance int, token []byte, err error) {
+		// Skip leading spaces.
+		start := 0
+		for width := 0; start < len(data); start += width {
+			var r rune
+			r, width = utf8.DecodeRune(data[start:])
+			if !isDelim(r) {
+				break
+			}
+		}
+		// Scan until space, marking end of word.
+		for width, i := 0, start; i < len(data); i += width {
+			var r rune
+			r, width = utf8.DecodeRune(data[i:])
+			if isDelim(r) {
+				return i + width, data[start:i], nil
+			}
+		}
+		// If we're at EOF, we have a final, non-empty, non-terminated word. Return it.
+		if atEOF && len(data) > start {
+			return len(data), data[start:], nil
+		}
+		// Request more data.
+		return start, nil, nil
+	})
+
+	for scanner.Scan() {
+		words = append(words, scanner.Text())
+	}
+	return words
+}
+
+// Kitty integration functions
+
+func kittyGetFocusedWindowId() string {
+	cmd := exec.Command("kitten", "@ls")
+	out, err := cmd.Output()
+	if err != nil {
+		return ""
+	}
+
+	resp := []kittyList{}
+	if json.Unmarshal(out, &resp) != nil {
+		return ""
+	}
+
+	for _, osWindow := range resp {
+		for _, tab := range osWindow.Tabs {
+			for _, win := range tab.Windows {
+				if win.IsFocused {
+					return strconv.Itoa(win.Id)
+				}
+			}
+		}
+	}
+	return ""
+}
+
+func kittyGetOverlayParrent() string {
+	cmd := exec.Command("kitten", "@ls", "-m", "state:overlay_parent")
+	out, err := cmd.Output()
+	if err != nil {
+		return ""
+	}
+	resp := []kittyList{}
+	try0(json.Unmarshal(out, &resp))
+	if len(resp) == 0 || len(resp[0].Tabs) == 0 || len(resp[0].Tabs[0].Windows) == 0 {
+		return ""
+	}
+	return strconv.Itoa(resp[0].Tabs[0].Windows[0].Id)
+}
+
+type kittyList struct {
+	Tabs []struct {
+		Windows []struct {
+			Id        int  `json:"id"`
+			IsFocused bool `json:"is_focused"`
+		} `json:"windows"`
+	} `json:"tabs"`
+}
+
+func kittyGetWindowIds() []string {
+	// Get all tabs and find the one with the focused window
+	cmd := exec.Command("kitten", "@ls")
+	out := try1(cmd.Output())
+	resp := []kittyList{}
+	try0(json.Unmarshal(out, &resp))
+
+	var ids []string
+	for _, osWindow := range resp {
+		for _, tab := range osWindow.Tabs {
+			// Find the tab with a focused window
+			hasFocusedWindow := false
+			for _, win := range tab.Windows {
+				if win.IsFocused {
+					hasFocusedWindow = true
+					break
+				}
+			}
+
+			// If this tab has the focused window, return all its windows
+			if hasFocusedWindow {
+				for _, win := range tab.Windows {
+					ids = append(ids, strconv.Itoa(win.Id))
+				}
+				return ids
+			}
+		}
+	}
+
+	// Fallback: return windows from active tab if no focused window found
+	if len(resp) > 0 && len(resp[0].Tabs) > 0 {
+		for _, win := range resp[0].Tabs[0].Windows {
+			ids = append(ids, strconv.Itoa(win.Id))
+		}
+	}
+	return ids
+}
+
+func kittyGetText(id string, extent string) string {
+	cmd := exec.Command("kitten", "@get-text", "--match=id:"+id, "--extent="+extent)
+	out := try1(cmd.Output())
+	return string(out)
+}
+
+func try0(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func try1[T any](v T, err error) T {
+	if err != nil {
+		log.Fatal(err)
+	}
+	return v
+}
+
+// go.mod >>>
+// module kitty-select-word-stream
+// go 1.23.2
+// <<< go.mod

@@ -425,7 +425,8 @@ end, { expr = true, desc = "Close Completion" })
 -- <C-i> is mapped to <F20> in ~/.config/kitty/kitty.conf
 map("n", "<F20>", "<tab>")
 map({ "i", "s" }, "<F20>", function()
-  return LazyVim.cmp.actions.ai_accept()
+  return LazyVim.cmp.actions.ai_nes() or
+  LazyVim.cmp.actions.ai_accept()
 end, { expr = true, desc = "Accept Copilot" })
 -- map({ "i", "s" }, "<Tab>", function()
 --   return LazyVim.cmp.actions.ai_accept() or LazyVim.cmp.actions.snippet_forward() or "<Tab>"
