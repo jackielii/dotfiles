@@ -123,6 +123,8 @@ if status is-interactive
     if [ -f ~/.local/share/google-cloud-sdk/path.fish.inc ]
         . ~/.local/share/google-cloud-sdk/path.fish.inc
     end
+
+    fish_add_path /opt/homebrew/opt/coreutils/libexec/gnubin
 end
 
 # vim:set et sts=4 sw=4 ts=4:

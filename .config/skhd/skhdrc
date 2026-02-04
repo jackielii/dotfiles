@@ -476,10 +476,10 @@ fn + cmd - h | cmd - left
 fn + cmd - l | cmd - right
 # }}}
 
-# for claude code: 
-shift - return [
-    "kitty" | alt - return
-    "WezTerm" | alt - return
-    "Ghostty" | alt - return
-    *       ~
-]
+# # for claude code: 
+# shift - return [
+#     "kitty" | alt - return
+#     "WezTerm" | alt - return
+#     "Ghostty" | alt - return
+#     *       ~
+# ]

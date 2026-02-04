@@ -193,7 +193,7 @@ cmd extract ${{
         *.tar.gz|*.tgz) tar xzvf $f;;
         *.tar.xz|*.txz) tar xJvf $f;;
         *.zip) unzip $f;;
-        *.rar) unrar x $f;;
+        *.rar) tar xf $f;;
         *.7z) 7z x $f;;
     esac
 }}
@@ -208,7 +208,7 @@ cmd extract_to_dir ${{
         *.tar.gz|*.tgz) tar xzvf $f -C $dir;;
         *.tar.xz|*.txz) tar xJvf $f -C $dir;;
         *.zip) unzip $f -d $dir;;
-        *.rar) unrar x $f $dir;;
+        *.rar) tar xf $f -C $dir;;
         *.7z) 7z x $f -o$dir;;
     esac
     lf -remote "send $id reload"

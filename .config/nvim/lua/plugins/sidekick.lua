@@ -7,6 +7,7 @@ return {
       -- { "<tab>", LazyVim.cmp.map({ "ai_nes" }, "<tab>"), mode = { "n" }, expr = true },
       -- { "<tab>", false },
       -- { "<leader>a", "", desc = "+ai", mode = { "n", "v" } },
+      { "<leader>as", false },
       {
         "<c-.>",
         false,
