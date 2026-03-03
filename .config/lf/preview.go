@@ -359,7 +359,7 @@ func previewText(opts previewOpts) {
 
 	paging := "--paging=never"
 	if opts.pagerRequired {
-		paging = "--paging=always"
+		paging = "--paging=always -p" // also plain
 	}
 
 	switch {

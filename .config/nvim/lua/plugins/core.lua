@@ -1652,18 +1652,18 @@ return {
           if vim.wo.diff then
             vim.cmd.normal({ "]c", bang = true })
           else
-            gs.nav_hunk("next")
+            gs.nav_hunk("next", {target = "all"})
           end
         end, "Next Hunk")
         map("n", "[h", function()
           if vim.wo.diff then
             vim.cmd.normal({ "[c", bang = true })
           else
-            gs.nav_hunk("prev")
+            gs.nav_hunk("prev", {target = "all"})
           end
         end, "Prev Hunk")
-        map("n", "]H", function() gs.nav_hunk("last") end, "Last Hunk")
-        map("n", "[H", function() gs.nav_hunk("first") end, "First Hunk")
+        map("n", "]H", function() gs.nav_hunk("last", {target = "all"}) end, "Last Hunk")
+        map("n", "[H", function() gs.nav_hunk("first", {target = "all"}) end, "First Hunk")
         map("n", "]c", gs.next_hunk, "Next Hunk")
         map("n", "[c", gs.prev_hunk, "Prev Hunk")
         map({ "n", "v" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
@@ -1680,6 +1680,7 @@ return {
         map("n", "<leader>ghd", gs.diffthis, "Diff This")
         map("n", "<leader>ghD", function() gs.diffthis("~") end, "Diff This ~")
         map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
+        map({ "o", "x" }, "ah", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
       end,
     },
   },

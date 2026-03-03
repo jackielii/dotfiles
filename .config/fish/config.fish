@@ -9,23 +9,24 @@ fish_add_path -m ~/.local/bin
 fish_add_path -m ~/bin ~/pycode
 
 # Go
-set -Ux GOPATH ~/go
+set -gx GOPATH ~/go
 fish_add_path -m $GOPATH/bin
 
-set -Ux EDITOR (which nvim)
-set -Ux VISUAL $EDITOR
-set -Ux SUDO_EDITOR $EDITOR
-set -Ux LESSKEYIN ~/.config/lesskey
+set -gx EDITOR (which nvim)
+set -gx VISUAL $EDITOR
+set -gx SUDO_EDITOR $EDITOR
+set -gx LESSKEYIN ~/.config/lesskey
 # pager is set in ~/.config/kitty/kitty.conf
-set -Ux PAGER less
+set -gx PAGER less
 
 source ~/.secrets
 
 # this enables `use node` in direnv
-set -Ux NODE_VERSION_PREFIX
-set -Ux NODE_VERSIONS ~/.nvm/versions/node
+# nvm stores versions as v11.15.0, so prefix must be "v"
+set -gx NODE_VERSION_PREFIX v
+set -gx NODE_VERSIONS ~/.nvm/versions/node
 
-set -Ux GITHUB_TOKEN $MY_GITHUB_API_TOKEN
+set -gx GITHUB_TOKEN $MY_GITHUB_API_TOKEN
 # set -Ux GITHUB_COPILOT_TOKEN $MY_GITHUB_API_TOKEN
 
 # here we disable the loading of base16-shell. To change the theme:
@@ -41,7 +42,7 @@ if [ -z "$BASE16_THEME" ] && [ -e ~/.base16_theme ]
     set -gx BASE16_THEME (string match 'base16-*' $SCRIPT_NAME  | string sub -s (string length 'base16-*'))
 end
 
-set -Ux XDG_CONFIG_HOME "$HOME/.config"
+set -gx XDG_CONFIG_HOME "$HOME/.config"
 
 fish_add_path ~/.fzf/bin
 fish_add_path ~/.cargo/bin
