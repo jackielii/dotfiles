@@ -94,9 +94,13 @@ rex.action{
     for _, window in ipairs(view.windows or {}) do live[window.window_id] = true end
     for _, id in ipairs(history[ctx.session_id] or {}) do
       if id ~= view.active_window_id and live[id] then
-        local result, focus_err = rex.session.focus_window{window_id = id}
-        if focus_err then error(focus_err) end
-        return result
+        -- Server focus alone does not select the visible tab in Rex.app.
+        for index, window in ipairs(view.windows or {}) do
+          if window.window_id == id then
+            rex.client.queue("client.tab.goto", {index = index})
+            return
+          end
+        end
       end
     end
   end,
