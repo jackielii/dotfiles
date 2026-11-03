@@ -1,7 +1,9 @@
-Include ~/.ssh/config
-
+# Work GitHub identity (jackieli-tes). Listed before the Include so its key is
+# tried before the personal default from ~/.ssh/config.
 host github.com
  HostName github.com
  IdentityFile ~/.ssh/id_tes_ed25519
+ IdentitiesOnly yes
  User git
 
+Include ~/.ssh/config

@@ -72,7 +72,7 @@ return {
 
   {
     -- https://github.com/numToStr/Navigator.nvim/pull/26
-    "craigmac/Navigator.nvim",
+    "jackielii/Navigator.nvim",
     keys = {
       { "<C-h>", [[<cmd>NavigatorLeft<cr>]], desc = "NavigatorLeft" },
       { "<C-j>", [[<cmd>NavigatorDown<cr>]], desc = "NavigatorDown" },
@@ -281,6 +281,11 @@ return {
           hi! link TSVariable Normal
           hi! link TSParameterReference Identifier
           hi! WinSeparator guifg=#1b1d2b gui=bold
+          " Use the terminal's base background so Rex can dim inactive panes.
+          hi Normal guibg=NONE
+          hi NormalNC guibg=NONE
+          hi SignColumn guibg=NONE
+          hi EndOfBuffer guibg=NONE
           ]])
         end,
       })

@@ -5,45 +5,45 @@
 
 # Command definitions {{{
 # Focus operations with placeholders
-.define focus_direction : yabai -m window --focus {{1}} || yabai -m display --focus {{1}}
-.define focus_stack_or_direction : yabai -m window --focus stack.{{1}} || yabai -m window --focus {{2}} || yabai -m display --focus {{2}} || yabai -m window --focus stack.{{3}}
-.define cycle_visible: yabai -m window --focus "$(yabai -m query --windows | jq -re "sort_by(.display, .frame.x, .frame.y, .id) | map(select(.\"is-visible\" == true and .role != \"AXUnknown\")) | reverse | nth(index(map(select(.\"has-focus\" == true))) - 1).id")"
+.define focus_direction : ~/.local/bin/yabai -m window --focus {{1}} || ~/.local/bin/yabai -m display --focus {{1}}
+.define focus_stack_or_direction : ~/.local/bin/yabai -m window --focus stack.{{1}} || ~/.local/bin/yabai -m window --focus {{2}} || ~/.local/bin/yabai -m display --focus {{2}} || ~/.local/bin/yabai -m window --focus stack.{{3}}
+.define cycle_visible: ~/.local/bin/yabai -m window --focus "$(~/.local/bin/yabai -m query --windows | jq -re "sort_by(.display, .frame.x, .frame.y, .id) | map(select(.\"is-visible\" == true and .role != \"AXUnknown\")) | reverse | nth(index(map(select(.\"has-focus\" == true))) - 1).id")"
 
 # Space focus operations
-.define focus_space : yabai -m space --focus {{1}}
+.define focus_space : ~/.local/bin/yabai -m space --focus {{1}}
 
 #
 
 # Window movement operations
-.define swap_or_display : yabai -m window --swap {{1}} || ( yabai -m window --display {{1}} ; yabai -m display --focus {{1}} )
-.define move_to_space : yabai -m window --space {{1}}
-.define move_window_rel : yabai -m window --move rel:{{1}}:{{2}}
-.define move_window_left : yabai -m window --move abs:0:$(yabai -m query --windows --window | jq '.frame.y')  # Move to left edge
-.define move_window_bot : yabai -m window --move abs:$(yabai -m query --windows --window | jq '.frame.x'):$(echo "$(yabai -m query --displays --display | jq '.frame.h') - $(yabai -m query --windows --window | jq '.frame.h')" | bc)  # Move to bottom edge
-.define move_window_top : yabai -m window --move abs:$(yabai -m query --windows --window | jq '.frame.x'):0  # Move to top edge
-.define move_window_right : yabai -m window --move abs:$(echo "$(yabai -m query --displays --display | jq '.frame.w') - $(yabai -m query --windows --window | jq '.frame.w')" | bc):$(yabai -m query --windows --window | jq '.frame.y')  # Move to right edge
+.define swap_or_display : ~/.local/bin/yabai -m window --swap {{1}} || ( ~/.local/bin/yabai -m window --display {{1}} ; ~/.local/bin/yabai -m display --focus {{1}} )
+.define move_to_space : ~/.local/bin/yabai -m window --space {{1}}
+.define move_window_rel : ~/.local/bin/yabai -m window --move rel:{{1}}:{{2}}
+.define move_window_left : ~/.local/bin/yabai -m window --move abs:0:$(~/.local/bin/yabai -m query --windows --window | jq '.frame.y')  # Move to left edge
+.define move_window_bot : ~/.local/bin/yabai -m window --move abs:$(~/.local/bin/yabai -m query --windows --window | jq '.frame.x'):$(echo "$(~/.local/bin/yabai -m query --displays --display | jq '.frame.h') - $(~/.local/bin/yabai -m query --windows --window | jq '.frame.h')" | bc)  # Move to bottom edge
+.define move_window_top : ~/.local/bin/yabai -m window --move abs:$(~/.local/bin/yabai -m query --windows --window | jq '.frame.x'):0  # Move to top edge
+.define move_window_right : ~/.local/bin/yabai -m window --move abs:$(echo "$(~/.local/bin/yabai -m query --displays --display | jq '.frame.w') - $(~/.local/bin/yabai -m query --windows --window | jq '.frame.w')" | bc):$(~/.local/bin/yabai -m query --windows --window | jq '.frame.y')  # Move to right edge
 
 # Window resize operations
-.define resize_window : yabai -m window --resize {{1}}:{{2}}:{{3}}
-.define resize_window_horizontal : yabai -m window --resize right:{{1}}:0 || yabai -m window --resize left:{{1}}:0
+.define resize_window : ~/.local/bin/yabai -m window --resize {{1}}:{{2}}:{{3}}
+.define resize_window_horizontal : ~/.local/bin/yabai -m window --resize right:{{1}}:0 || ~/.local/bin/yabai -m window --resize left:{{1}}:0
 # .define resize_window_vertical : n={{1}}; nn={{1}}; [ $nn -le 0 ] && nn=$((-nn)); \
-.define resize_window_vertical : yabai -m window --resize bottom:0:{{1}} || yabai -m window --resize top:0:{{1}}
+.define resize_window_vertical : ~/.local/bin/yabai -m window --resize bottom:0:{{1}} || ~/.local/bin/yabai -m window --resize top:0:{{1}}
 
 # Warp and stack operations
-.define warp_window : yabai -m window --warp {{1}}
-.define stack_window : yabai -m window --stack {{1}}
+.define warp_window : ~/.local/bin/yabai -m window --warp {{1}}
+.define stack_window : ~/.local/bin/yabai -m window --stack {{1}}
 
 # Layout operations
-.define toggle_layout : [ $(yabai -m query --spaces --space | jq -re '.type') = 'bsp' ] && yabai -m space --layout stack || yabai -m space --layout bsp
-.define toggle_float : yabai -m window --toggle float; yabai -m window --grid 8:8:1:1:6:6
-.define switch_float_focus : [ $(yabai -m query --windows --window | jq -r '.["is-floating"]') = 'true' ] && yabai -m window --focus "$(yabai -m query --windows --space | jq -r 'map(select(.["is-floating"] == false and .["is-visible"] == true)) | first | .id')" || yabai -m window --focus "$(yabai -m query --windows --space | jq -r 'map(select(.["is-floating"] == true and .["is-visible"] == true)) | first | .id')"
+.define toggle_layout : [ $(~/.local/bin/yabai -m query --spaces --space | jq -re '.type') = 'bsp' ] && ~/.local/bin/yabai -m space --layout stack || ~/.local/bin/yabai -m space --layout bsp
+.define toggle_float : ~/.local/bin/yabai -m window --toggle float; ~/.local/bin/yabai -m window --grid 8:8:1:1:6:6
+.define switch_float_focus : [ $(~/.local/bin/yabai -m query --windows --window | jq -r '.["is-floating"]') = 'true' ] && ~/.local/bin/yabai -m window --focus "$(~/.local/bin/yabai -m query --windows --space | jq -r 'map(select(.["is-floating"] == false and .["is-visible"] == true)) | first | .id')" || ~/.local/bin/yabai -m window --focus "$(~/.local/bin/yabai -m query --windows --space | jq -r 'map(select(.["is-floating"] == true and .["is-visible"] == true)) | first | .id')"
 
 # Window toggle operations
-.define toggle_scratchpad : yabai -m window --toggle {{1}} || open -a "{{2}}"
+.define toggle_scratchpad : ~/.local/bin/yabai -m window --toggle {{1}} || open -a "{{2}}"
 
 # Focus cycling operations
-.define cycle_windows_forward : yabai -m window --focus $(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" and .scratchpad == "" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id')
-.define cycle_windows_backward : yabai -m window --focus $(yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" and .scratchpad == "" )) | sort_by(.id) | .[map(."has-focus") | index(true)-1].id')
+.define cycle_windows_forward : ~/.local/bin/yabai -m window --focus $(~/.local/bin/yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" and .scratchpad == "" )) | sort_by(.id) | reverse | .[map(."has-focus") | index(true)-1].id')
+.define cycle_windows_backward : ~/.local/bin/yabai -m window --focus $(~/.local/bin/yabai -m query --windows --space | jq 'map(select( .title != "Microsoft Teams Notification" and .scratchpad == "" )) | sort_by(.id) | .[map(."has-focus") | index(true)-1].id')
 
 # AnyBar indicator
 .define anybar_color : echo -n "{{1}}" | nc -4u -w0 localhost 1738
@@ -100,18 +100,18 @@ lcmd - 9 : @focus_space("9")
 # cmd + ctrl - 9 : yabai -m space --focus 9
 
 # focus full screen alt-`
-lalt - 0x32 : yabai -m space --focus \
-    $(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == true).index)|.[0]') \
-        || yabai -m space --focus recent
-cmd + ctrl - d : yabai -m space --toggle show-desktop
+lalt - 0x32 : ~/.local/bin/yabai -m space --focus \
+    $(~/.local/bin/yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == true).index)|.[0]') \
+        || ~/.local/bin/yabai -m space --focus recent
+cmd + ctrl - d : ~/.local/bin/yabai -m space --toggle show-desktop
 
 # toggle padding
-f16: yabai -m space --toggle padding
+f16: ~/.local/bin/yabai -m space --toggle padding
 
 # focus previous window: there is no way to switch to recent floating window
 # cmd - tab : yabai -m window --focus recent || yabai -m space --focus recent
-cmd - f14 : yabai -m window --focus recent || yabai -m space --focus recent
-f15 : yabai -m space --focus recent
+cmd - f14 : ~/.local/bin/yabai -m window --focus recent || ~/.local/bin/yabai -m space --focus recent
+f15 : ~/.local/bin/yabai -m space --focus recent
 # cycle through all windows in current space
 cmd + ctrl - tab : @cycle_windows_forward
 # reverse cycle through all windows in current space
@@ -123,7 +123,7 @@ ctrl - f14 : @cycle_windows_forward
 ## f15 is pause, f14 is screenlock
 # lalt - tab : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
 ## 0x32 is `
-cmd + ctrl - 0x32 : yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
+cmd + ctrl - 0x32 : ~/.local/bin/yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
 
 # ctrl - f13 : /Applications/flameshot.app/Contents/MacOS/flameshot gui
 # shift - f13 : open -a flameshot --args screen
@@ -248,10 +248,10 @@ winmode < ctrl + shift - right : @stack_window("east")
 # winmode < up : @insert_window("north")
 # winmode < right : @insert_window("east")
 winmode < space : @toggle_float
-winmode < s : yabai -m window --insert stack
+winmode < s : ~/.local/bin/yabai -m window --insert stack
 
-winmode < n : yabai -m window --focus stack.next  # Navigate stack next
-winmode < p : yabai -m window --focus stack.prev  # Navigate stack prev
+winmode < n : ~/.local/bin/yabai -m window --focus stack.next  # Navigate stack next
+winmode < p : ~/.local/bin/yabai -m window --focus stack.prev  # Navigate stack prev
 
 # }}}
 
@@ -262,20 +262,20 @@ cmd + shift - space : @toggle_float
 # cmd + ctrl + shift - space : yabai -m window --toggle topmost
 
 ## fullscreen
-cmd - f11 : yabai -m window --toggle native-fullscreen
-ctrl + cmd - f : yabai -m window --toggle zoom-fullscreen
-ctrl + shift + cmd - f : yabai -m window --toggle native-fullscreen
+cmd - f11 : ~/.local/bin/yabai -m window --toggle native-fullscreen
+ctrl + cmd - f : ~/.local/bin/yabai -m window --toggle zoom-fullscreen
+ctrl + shift + cmd - f : ~/.local/bin/yabai -m window --toggle native-fullscreen
 
 # ## flash window border for active window
 # cmd + ctrl + shift - w : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
 # ## 0x2F is dot
 # cmd + ctrl + shift - 0x2F : yabai -m window --toggle border; sleep 0.5; yabai -m config window_border off
 ## 0x4C is numpad Enter
-0x4C : yabai -m window --focus mouse
+0x4C : ~/.local/bin/yabai -m window --focus mouse
 
 ## 0x18 is = ; 0x1B is -
-cmd + shift - 0x18 : yabai -m space --balance y-axis
-cmd + shift - 0x1B : yabai -m space --balance x-axis
+cmd + shift - 0x18 : ~/.local/bin/yabai -m space --balance y-axis
+cmd + shift - 0x1B : ~/.local/bin/yabai -m space --balance x-axis
 
 # # cycle all windows on space backwards by coordinate
 # meh - m : yabai -m window --focus "$(yabai -m query --windows --space | jq -re "[sort_by(.id, .frame) | reverse | .[] | select(.role == \"AXWindow\" and .subrole == \"AXStandardWindow\") | .id] | nth(index($(yabai -m query --windows --window | jq -re ".id")) - 1)")"
@@ -300,26 +300,23 @@ ctrl + cmd - k | cmd - k
 
 # launch common apps {{{
 
-cmd + ralt - r : yabai -m window --scratchpad recover
+cmd + ralt - r : ~/.local/bin/yabai -m window --scratchpad recover
 ralt - 0x32 : @toggle_scratchpad("music", "YouTube Music")
 # alt - return: yabai -m window --toggle tt || fish -c "kitty -o tab_bar_min_tabs=3 -o hide_window_decorations=false -d ~ -T 'T_T'"
 ralt - return: @fish("cd ~ && kitten quick-access-terminal -o os_window_title=main -o lines=35")
 lalt - c: @toggle_scratchpad("wechat", "WeChat")
 alt - a: @toggle_scratchpad("whatsapp", "WhatsApp")
-alt - d: yabai -m window --toggle finder || open ~/Downloads
+alt - d: ~/.local/bin/yabai -m window --toggle finder || open ~/Downloads
 ralt - n: @toggle_scratchpad("notes", "Notes")
 lalt - t: @toggle_scratchpad("claude", "Claude")
+lalt - g: @toggle_scratchpad("chatgpt", "ChatGPT")
 ralt - p: @toggle_scratchpad("skype", "Skype")
 
-alt - g: yabai -m window --toggle ClaudeCode || \
-    fish -c 'kitty -1=false -d ~ -T "ClaudeCode" --session=~/.local/share/kitty/sessions/claudecode.session'
+# ralt - g: yabai -m window --toggle ClaudeCode || \
+#     fish -c 'kitty -1=false -d ~ -T "ClaudeCode" --session=~/.local/share/kitty/sessions/claudecode.session'
 
-# switch to main first tmux listening to socket, if none, launch new one
-ralt - t : kitty @ --to unix:/tmp/mykitty focus-window -m session:main || \
-    fish -c "kitty -1 --listen-on=unix:/tmp/mykitty -d ~ --session=~/.local/share/kitty/sessions/main.session"
-    # fish -c "~/personal/kitty/kitty/launcher/kitty.app/Contents/MacOS/kitty -1 -d ~"
-    # zsh -ci "kitty -1 -d ~"
-        # zsh -c "source ~/.base16_theme; tmux new-session -A -s main"
+# Launch or focus Rex Beta on workspace 1
+ralt - t : open -a "Rex Beta"
 # alt - f : kitty -d ~ --title 'MY-|-Filer' lf
 # -1 option makes it very fast but makes -o option not work
 ralt - f : @fish("kitty -1 -d ~ -T \"MY-|-Filer\" lf")
@@ -333,7 +330,7 @@ cmd + ctrl + shift - return : open ~
 # alt - f : open ~
 # ralt - m : open -a "Microsoft Outlook.app"
 # cmd + ctrl + shift - return : kitty -1 -d ~ zsh -c "source ~/.base16_theme; ranger"
-cmd + shift - x : yabai -m window --close
+cmd + shift - x : ~/.local/bin/yabai -m window --close
 # }}}
 
 
@@ -428,7 +425,7 @@ fn - space : ~/.local/bin/fntoggle
 
 # reload yabai
 # ctrl + shift + cmd - r : launchctl kickstart -k "gui/${UID}/homebrew.mxcl.yabai"
-ctrl + shift + cmd - r : yabai --restart-service
+ctrl + shift + cmd - r : ~/.local/bin/yabai --restart-service
 
 # mac built-in keyboard {{{
 # § -> ` and shift - § -> ~

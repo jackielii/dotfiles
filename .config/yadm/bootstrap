@@ -29,6 +29,18 @@ yadm submodule update --recursive --init
 
 OS=$(uname -s) # Linux or Darwin
 
+# Recreate the yadm-managed local Homebrew casks before bundle runs.
+if [ -d "$HOME/.config/homebrew/local-casks" ]; then
+    local_tap="$(brew --repository)/Library/Taps/jackielii/homebrew-local"
+    mkdir -p "$local_tap/Casks"
+    if [ ! -d "$local_tap/.git" ]; then
+        git init "$local_tap"
+    fi
+    cp "$HOME/.config/homebrew/local-casks/"*.rb "$local_tap/Casks/"
+    brew trust --cask jackielii/local/yabai-indicator
+    brew trust --cask jackielii/local/flameshot
+fi
+
 if [ -f "$HOME/.Brewfile" ]; then
 	echo "\nUpdating homebrew bundle\n"
 	brew bundle --global

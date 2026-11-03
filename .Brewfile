@@ -4,8 +4,12 @@
 brew "fish"
 brew "fisher"
 cask "kitty"
+if OS.mac?
+    cask "claude-code"
+end
 brew "tmux"
 brew "neovim"
+brew "node" # Runtime and npm for Neovim Mason tools
 brew "fd"
 brew "starship"
 brew "zoxide" # z change directory
@@ -63,6 +67,9 @@ if OS.mac?
 
     tap "koekeishiya/formulae"
     tap "jackielii/tap"
+    tap "jackielii/local"
+    cask "jackielii/local/yabai-indicator"
+    cask "jackielii/local/flameshot"
     # see https://github.com/koekeishiya/yabai for installation steps on mac
     brew "koekeishiya/formulae/yabai"
     brew "jackielii/tap/skhd-zig"
@@ -116,3 +123,6 @@ end
 # whalebrew "whalebrew/wget"
 
 # ( vim: set ts=4 sw=4 et fdm=marker: )
+
+# Software volume control for the FiiO DAC
+cask "proxy-audio-device"

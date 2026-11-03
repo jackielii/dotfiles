@@ -37,8 +37,8 @@ vim.g.ai_cmp = false
 
 vim.o.autoread = true -- Automatically read file when changed outside of Neovim
 
-vim.lsp.set_log_level("info")
--- vim.lsp.set_log_level("off")
+-- vim.lsp.log.set_level("info")
+vim.lsp.set_log_level("off")
 
 -- vim.lsp.set_log_level(vim.lsp.log_levels.DEBUG)
 -- vim.lsp.set_log_level(vim.lsp.log_levels.INFO)

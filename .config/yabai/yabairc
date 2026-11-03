@@ -11,11 +11,11 @@
 # see this wiki page for information:
 #  - https://github.com/koekeishiya/yabai/wiki/Installing-yabai-(latest-release)
 #
-yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
-sudo yabai --load-sa
+yabai -m signal --add event=dock_did_restart action="sudo -n /Users/jackieli/.local/bin/yabai --load-sa"
+sudo -n /Users/jackieli/.local/bin/yabai --load-sa
 
 # global settings
-yabai -m config mouse_follows_focus          true
+yabai -m config mouse_follows_focus          off
 yabai -m config focus_follows_mouse          off
 yabai -m config window_placement             second_child
 yabai -m config mouse_drop_action stack
@@ -30,7 +30,7 @@ yabai -m config normal_window_opacity        0.96
 # example: show shadows only for floating windows
 yabai -m config window_shadow                float
 
-yabai -m config active_window_opacity        1
+yabai -m config active_window_opacity        1.0
 # yabai -m config normal_window_opacity        0.95
 yabai -m config split_ratio                  0.5
 yabai -m config auto_balance                 off
@@ -55,6 +55,7 @@ yabai -m config right_padding                16
 yabai -m config window_gap                   8
 
 # pinned apps to space
+yabai -m rule --add label=rex-workspace app="^Rex Beta$" space=1
 yabai -m rule --add app='^Microsoft Teams$' space=3
 yabai -m rule --add app='^MSTeams$' space=3
 
@@ -62,12 +63,11 @@ yabai -m rule --add app='^MSTeams$' space=3
 yabai -m rule --add app='^System Information$' manage=off
 yabai -m rule --add app='^System Preferences$' manage=off
 yabai -m rule --add app='^System Settings$' manage=off
-yabai -m rule --add title='Preferences$' manage=off
 # yabai -m rule --add app='^Finder$' manage=off
 yabai -m rule --add app='^AltTab$' manage=off
 
 # float settings windows
-yabai -m rule --add title='Settings$' manage=off
+yabai -m rule --add label=settings-dialogs title='(^|[[:space:]:—–-])([Ss]ettings|[Pp]references)([[:space:]:—–-]|$)' manage=off
 yabai -m rule --add app='^Mac Mouse Fix$' manage=off
 yabai -m rule --add app='^Maccy$' manage=off
 yabai -m rule --add app='^Happy Hacking Keyboard Keymap Tool$' manage=off
@@ -85,15 +85,16 @@ yabai -m rule --add title="^ClaudeCode$" manage=off
 yabai -m rule --add title="^ClaudeCode$" scratchpad=ClaudeCode grid=11:11:1:1:9:9
 
 # scratchpad windows
-yabai -m rule --add app="^Ghostty$" scratchpad=ghostty grid=11:11:1:1:9:9
-yabai -m rule --add app="^YouTube Music$" scratchpad=music grid=11:11:1:1:9:9
-yabai -m rule --add title="^T_T$" scratchpad=tt grid=11:11:1:1:9:9
-yabai -m rule --add app="^WeChat$" scratchpad=wechat grid=11:11:1:1:9:9
-yabai -m rule --add app='WhatsApp$' scratchpad=whatsapp grid=11:11:1:1:9:9
-yabai -m rule --add app="^Finder$" scratchpad=finder grid=11:11:1:1:9:9
-yabai -m rule --add app="^Notes$" scratchpad=notes grid=11:11:1:1:9:9
-yabai -m rule --add app="^Claude$" scratchpad=claude grid=11:11:1:1:9:9
-yabai -m rule --add app="^Skype$" scratchpad=skype grid=11:11:1:1:9:9
+yabai -m rule --add app="^ChatGPT$" manage=off scratchpad=chatgpt grid=11:11:1:1:9:9
+yabai -m rule --add app="^Ghostty$" manage=off scratchpad=ghostty grid=11:11:1:1:9:9
+yabai -m rule --add app="^YouTube Music$" manage=off scratchpad=music grid=11:11:1:1:9:9
+yabai -m rule --add title="^T_T$" manage=off scratchpad=tt grid=11:11:1:1:9:9
+yabai -m rule --add app="^WeChat$" manage=off scratchpad=wechat grid=11:11:1:1:9:9
+yabai -m rule --add app='WhatsApp$' manage=off scratchpad=whatsapp grid=11:11:1:1:9:9
+yabai -m rule --add app="^Finder$" manage=off scratchpad=finder grid=11:11:1:1:9:9
+yabai -m rule --add app="^Notes$" manage=off scratchpad=notes grid=11:11:1:1:9:9
+yabai -m rule --add app="^Claude$" manage=off scratchpad=claude grid=11:11:1:1:9:9
+yabai -m rule --add app="^Skype$" manage=off scratchpad=skype grid=11:11:1:1:9:9
 
 #SPACEBAR_HEIGHT=$(spacebar -m config height)
 #yabai -m config external_bar all:${SPACEBAR_HEIGHT}:0
@@ -110,6 +111,8 @@ yabai -m signal --add event=window_resized action='echo "refresh windows" | nc -
 yabai -m signal --add event=window_minimized action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
 yabai -m signal --add event=window_deminimized action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
 
-borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=8.0 &
+if command -v borders >/dev/null; then
+    borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=8.0 &
+fi
 # borders active_color=0xffebcb8b inactive_color=0xff494d64 width=10.0 &
 echo "yabai configuration loaded.."
