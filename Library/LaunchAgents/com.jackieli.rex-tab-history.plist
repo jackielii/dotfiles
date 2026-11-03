@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>KeepAlive</key>
+	<true/>
+	<key>Label</key>
+	<string>com.jackieli.rex-tab-history</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Applications/Rex Beta.app/Contents/Helpers/Rex Server.rex/Contents/MacOS/rex</string>
+		<string>do</string>
+		<string>/Users/jackieli/.config/rex/tab-history.lua</string>
+		<string>--all</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/Users/jackieli/Library/Logs/rex-tab-history.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/jackieli/Library/Logs/rex-tab-history.log</string>
+	<key>ThrottleInterval</key>
+	<integer>5</integer>
+</dict>
+</plist>
