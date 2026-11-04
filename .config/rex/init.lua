@@ -45,6 +45,38 @@ rex.bind("ctrl+a>up", "pane.focus", { direction = "up" }) -- kitty.conf:84
 rex.bind("ctrl+a>down", "pane.focus", { direction = "down" }) -- kitty.conf:85
 rex.bind("ctrl+a>x", "pane.close") -- kitty.conf:90
 rex.bind("ctrl+a>,", "client.tab.rename") -- kitty.conf:91
+
+rex.action{
+  name = "rename_tab_to_folder",
+  title = "Rename Tab to Current Folder",
+  run = function(ctx)
+    local view, err = rex.session.view{}
+    if err then error(err) end
+    local window
+    for _, candidate in ipairs(view.windows or {}) do
+      if candidate.window_id == view.active_window_id then window = candidate end
+    end
+    if not window then error("No active tab") end
+    local directory, pwd_err = rex.block.call("com.superlogical.terminal", "pwd", {
+      block_id = ctx.block_id or window.focused_block_id,
+    })
+    if pwd_err then error(pwd_err) end
+    local path = directory.pwd
+    if not path or path == "" then error("The terminal has not reported its directory") end
+    if path:match("^file://") then
+      path = path:gsub("^file://[^/]*", "")
+      path = path:gsub("%%(%x%x)", function(hex) return string.char(tonumber(hex, 16)) end)
+    end
+    local label = path:gsub("/+$", ""):match("([^/]+)$") or "/"
+    local result, rename_err = rex.session.set_window_label{
+      window_id = window.window_id,
+      label = label,
+    }
+    if rename_err then error(rename_err) end
+    return result
+  end,
+}
+rex.bind("ctrl+a>ctrl+,", "rename_tab_to_folder")
 rex.bind("ctrl+a>shift+1", "pane.move_to_new_tab") -- kitty.conf:93
 rex.bind("ctrl+a>alt+s", "pane.split", { direction = "down" }) -- kitty.conf:101
 rex.bind("ctrl+a>alt+v", "pane.split", { direction = "right" }) -- kitty.conf:102
