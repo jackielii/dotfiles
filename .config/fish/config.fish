@@ -73,10 +73,10 @@ if status is-interactive
     abbr l lf
     abbr gci git commit
     abbr k kubectl
-    abbr d kitten diff
-    abbr gd git difftool --no-symlinks --dir-diff
-    abbr gds git difftool --no-symlinks --dir-diff --staged
-    abbr gsh git difftool --no-symlinks --dir-diff HEAD~1 HEAD
+    abbr d hunk diff --files
+    abbr gd hunk diff
+    abbr gds hunk diff --staged
+    abbr gsh hunk show
     abbr gr8 git rev-parse --short=8 HEAD
     abbr --add gcm 'git checkout (__git.default_branch)'
     abbr gcim git commit -m

@@ -61,13 +61,17 @@ yabai -m rule --add app='^MSTeams$' space=3
 
 # float system preferences
 yabai -m rule --add app='^System Information$' manage=off
-yabai -m rule --add app='^System Preferences$' manage=off
-yabai -m rule --add app='^System Settings$' manage=off
+# Reapply when Settings activates, including windows restored by macOS.
+yabai -m rule --add label=system-settings app='^System (Settings|Preferences)$' manage=off
+yabai -m signal --add label=system-settings-activated event=application_activated app='^System (Settings|Preferences)$' action='"$HOME/.local/bin/yabai" -m rule --apply system-settings'
+yabai -m signal --add label=system-settings-created event=window_created app='^System (Settings|Preferences)$' action='"$HOME/.local/bin/yabai" -m rule --apply system-settings'
 # yabai -m rule --add app='^Finder$' manage=off
 yabai -m rule --add app='^AltTab$' manage=off
 
 # float settings windows
 yabai -m rule --add label=settings-dialogs title='(^|[[:space:]:—–-])([Ss]ettings|[Pp]references)([[:space:]:—–-]|$)' manage=off
+# Some apps set the Settings title only after their window is created.
+yabai -m signal --add label=settings-dialog-title event=window_title_changed title='(^|[[:space:]:—–-])([Ss]ettings|[Pp]references)([[:space:]:—–-]|$)' action='"$HOME/.local/bin/yabai" -m rule --apply settings-dialogs'
 yabai -m rule --add app='^Mac Mouse Fix$' manage=off
 yabai -m rule --add app='^Maccy$' manage=off
 yabai -m rule --add app='^Happy Hacking Keyboard Keymap Tool$' manage=off

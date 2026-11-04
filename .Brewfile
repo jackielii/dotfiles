@@ -126,3 +126,5 @@ end
 
 # Software volume control for the FiiO DAC
 cask "proxy-audio-device"
+
+brew "hunk"

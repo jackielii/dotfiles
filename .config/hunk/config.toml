@@ -1,0 +1,19 @@
+# Migrated from ~/.config/kitty/diff.conf.
+theme = "terminal"
+mode = "split"
+
+[keybindings]
+"hunk.app.quit" = ["q", "escape"]
+"hunk.review.stepDown" = ["j", "down", "ctrl+e"]
+"hunk.review.stepUp" = ["k", "up", "ctrl+y"]
+"hunk.review.jumpToTop" = ["g", "home"]
+"hunk.review.jumpToBottom" = ["G", "end"]
+"hunk.review.pageDown" = ["pagedown", "space", "ctrl+f", "ctrl+d", "f", "d"]
+"hunk.review.pageUp" = ["pageup", "ctrl+b", "ctrl+u", "b"]
+"hunk.review.nextHunk" = [".", ">", "]"]
+"hunk.review.previousHunk" = [",", "<", "["]
+"hunk.review.nextFile" = "J"
+"hunk.review.previousFile" = "K"
+"hunk.search.next" = "n"
+"hunk.search.previous" = ["p", "N"]
+"hunk.review.copySelection" = ["y", "c", "cmd+c"]
