@@ -4,13 +4,13 @@
 
 /opt/homebrew/bin/brew shellenv | source
 
-fish_add_path "/Users/jackieli/.bun/bin"
-fish_add_path -m ~/.local/bin
-fish_add_path -m ~/bin ~/pycode
+fish_add_path --path "/Users/jackieli/.bun/bin"
+fish_add_path --path ~/.local/bin
+fish_add_path --path ~/bin ~/pycode
 
 # Go
 set -gx GOPATH ~/go
-fish_add_path -m $GOPATH/bin
+fish_add_path --path $GOPATH/bin
 
 set -gx EDITOR (which nvim)
 set -gx VISUAL $EDITOR
@@ -19,7 +19,9 @@ set -gx LESSKEYIN ~/.config/lesskey
 # pager is set in ~/.config/kitty/kitty.conf
 set -gx PAGER less
 
-source ~/.secrets
+if test -r ~/.secrets
+    source ~/.secrets
+end
 
 # this enables `use node` in direnv
 # nvm stores versions as v11.15.0, so prefix must be "v"
@@ -44,8 +46,18 @@ end
 
 set -gx XDG_CONFIG_HOME "$HOME/.config"
 
-fish_add_path ~/.fzf/bin
-fish_add_path ~/.cargo/bin
+fish_add_path --path ~/.fzf/bin
+fish_add_path --path ~/.cargo/bin
+
+fish_add_path --path /opt/homebrew/opt/libpq/bin
+fish_add_path --path /opt/homebrew/opt/coreutils/libexec/gnubin
+
+if test -f ~/.local/share/google-cloud-sdk/path.fish.inc
+    source ~/.local/share/google-cloud-sdk/path.fish.inc
+end
+
+set -gx FZF_DEFAULT_COMMAND 'fd --type f --hidden --follow --exclude .git'
+set -gx FZF_DEFAULT_OPTS "--history=$HOME/.fzf_history --bind='ctrl-e:preview-down,ctrl-y:preview-up,ctrl-o:toggle-preview'"
 
 if status is-interactive
     set -g fish_greeting
@@ -66,7 +78,7 @@ if status is-interactive
     abbr gds git difftool --no-symlinks --dir-diff --staged
     abbr gsh git difftool --no-symlinks --dir-diff HEAD~1 HEAD
     abbr gr8 git rev-parse --short=8 HEAD
-    abbr gcm git checkout (__git.default_branch)
+    abbr --add gcm 'git checkout (__git.default_branch)'
     abbr gcim git commit -m
     abbr glola git log --oneline --decorate --color --graph --all
     abbr - cd -
@@ -88,8 +100,6 @@ if status is-interactive
     bind \cw backward-kill-bigword # ctrl+w to delete big word
     bind \e\[3\;5~ kill-word # ctrl+delete to delete forward word
 
-    set -Ux FZF_DEFAULT_COMMAND 'fd --type f --hidden --follow --exclude .git'
-    set -Ux FZF_DEFAULT_OPTS "--history=$HOME/.fzf_history --bind='ctrl-e:preview-down,ctrl-y:preview-up,ctrl-o:toggle-preview'"
     # if [ -n "$BASE16_THEME" ] && [ -f ~/.config/base16-fzf/fish/base16-$BASE16_THEME.fish ] && not string match -qe -- --color $FZF_DEFAULT_OPTS
     # 	source ~/.config/base16-fzf/fish/base16-$BASE16_THEME.fish
     # end
@@ -121,11 +131,6 @@ if status is-interactive
     end
 
     alias pg $PAGER
-    if [ -f ~/.local/share/google-cloud-sdk/path.fish.inc ]
-        . ~/.local/share/google-cloud-sdk/path.fish.inc
-    end
-
-    fish_add_path /opt/homebrew/opt/coreutils/libexec/gnubin
 end
 
 # vim:set et sts=4 sw=4 ts=4:
