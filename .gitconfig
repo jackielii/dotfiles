@@ -78,3 +78,12 @@
 	prompt = false
 [includeIf "gitdir:~/work/"]
 	path = ~/work/.gitconfig-ssh
+# work repos outside ~/work (e.g. go's module cache) still get the work ssh identity
+[includeIf "hasconfig:remote.*.url:https://github.com/tespkg/**"]
+	path = ~/work/.gitconfig-ssh
+[includeIf "hasconfig:remote.*.url:git@github.com:tespkg/**"]
+	path = ~/work/.gitconfig-ssh
+[includeIf "hasconfig:remote.*.url:https://gitlab.com/target-digital-transformation/**"]
+	path = ~/work/.gitconfig-ssh
+[includeIf "hasconfig:remote.*.url:git@gitlab.com:target-digital-transformation/**"]
+	path = ~/work/.gitconfig-ssh
