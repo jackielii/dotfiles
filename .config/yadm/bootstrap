@@ -21,6 +21,12 @@ fi
 
 cd "$HOME"
 
+# yadm (and `ly` lazygit) always use the personal identity, even from ~/work
+# where direnv points GIT_CONFIG_GLOBAL at the work gitconfig
+yadm gitconfig user.email jackie.space@gmail.com
+yadm gitconfig user.signingkey CCA6DE5218A5486A1C3D141D9D44BB781C299FEF
+yadm gitconfig commit.gpgsign true
+yadm gitconfig core.sshCommand "/usr/bin/ssh -F ~/.ssh/config"
 
 export YADM_BOOTSTRAPPING=yes
 
