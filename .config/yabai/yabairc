@@ -89,7 +89,11 @@ yabai -m rule --add app="^ChatGPT$" manage=off scratchpad=chatgpt grid=11:11:1:1
 yabai -m rule --add app="^Ghostty$" manage=off scratchpad=ghostty grid=11:11:1:1:9:9
 yabai -m rule --add app="^YouTube Music$" manage=off scratchpad=music grid=11:11:1:1:9:9
 yabai -m rule --add title="^T_T$" manage=off scratchpad=tt grid=11:11:1:1:9:9
-yabai -m rule --add app="^WeChat$" manage=off scratchpad=wechat grid=11:11:1:1:9:9
+# Assign only the resizable main window; WeChat's small auxiliary window has the same title.
+yabai -m rule --add label=wechat-floating app="^WeChat$" manage=off
+yabai -m signal --add label=wechat-main-created event=window_created app="^WeChat$" action='"$HOME/.config/yabai/assign-wechat-scratchpad"'
+yabai -m signal --add label=wechat-main-activated event=application_activated app="^WeChat$" action='"$HOME/.config/yabai/assign-wechat-scratchpad"'
+"$HOME/.config/yabai/assign-wechat-scratchpad"
 yabai -m rule --add app='WhatsApp$' manage=off scratchpad=whatsapp grid=11:11:1:1:9:9
 yabai -m rule --add app="^Finder$" manage=off scratchpad=finder grid=11:11:1:1:9:9
 yabai -m rule --add app="^Notes$" manage=off scratchpad=notes grid=11:11:1:1:9:9

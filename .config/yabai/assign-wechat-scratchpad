@@ -1,0 +1,15 @@
+#!/bin/sh
+# WeChat creates a small non-resizable window before its main chat window.
+# Keep native yabai scratchpad toggling, but assign it only to the main window.
+yabai="$HOME/.local/bin/yabai"
+jq=/opt/homebrew/bin/jq
+windows=$("$yabai" -m query --windows) || exit 1
+main=$(printf '%s' "$windows" | "$jq" -r '[.[] | select(.app == "WeChat" and .["can-resize"] == true and .subrole == "AXStandardWindow")] | sort_by(.frame.w * .frame.h) | last | .id // empty')
+[ -n "$main" ] || exit 0
+owner=$(printf '%s' "$windows" | "$jq" -r '.[] | select(.scratchpad == "wechat") | .id')
+[ "$owner" != "$main" ] || exit 0
+if [ -n "$owner" ]; then
+    "$yabai" -m window "$owner" --scratchpad || exit 1
+fi
+"$yabai" -m window "$main" --scratchpad wechat || exit 1
+"$yabai" -m window "$main" --grid 11:11:1:1:9:9
