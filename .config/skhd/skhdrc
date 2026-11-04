@@ -125,8 +125,6 @@ ctrl - f14 : @cycle_windows_forward
 ## 0x32 is `
 cmd + ctrl - 0x32 : ~/.local/bin/yabai -m space --toggle mission-control && cliclick -r w:150 m:0,0
 
-# ctrl - f13 : /Applications/flameshot.app/Contents/MacOS/flameshot gui
-# shift - f13 : open -a flameshot --args screen
 # }}}
 
 # move window cmd + shift - ? {{{

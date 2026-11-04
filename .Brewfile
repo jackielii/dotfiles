@@ -69,7 +69,6 @@ if OS.mac?
     tap "jackielii/tap"
     tap "jackielii/local"
     cask "jackielii/local/yabai-indicator"
-    cask "jackielii/local/flameshot"
     # see https://github.com/koekeishiya/yabai for installation steps on mac
     brew "koekeishiya/formulae/yabai"
     brew "jackielii/tap/skhd-zig"
@@ -128,3 +127,7 @@ end
 cask "proxy-audio-device"
 
 brew "hunk"
+
+cask "squirrel-app"
+
+cask "shottr"

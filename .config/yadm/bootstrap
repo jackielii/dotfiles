@@ -38,7 +38,6 @@ if [ -d "$HOME/.config/homebrew/local-casks" ]; then
     fi
     cp "$HOME/.config/homebrew/local-casks/"*.rb "$local_tap/Casks/"
     brew trust --cask jackielii/local/yabai-indicator
-    brew trust --cask jackielii/local/flameshot
 fi
 
 if [ -f "$HOME/.Brewfile" ]; then
