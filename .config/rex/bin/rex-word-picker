@@ -17,8 +17,9 @@ split() {
     space) tr " '\"\`\t" '\n\n\n\n\n' ;;
     slash) tr "/ '\"\`\t-" '\n\n\n\n\n\n\n' ;;
     line) sed 's/^[[:space:]]*//; s/[[:space:]]*$//' ;;
-    # Commands typed at the starship prompt, whose last line starts with ❯.
-    command) sed -n 's/^❯[[:space:]][[:space:]]*\(.*[^[:space:]]\)[[:space:]]*$/\1/p' ;;
+    # Commands typed at the starship prompt, whose last line starts with ❯,
+    # ✗ after a failed command, or ❮ in vim mode.
+    command) sed -En 's/^(❯|✗|❮)[[:space:]]+(.*[^[:space:]])[[:space:]]*$/\2/p' ;;
   esac
 }
 
