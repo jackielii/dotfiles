@@ -207,8 +207,8 @@ rex.action{
 rex.bind("ctrl+shift+u>j", "open_url_hints")
 
 -- Pick a word from every pane in the tab, like kitty-select-word-stream:
--- Enter types it into this pane, Tab copies it. Starts with what is on
--- screen; ctrl-h in fzf adds the scrollback.
+-- Enter types it into this pane, Tab copies it. The picker streams each
+-- pane's screen first, then its scrollback; ctrl-space changes the split.
 rex.action{
   name = "word_picker",
   title = "Pick Word from Panes…",
@@ -232,26 +232,19 @@ rex.action{
       end
     end
 
-    local screen, all = {}, {}
+    local list = {}
     for _, id in ipairs(blocks) do
-      local text = pane_text(id, false)
-      local lines = {}
-      for line in (text .. "\n"):gmatch("(.-)\n") do table.insert(lines, line) end
       local size = rex.block.call(terminal, "size", { block_id = id })
-      local rows = size and size.rows or #lines
-      table.insert(screen, table.concat(lines, "\n", math.max(1, #lines - rows + 1)))
-      table.insert(all, text)
+      table.insert(list, id .. " " .. (size and size.rows or 0))
     end
 
     local dir = temp_file("words", "")
     os.remove(dir)
     local made = rex.exec({ "mkdir", dir })
     if not made.ok then error(made.stderr, 0) end
-    for name, parts in pairs({ ["screen.txt"] = screen, ["all.txt"] = all }) do
-      local file = assert(io.open(dir .. "/" .. name, "w"))
-      file:write(table.concat(parts, "\n"), "\n")
-      file:close()
-    end
+    local file = assert(io.open(dir .. "/blocks", "w"))
+    file:write(table.concat(list, "\n"), "\n")
+    file:close()
     open_float({ os.getenv("HOME") .. "/.config/rex/bin/rex-word-picker", dir, ctx.block_id })
   end,
 }

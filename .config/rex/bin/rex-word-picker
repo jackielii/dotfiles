@@ -2,10 +2,12 @@
 # Pick a word, path part or line from the panes of a Rex tab with fzf, like
 # kitty-select-word-stream. Started by the word_picker action in init.lua.
 #
-#   rex-word-picker DIR BLOCK      DIR holds screen.txt and all.txt; BLOCK gets the pick
-#   rex-word-picker --list DIR MODE        used by fzf's reload bindings
-#   rex-word-picker --history DIR          used by fzf's ctrl-h binding
-#   rex-word-picker --pick DIR copy|send WORD      used by fzf's tab and enter
+#   rex-word-picker DIR BLOCK      DIR/blocks lists "BLOCK ROWS" for each pane,
+#                                  the focused one first; BLOCK gets the pick
+#   rex-word-picker --produce DIR          fzf's input: streams the words
+#   rex-word-picker --cycle DIR            fzf's ctrl-space: next way to split
+#   rex-word-picker --list DIR             reloads the words split the new way
+#   rex-word-picker --pick DIR copy|send WORD      fzf's tab and enter
 #
 # fzf replaces this script with exec, so Rex sees fzf in the foreground and
 # passes ctrl+h/j/k/l to it instead of moving between panes.
@@ -13,48 +15,67 @@
 split() {
   case $1 in
     space) tr " '\"\`\t" '\n\n\n\n\n' ;;
-    slash) tr '/ \t-' '\n\n\n\n' ;;
+    slash) tr "/ '\"\`\t-" '\n\n\n\n\n\n\n' ;;
     line) sed 's/^[[:space:]]*//; s/[[:space:]]*$//' ;;
-  esac | awk 'NF && !seen[$0]++'
+  esac
+}
+
+unique() {
+  awk 'NF && !seen[$0]++ { print; fflush() }'
+}
+
+# Newest lines first, so words near the prompt come first.
+newest_first() {
+  /usr/bin/tail -r
 }
 
 case $1 in
-  --list)
-    split "$3" < "$2/$(cat "$2/source")"
+  --produce)
+    # Every pane's screen first, then its scrollback, each piece split and
+    # sent to fzf as soon as it is read. DIR/text keeps the lines in the same
+    # order so a reload can split them another way.
+    dir=$2
+    {
+      while read -r block rows; do
+        rex capture -b "$block" --trim --unwrap > "$dir/$block.txt"
+        newest_first < "$dir/$block.txt" | head -n "$rows" | tee -a "$dir/text" | split space
+      done < "$dir/blocks"
+      while read -r block rows; do
+        newest_first < "$dir/$block.txt" | tail -n +"$((rows + 1))" | tee -a "$dir/text" | split space
+      done < "$dir/blocks"
+    } | unique
     exit ;;
-  --history)
-    echo all.txt > "$2/source"
-    split space < "$2/all.txt"
+  --cycle)
+    case $(cat "$2/mode") in
+      space) next=slash ;;
+      slash) next=line ;;
+      *) next=space ;;
+    esac
+    echo "$next" > "$2/mode"
+    echo "reload('$0' --list '$2')+change-prompt($next> )"
+    exit ;;
+  --list)
+    split "$(cat "$2/mode")" < "$2/text" | unique
     exit ;;
   --pick)
-    dir=$2
-    target=$(cat "$dir/target")
-    rm -rf "$dir"
+    target=$(cat "$2/target")
+    rm -rf "$2"
     printf %s "$4" | pbcopy
-    [ "$3" = send ] || exit 0
-    rex=$(command -v rex)
-    if [ -z "$rex" ]; then
-      for candidate in "$HOME/Library/Application Support/com.superlogical.rex/RexServer/Versions/"[0-9]*"/Rex Server.app/Contents/MacOS/rex"; do
-        rex=$candidate
-      done
-    fi
-    printf %s "$4" | "$rex" send -b "$target"
-    exit ;;
+    [ "$3" = send ] && printf %s "$4" | rex send -b "$target"
+    exit 0 ;;
 esac
 
 dir=$1
 self=$0
 echo "$2" > "$dir/target"
-echo screen.txt > "$dir/source"
-split space < "$dir/screen.txt" > "$dir/words"
+echo space > "$dir/mode"
+: > "$dir/text"
 
-exec fzf --tac < "$dir/words" \
-  --bind "ctrl-space:reload('$self' --list '$dir' space)" \
-  --bind "ctrl-/:reload('$self' --list '$dir' slash)" \
-  --bind "ctrl-l:reload('$self' --list '$dir' line)" \
-  --bind "ctrl-h:reload('$self' --history '$dir')" \
+FZF_DEFAULT_COMMAND="'$self' --produce '$dir'" exec fzf \
+  --prompt "space> " \
+  --bind "ctrl-space:transform('$self' --cycle '$dir')" \
   --bind "tab:become('$self' --pick '$dir' copy {})" \
   --bind "enter:become('$self' --pick '$dir' send {})" \
   --bind "esc:become(rm -rf '$dir')" \
   --bind "ctrl-c:become(rm -rf '$dir')" \
-  --header "Tab: copy; Enter: send; ctrl-h: load history; ctrl-space/slash/l: change delimiter"
+  --header "Enter: send; Tab: copy; ctrl-space: split by space, slash or line"
