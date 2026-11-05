@@ -4,6 +4,12 @@
 yabai="$HOME/.local/bin/yabai"
 jq=/opt/homebrew/bin/jq
 windows=$("$yabai" -m query --windows) || exit 1
+# Transparent helper dialogs can retain a visible shadow after the main window hides.
+# Leave real dialogs alone; suppress shadows only on invisible, non-resizable helpers.
+printf '%s' "$windows" | "$jq" -r '.[] | select(.app == "WeChat" and .subrole == "AXDialog" and .["can-resize"] == false and .opacity == 0 and .["has-shadow"] == true) | .id' |
+while IFS= read -r helper; do
+    "$yabai" -m window "$helper" --toggle shadow
+done
 main=$(printf '%s' "$windows" | "$jq" -r '[.[] | select(.app == "WeChat" and .["can-resize"] == true and .subrole == "AXStandardWindow")] | sort_by(.frame.w * .frame.h) | last | .id // empty')
 [ -n "$main" ] || exit 0
 owner=$(printf '%s' "$windows" | "$jq" -r '.[] | select(.scratchpad == "wechat") | .id')
