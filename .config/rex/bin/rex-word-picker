@@ -17,6 +17,8 @@ split() {
     space) tr " '\"\`\t" '\n\n\n\n\n' ;;
     slash) tr "/ '\"\`\t-" '\n\n\n\n\n\n\n' ;;
     line) sed 's/^[[:space:]]*//; s/[[:space:]]*$//' ;;
+    # Commands typed at the starship prompt, whose last line starts with ❯.
+    command) sed -n 's/^❯[[:space:]][[:space:]]*\(.*[^[:space:]]\)[[:space:]]*$/\1/p' ;;
   esac
 }
 
@@ -49,6 +51,7 @@ case $1 in
     case $(cat "$2/mode") in
       space) next=slash ;;
       slash) next=line ;;
+      line) next=command ;;
       *) next=space ;;
     esac
     echo "$next" > "$2/mode"
@@ -78,4 +81,4 @@ FZF_DEFAULT_COMMAND="'$self' --produce '$dir'" exec fzf \
   --bind "enter:become('$self' --pick '$dir' send {})" \
   --bind "esc:become(rm -rf '$dir')" \
   --bind "ctrl-c:become(rm -rf '$dir')" \
-  --header "Enter: send; Tab: copy; ctrl-space: split by space, slash or line"
+  --header "Enter: send; Tab: copy; ctrl-space: split by space, slash, line or command"
