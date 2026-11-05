@@ -317,8 +317,7 @@ ralt - p: @toggle_scratchpad("skype", "Skype")
 ralt - t : open -a "Rex Beta"
 # alt - f : kitty -d ~ --title 'MY-|-Filer' lf
 # -1 option makes it very fast but makes -o option not work
-# ralt - f : @fish("kitty -1 -d ~ -T \"MY-|-Filer\" lf")
-ralt - f : $HOME/.config/rex/bin/rex-filer
+ralt - f : @fish("kitty -1 -d ~ -T \"MY-|-Filer\" lf")
 # ralt - f : fish -c "kitty -1 --instance-group lf -d ~ -T 'MY-|-Filer' -o tab_bar_min_tabs=2 lf"
 
 cmd + shift - return : kitty -1 -d ~

@@ -1,7 +1,0 @@
-#!/bin/sh
-# Open lf in a floating Rex pane, for skhd's ralt - f. Run from outside Rex,
-# the filer action needs a session to open in, so this uses the first one.
-rex="/Applications/Rex Beta.app/Contents/Helpers/Rex Server.rex/Contents/MacOS/rex"
-session=$("$rex" ls --json | sed -n 's/.*"session_id": "\(.*\)".*/\1/p' | head -n 1)
-open -a "Rex Beta"
-exec "$rex" do -s "$session" filer
