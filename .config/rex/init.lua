@@ -109,6 +109,136 @@ rex.bind("shift+cmd+[", "client.tab.move", { direction = "backward" }) -- kitty.
 rex.bind("cmd+]", "client.tab.next") -- kitty.conf:188
 rex.bind("shift+cmd+]", "client.tab.move", { direction = "forward" }) -- kitty.conf:189
 
+-- More tmux-like keys
+rex.bind("ctrl+a>ctrl+c", "session.rename")
+rex.bind("ctrl+a>=", "pane.balance")
+
+-- Scrollback pager and pickers. Rex has no overlays, so these open a zoomed
+-- split or a floating pane that closes when its program exits.
+local terminal = "com.superlogical.terminal"
+
+local function pane_text(block_id, unwrap)
+  local r, err = rex.block.call(terminal, "format", {
+    block_id = block_id, format = "text", trim = true, unwrap = unwrap ~= false,
+  })
+  if err then error(err, 0) end
+  return r.content
+end
+
+local function temp_file(name, text)
+  local dir = (os.getenv("TMPDIR") or "/tmp"):gsub("/+$", "")
+  local path = string.format("%s/rex-%s-%d-%d", dir, name, os.time(), math.random(1000000))
+  local file = assert(io.open(path, "w"))
+  file:write(text)
+  file:close()
+  return path
+end
+
+local function command_block(command)
+  return rex.layout.block{ flavor = terminal .. ".shell", options = { command = command } }
+end
+
+local function open_zoomed(ctx, command)
+  local _, err = rex.session.new_split{
+    anchor_id = ctx.block_id, direction = "vertical", side = "after", focus = true,
+    layout = command_block(command),
+  }
+  if err then error(err, 0) end
+  rex.client.queue("pane.zoom")
+end
+
+local function open_float(command)
+  local _, err = rex.session.new_layer{
+    bounds = { 0.15, 0.15, 0.7, 0.7 }, focus = true,
+    layout = command_block(command),
+  }
+  if err then error(err, 0) end
+end
+
+-- Page the scrollback with nvimpager, as kitty.conf:132 did.
+rex.action{
+  name = "scrollback_in_pager",
+  title = "Open Scrollback in Pager",
+  run = function(ctx)
+    local path = temp_file("scrollback", pane_text(ctx.block_id))
+    open_zoomed(ctx, { "sh", "-c", 'nvimpager -p "$1"; rm -f "$1"', "sh", path })
+  end,
+}
+rex.bind("ctrl+a>enter", "scrollback_in_pager")
+
+-- Pick a URL from the pane with fzf and open it, newest first.
+rex.action{
+  name = "open_url_hints",
+  title = "Open URL from Pane…",
+  run = function(ctx)
+    local found, seen, urls = {}, {}, {}
+    for url in pane_text(ctx.block_id):gmatch("%a[%w+.-]*://[%w%-._~:/?#%[%]@!$&'()*+,;=%%]+") do
+      table.insert(found, (url:gsub("[.,;:)'%]]+$", "")))
+    end
+    for i = #found, 1, -1 do
+      if not seen[found[i]] then
+        seen[found[i]] = true
+        table.insert(urls, found[i])
+      end
+    end
+    if #urls == 0 then return end
+    local path = temp_file("urls", table.concat(urls, "\n") .. "\n")
+    open_float({ "sh", "-c", 'url=$(fzf --no-sort < "$1"); rm -f "$1"; [ -n "$url" ] && open "$url"', "sh", path })
+  end,
+}
+rex.bind("ctrl+shift+u>j", "open_url_hints")
+
+-- Pick a word from every pane in the tab, like kitty-select-word-stream:
+-- Enter types it into this pane, Tab copies it. Starts with what is on
+-- screen; ctrl-h in fzf adds the scrollback.
+rex.action{
+  name = "word_picker",
+  title = "Pick Word from Panes…",
+  run = function(ctx)
+    local view, err = rex.session.view{}
+    if err then error(err, 0) end
+    local blocks = { ctx.block_id }
+    for _, window in ipairs(view.windows or {}) do
+      local here, others = false, {}
+      for _, layer in ipairs(window.layers or {}) do
+        for _, block in ipairs(layer.blocks or {}) do
+          if block.block_id == ctx.block_id then
+            here = true
+          elseif block.creator_name == terminal then
+            table.insert(others, block.block_id)
+          end
+        end
+      end
+      if here then
+        for _, id in ipairs(others) do table.insert(blocks, id) end
+      end
+    end
+
+    local screen, all = {}, {}
+    for _, id in ipairs(blocks) do
+      local text = pane_text(id, false)
+      local lines = {}
+      for line in (text .. "\n"):gmatch("(.-)\n") do table.insert(lines, line) end
+      local size = rex.block.call(terminal, "size", { block_id = id })
+      local rows = size and size.rows or #lines
+      table.insert(screen, table.concat(lines, "\n", math.max(1, #lines - rows + 1)))
+      table.insert(all, text)
+    end
+
+    local dir = temp_file("words", "")
+    os.remove(dir)
+    local made = rex.exec({ "mkdir", dir })
+    if not made.ok then error(made.stderr, 0) end
+    for name, parts in pairs({ ["screen.txt"] = screen, ["all.txt"] = all }) do
+      local file = assert(io.open(dir .. "/" .. name, "w"))
+      file:write(table.concat(parts, "\n"), "\n")
+      file:close()
+    end
+    open_float({ os.getenv("HOME") .. "/.config/rex/bin/rex-word-picker", dir, ctx.block_id })
+  end,
+}
+rex.bind("ctrl+a>tab", "word_picker")
+
 -- Ctrl-Q toggles the last visited tabs, including visits made by clicking.
 -- tab-history.lua listens to server events via the user LaunchAgent.
 rex.action{

@@ -10,6 +10,7 @@ end
 brew "tmux"
 brew "neovim"
 brew "node" # Runtime and npm for Neovim Mason tools
+brew "nvimpager" # Pager for kitty and Rex scrollback
 brew "fd"
 brew "starship"
 brew "zoxide" # z change directory

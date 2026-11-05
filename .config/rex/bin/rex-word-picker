@@ -1,0 +1,51 @@
+#!/bin/sh
+# Pick a word, path part or line from the panes of a Rex tab with fzf, like
+# kitty-select-word-stream. Started by the word_picker action in init.lua.
+#
+#   rex-word-picker DIR BLOCK      DIR holds screen.txt and all.txt; BLOCK gets the pick
+#   rex-word-picker --list DIR MODE        used by fzf's reload bindings
+#   rex-word-picker --history DIR          used by fzf's ctrl-h binding
+
+split() {
+  case $1 in
+    space) tr " '\"\`\t" '\n\n\n\n\n' ;;
+    slash) tr '/ \t-' '\n\n\n\n' ;;
+    line) sed 's/^[[:space:]]*//; s/[[:space:]]*$//' ;;
+  esac | awk 'NF && !seen[$0]++'
+}
+
+case $1 in
+  --list)
+    split "$3" < "$2/$(cat "$2/source")"
+    exit ;;
+  --history)
+    echo all.txt > "$2/source"
+    split space < "$2/all.txt"
+    exit ;;
+esac
+
+dir=$1
+target=$2
+self=$0
+trap 'rm -rf "$dir"' EXIT
+echo screen.txt > "$dir/source"
+
+rex=$(command -v rex)
+if [ -z "$rex" ]; then
+  for candidate in "$HOME/Library/Application Support/com.superlogical.rex/RexServer/Versions/"[0-9]*"/Rex Server.app/Contents/MacOS/rex"; do
+    rex=$candidate
+  done
+fi
+
+result=$(split space < "$dir/screen.txt" | fzf --tac --expect=tab \
+  --bind "ctrl-space:reload('$self' --list '$dir' space)" \
+  --bind "ctrl-/:reload('$self' --list '$dir' slash)" \
+  --bind "ctrl-l:reload('$self' --list '$dir' line)" \
+  --bind "ctrl-h:reload('$self' --history '$dir')" \
+  --header "Tab: copy; Enter: send; ctrl-h: load history; ctrl-space/slash/l: change delimiter")
+
+key=$(printf '%s\n' "$result" | sed -n 1p)
+pick=$(printf '%s\n' "$result" | sed -n 2p)
+[ -n "$pick" ] || exit 0
+printf %s "$pick" | pbcopy
+[ "$key" = tab ] || printf %s "$pick" | "$rex" send -b "$target"
