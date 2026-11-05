@@ -306,8 +306,8 @@ lalt - c: @toggle_scratchpad("wechat", "WeChat")
 alt - a: @toggle_scratchpad("whatsapp", "WhatsApp")
 alt - d: ~/.local/bin/yabai -m window --toggle finder || open ~/Downloads
 ralt - n: @toggle_scratchpad("notes", "Notes")
-lalt - t: @toggle_scratchpad("claude", "Claude")
-lalt - g: @toggle_scratchpad("chatgpt", "ChatGPT")
+lalt - g: @toggle_scratchpad("claude", "Claude")
+lalt - t: @toggle_scratchpad("chatgpt", "ChatGPT")
 ralt - p: @toggle_scratchpad("skype", "Skype")
 
 # ralt - g: yabai -m window --toggle ClaudeCode || \
