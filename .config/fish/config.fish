@@ -87,7 +87,7 @@ if status is-interactive
     abbr dcup docker-compose up
     abbr dcdn docker-compose down
     abbr ll ls -lhtr
-    abbr ly lazygit -ucd ~/.local/share/yadm/lazygit -w ~ -g ~/.local/share/yadm/repo.git
+    abbr ly lazygit -ucd ~/.local/share/yadm/lazygit -ucf ~/.config/yadm/lazygit.yaml -w ~ -g ~/.local/share/yadm/repo.git
 
     starship init fish | source
     # oh-my-posh init fish | source

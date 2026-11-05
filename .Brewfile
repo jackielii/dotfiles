@@ -132,3 +132,6 @@ brew "hunk"
 cask "squirrel-app"
 
 cask "shottr"
+
+# Scan staged yadm files before commits.
+brew "gitleaks"

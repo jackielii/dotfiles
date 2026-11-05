@@ -1,0 +1,5 @@
+#!/bin/sh
+# Scope this hook to yadm via its repository-local core.hooksPath.
+PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+export PATH
+exec python3 "$HOME/.config/yadm/secret-guard.py"

@@ -1,4 +1,9 @@
+# The worktree is HOME: bulk staging can include private or enormous directories.
 keybinding:
+  universal:
+    toggleStagedAll: '<disabled>'
   files:
-    toggleStagedAll: '<c-a>' # avoid "stage/unstage all" since it hangs lazygit, cause I guess it tries to list all files
-
+    toggleStagedAll: '<disabled>'
+    stashAllChanges: '<disabled>'
+    viewResetOptions: '<disabled>'
+    commitChangesWithoutHook: '<disabled>'

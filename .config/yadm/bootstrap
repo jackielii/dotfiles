@@ -27,6 +27,7 @@ yadm gitconfig user.email jackie.space@gmail.com
 yadm gitconfig user.signingkey CCA6DE5218A5486A1C3D141D9D44BB781C299FEF
 yadm gitconfig commit.gpgsign true
 yadm gitconfig core.sshCommand "/usr/bin/ssh -F ~/.ssh/config"
+yadm gitconfig core.hooksPath "$HOME/.config/yadm/hooks"
 
 export YADM_BOOTSTRAPPING=yes
 
