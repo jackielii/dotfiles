@@ -5,6 +5,10 @@
 #   rex-word-picker DIR BLOCK      DIR holds screen.txt and all.txt; BLOCK gets the pick
 #   rex-word-picker --list DIR MODE        used by fzf's reload bindings
 #   rex-word-picker --history DIR          used by fzf's ctrl-h binding
+#   rex-word-picker --pick DIR copy|send WORD      used by fzf's tab and enter
+#
+# fzf replaces this script with exec, so Rex sees fzf in the foreground and
+# passes ctrl+h/j/k/l to it instead of moving between panes.
 
 split() {
   case $1 in
@@ -22,30 +26,35 @@ case $1 in
     echo all.txt > "$2/source"
     split space < "$2/all.txt"
     exit ;;
+  --pick)
+    dir=$2
+    target=$(cat "$dir/target")
+    rm -rf "$dir"
+    printf %s "$4" | pbcopy
+    [ "$3" = send ] || exit 0
+    rex=$(command -v rex)
+    if [ -z "$rex" ]; then
+      for candidate in "$HOME/Library/Application Support/com.superlogical.rex/RexServer/Versions/"[0-9]*"/Rex Server.app/Contents/MacOS/rex"; do
+        rex=$candidate
+      done
+    fi
+    printf %s "$4" | "$rex" send -b "$target"
+    exit ;;
 esac
 
 dir=$1
-target=$2
 self=$0
-trap 'rm -rf "$dir"' EXIT
+echo "$2" > "$dir/target"
 echo screen.txt > "$dir/source"
+split space < "$dir/screen.txt" > "$dir/words"
 
-rex=$(command -v rex)
-if [ -z "$rex" ]; then
-  for candidate in "$HOME/Library/Application Support/com.superlogical.rex/RexServer/Versions/"[0-9]*"/Rex Server.app/Contents/MacOS/rex"; do
-    rex=$candidate
-  done
-fi
-
-result=$(split space < "$dir/screen.txt" | fzf --tac --expect=tab \
+exec fzf --tac < "$dir/words" \
   --bind "ctrl-space:reload('$self' --list '$dir' space)" \
   --bind "ctrl-/:reload('$self' --list '$dir' slash)" \
   --bind "ctrl-l:reload('$self' --list '$dir' line)" \
   --bind "ctrl-h:reload('$self' --history '$dir')" \
-  --header "Tab: copy; Enter: send; ctrl-h: load history; ctrl-space/slash/l: change delimiter")
-
-key=$(printf '%s\n' "$result" | sed -n 1p)
-pick=$(printf '%s\n' "$result" | sed -n 2p)
-[ -n "$pick" ] || exit 0
-printf %s "$pick" | pbcopy
-[ "$key" = tab ] || printf %s "$pick" | "$rex" send -b "$target"
+  --bind "tab:become('$self' --pick '$dir' copy {})" \
+  --bind "enter:become('$self' --pick '$dir' send {})" \
+  --bind "esc:become(rm -rf '$dir')" \
+  --bind "ctrl-c:become(rm -rf '$dir')" \
+  --header "Tab: copy; Enter: send; ctrl-h: load history; ctrl-space/slash/l: change delimiter"

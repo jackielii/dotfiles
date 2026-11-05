@@ -198,7 +198,10 @@ rex.action{
     end
     if #urls == 0 then return end
     local path = temp_file("urls", table.concat(urls, "\n") .. "\n")
-    open_float({ "sh", "-c", 'url=$(fzf --no-sort < "$1"); rm -f "$1"; [ -n "$url" ] && open "$url"', "sh", path })
+    -- exec so Rex sees fzf in the foreground and passes ctrl+h/j/k/l to it.
+    open_float({ "sh", "-c", [[exec fzf --no-sort < "$1" \
+      --bind "enter:become(open {}; rm -f '$1')" \
+      --bind "esc:become(rm -f '$1')" --bind "ctrl-c:become(rm -f '$1')"]], "sh", path })
   end,
 }
 rex.bind("ctrl+shift+u>j", "open_url_hints")
