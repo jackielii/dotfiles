@@ -1,8 +1,23 @@
--- Move between terminal panes with Ctrl-H/J/K/L.
-rex.bind("ctrl+h", "pane.focus", { direction = "left" })
-rex.bind("ctrl+j", "pane.focus", { direction = "down" })
-rex.bind("ctrl+k", "pane.focus", { direction = "up" })
-rex.bind("ctrl+l", "pane.focus", { direction = "right" })
+-- Move between terminal panes with Ctrl-H/J/K/L, except in programs that
+-- use the keys themselves, such as fzf in the pickers below. The server
+-- does both itself, so this also works from apps connected remotely.
+local pass_keys_to = { fzf = true }
+
+local function focus_or_pass(key, byte, direction)
+  rex.bind(key, function(ctx)
+    local p = ctx.block_id and rex.block.call("com.superlogical.terminal", "process", { block_id = ctx.block_id })
+    if p and p.foreground and pass_keys_to[p.foreground.name] then
+      rex.block.call("com.superlogical.terminal", "write", { block_id = ctx.block_id, data = byte })
+    else
+      rex.session.focus_direction{ direction = direction }
+    end
+    return true
+  end)
+end
+focus_or_pass("ctrl+h", "\8", "left")
+focus_or_pass("ctrl+j", "\10", "down")
+focus_or_pass("ctrl+k", "\11", "up")
+focus_or_pass("ctrl+l", "\12", "right")
 
 -- Rex config, migrated from ~/.tmux.conf and ~/.config/kitty/kitty.conf
 
@@ -256,10 +271,12 @@ rex.action{
     for _, window in ipairs(view.windows or {}) do live[window.window_id] = true end
     for _, id in ipairs(history[ctx.session_id] or {}) do
       if id ~= view.active_window_id and live[id] then
-        -- Server focus alone does not select the visible tab in Rex.app.
+        -- Server focus alone does not select the visible tab in Rex.app, and
+        -- an app connected remotely may not take queued actions, so do both.
+        rex.session.focus_window{ window_id = id }
         for index, window in ipairs(view.windows or {}) do
           if window.window_id == id then
-            rex.client.queue("client.tab.goto", {index = index})
+            pcall(rex.client.queue, "client.tab.goto", {index = index})
             return
           end
         end
