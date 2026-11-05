@@ -2,4 +2,4 @@
 .secrets
 .config/gh/hosts.yml
 .kube/config*
-.config/argocd/config*
+.config/argocd/*

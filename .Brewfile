@@ -63,6 +63,9 @@ if OS.mac?
     cask "tailscale-app"
     cask "wechat"
     cask "microsoft-teams"
+    cask "microsoft-word"
+    cask "microsoft-powerpoint"
+    cask "microsoft-excel"
     cask "whatsapp"
     cask "orbstack"
 

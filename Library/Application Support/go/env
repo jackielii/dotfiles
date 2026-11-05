@@ -1,0 +1,4 @@
+GOCACHE=/Volumes/Stack/go/build
+GOMODCACHE=/Volumes/Stack/go/mod
+GOPRIVATE=tespkg.in,github.com/tespkg,gitlab.com/target-digital-transformation
+GOTMPDIR=/Volumes/Stack/go/tmp
