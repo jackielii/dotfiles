@@ -149,8 +149,8 @@ local function temp_file(name, text)
   return path
 end
 
-local function command_block(command)
-  return rex.layout.block{ flavor = terminal .. ".shell", options = { command = command } }
+local function command_block(command, cwd)
+  return rex.layout.block{ flavor = terminal .. ".shell", options = { command = command, cwd = cwd } }
 end
 
 local function open_zoomed(ctx, command)
@@ -162,10 +162,10 @@ local function open_zoomed(ctx, command)
   rex.client.queue("pane.zoom")
 end
 
-local function open_float(command)
+local function open_float(command, cwd)
   local _, err = rex.session.new_layer{
     bounds = { 0.15, 0.15, 0.7, 0.7 }, focus = true,
-    layout = command_block(command),
+    layout = command_block(command, cwd),
   }
   if err then error(err, 0) end
 end
@@ -250,6 +250,16 @@ rex.action{
 }
 rex.bind("ctrl+a>tab", "word_picker")
 
+-- lf in a floating pane, started from skhd's ralt - f, as kitty's
+-- floating MY-|-Filer window was.
+rex.action{
+  name = "filer",
+  title = "Open lf",
+  run = function()
+    open_float({ "lf" }, os.getenv("HOME"))
+  end,
+}
+
 -- Ctrl-Q toggles the last visited tabs, including visits made by clicking.
 -- tab-history.lua listens to server events via the user LaunchAgent.
 rex.action{
@@ -281,3 +291,6 @@ rex.action{
   end,
 }
 rex.bind("ctrl+q", "previous_visited_tab")
+
+-- Return to the previous Rex session.
+rex.bind("ctrl+a>backspace", "session.previous")
