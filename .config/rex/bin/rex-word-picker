@@ -8,6 +8,7 @@
 #   rex-word-picker --cycle DIR            fzf's ctrl-space: next way to split
 #   rex-word-picker --list DIR             reloads the words split the new way
 #   rex-word-picker --pick DIR copy|send WORD      fzf's tab and enter
+#   rex-word-picker --close DIR            fzf's esc and ctrl-c
 #
 # fzf replaces this script with exec, so Rex sees fzf in the foreground and
 # passes ctrl+h/j/k/l to it instead of moving between panes.
@@ -23,8 +24,9 @@ split() {
   esac
 }
 
+# Drops repeats and the bare prompt symbols, which top every pane.
 unique() {
-  awk 'NF && !seen[$0]++ { print; fflush() }'
+  awk 'NF && $0 !~ /^(❯|✗|❮)$/ && !seen[$0]++ { print; fflush() }'
 }
 
 # Newest lines first, so words near the prompt come first.
@@ -61,11 +63,16 @@ case $1 in
   --list)
     split "$(cat "$2/mode")" < "$2/text" | unique
     exit ;;
-  --pick)
+  --pick|--close)
     target=$(cat "$2/target")
     rm -rf "$2"
-    printf %s "$4" | pbcopy
-    [ "$3" = send ] && printf %s "$4" | rex send -b "$target"
+    if [ "$1" = --pick ]; then
+      printf %s "$4" | pbcopy
+      [ "$3" = send ] && printf %s "$4" | rex send -b "$target"
+    fi
+    # Closing the float can focus another pane, so focus this one again once
+    # the float has gone, from a process that outlives it.
+    nohup sh -c 'sleep 0.3; rex focus "$1"' sh "$target" > /dev/null 2>&1 &
     exit 0 ;;
 esac
 
@@ -80,6 +87,6 @@ FZF_DEFAULT_COMMAND="'$self' --produce '$dir'" exec fzf \
   --bind "ctrl-space:transform('$self' --cycle '$dir')" \
   --bind "tab:become('$self' --pick '$dir' copy {})" \
   --bind "enter:become('$self' --pick '$dir' send {})" \
-  --bind "esc:become(rm -rf '$dir')" \
-  --bind "ctrl-c:become(rm -rf '$dir')" \
+  --bind "esc:become('$self' --close '$dir')" \
+  --bind "ctrl-c:become('$self' --close '$dir')" \
   --header "Enter: send; Tab: copy; ctrl-space: split by space, slash, line or command"
