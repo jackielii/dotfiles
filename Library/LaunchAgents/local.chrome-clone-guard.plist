@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>local.chrome-clone-guard</string>
+  <key>ProgramArguments</key><array><string>/bin/bash</string><string>/Users/jackieli/Library/Application Support/chrome-clone-guard/guard.sh</string></array>
+  <key>StartInterval</key><integer>600</integer>
+  <key>RunAtLoad</key><true/>
+  <key>LowPriorityIO</key><true/>
+  <key>Nice</key><integer>10</integer>
+  <key>StandardErrorPath</key><string>/Users/jackieli/Library/Logs/chrome-clone-guard/guard.err</string>
+</dict></plist>
