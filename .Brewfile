@@ -127,9 +127,6 @@ end
 
 # ( vim: set ts=4 sw=4 et fdm=marker: )
 
-# Software volume control for the FiiO DAC
-cask "proxy-audio-device"
-
 brew "hunk"
 
 cask "squirrel-app"
